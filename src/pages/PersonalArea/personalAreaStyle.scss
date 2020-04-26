@@ -1,0 +1,11 @@
+@import "../../theme/styles/layout.scss";
+@import "../../theme/styles/fonts.scss";
+@import "../..//theme/styles/pallete.scss";
+
+.personal-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+    background-color: $bgcPageDefault;
+}
