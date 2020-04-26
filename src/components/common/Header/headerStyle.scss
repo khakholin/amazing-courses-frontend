@@ -1,0 +1,21 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    background-color: $bgcPageDefault;
+
+    &-text {
+        font-size: $text-huge;
+        font-weight: $text-bold;
+        color: $textColorDefault;
+        text-transform: uppercase;
+
+        &__second {
+            color: $intabiaColorDark;
+        }
+    }
+}
