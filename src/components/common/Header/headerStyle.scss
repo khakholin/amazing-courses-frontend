@@ -8,14 +8,37 @@
     height: 100px;
     background-color: $bgcPageDefault;
 
-    &-text {
-        font-size: $text-huge;
-        font-weight: $text-bold;
-        color: $textColorDefault;
-        text-transform: uppercase;
+    &-icon {
+        background-color: $bgcPageSecondary;
+        height: 48px;
+        width: 60px;
+        border-radius: 4px;
 
-        &__second {
-            color: $intabiaColorDark;
+        &__text {
+            color: $bgcPageDefault;
+            font-size: 16px;
         }
+    }
+
+    &-logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: $textColorDefault;
+
+
+        &__dash {
+            font-weight: $text-thin;
+            font-size: 72px;
+
+        }
+
+        &__text {
+            display: flex;
+            font-size: $text-huge;
+            font-weight: $text-bold;
+            text-transform: uppercase;
+        }
+
     }
 }

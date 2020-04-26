@@ -6,7 +6,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 220px);
+    min-height: calc(100vh - 200px);
     background-color: $bgcPageDefault;
 
     &__title {
@@ -18,6 +18,6 @@
         margin-right: $margin-1;
         margin-left: $margin-1;
         color: $textColorSecondary !important;
-        background: linear-gradient(to top left, $intabiaColorDark, $intabiaColorLight);
+        background: linear-gradient(to top left, $bgcPageDefault, $bgcPageSecondary);
     }
 }
