@@ -6,16 +6,16 @@
     justify-content: center;
     align-items: center;
     height: 100px;
-    background-color: $bgcPageDefault;
+    background-color: white;
 
     &-icon {
-        background-color: $bgcPageSecondary;
+        background-color: $secondaryColor;
         height: 48px;
         width: 60px;
         border-radius: 4px;
 
         &__text {
-            color: $bgcPageDefault;
+            color: $mainColor;
             font-size: 16px;
         }
     }
@@ -24,7 +24,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        color: $textColorDefault;
+        color: $mainColor;
 
 
         &__dash {

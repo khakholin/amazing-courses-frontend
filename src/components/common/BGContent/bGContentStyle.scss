@@ -1,0 +1,20 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.bg-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background-color: white;
+    padding: 40px 80px;
+
+    &__title {
+        font-family: MullerRegular;
+        font-size: 20px;
+        color: $textColorDark;
+        margin-bottom: 20px;
+    }
+}

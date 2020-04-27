@@ -9,6 +9,7 @@
     align-items: center;
     height: 100px;
     background-color: $bgcPageDefault;
+    font-family: MullerRegular;
 
     &-wrapper {
         position: relative;
@@ -22,7 +23,7 @@
             content: '';
             position: absolute;
             top: 0;
-            background-color: $textColorDefault;
+            background-color: $textColorSecondary;
             height: 1px;
             width: 100%;
         }
@@ -30,6 +31,6 @@
 
     &-text {
         font-size: $text-default;
-        color: $textColorDefault;
+        color: $textColorSecondary;
     }
 }

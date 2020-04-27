@@ -18,6 +18,6 @@
         margin-right: $margin-1;
         margin-left: $margin-1;
         color: $textColorSecondary !important;
-        background: linear-gradient(to top left, $bgcPageDefault, $bgcPageSecondary);
+        background: linear-gradient(to top left, $bgcPageDefault, $secondaryColor);
     }
 }
