@@ -1,9 +1,11 @@
+@import "../..//theme/styles/buttons.scss";
 @import "../../theme/styles/layout.scss";
 @import "../../theme/styles/fonts.scss";
 @import "../..//theme/styles/pallete.scss";
 
 .login {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: calc(100vh - 200px);
@@ -19,5 +21,9 @@
         margin-left: $margin-1;
         color: $textColorSecondary !important;
         background: linear-gradient(to top left, $bgcPageDefault, $secondaryColor);
+    }
+
+    &-registration {
+        margin-top: 40px;
     }
 }

@@ -1,0 +1,37 @@
+@import "./pallete.scss";
+
+.button {
+    &-primary {
+        color: white !important;
+        font-family: MullerRegular !important;
+        background-color: $mainColor !important;
+
+        &_full-width {
+            width: 100%;
+        }
+    }
+
+    &-secondary {
+        color: white !important;
+        font-family: MullerRegular !important;
+        background-color: $secondaryColor !important;
+
+        &_full-width {
+            width: 100%;
+        }
+    }
+
+    &-text {
+        color: $mainColor;
+        font-family: MullerRegular;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    &_column-margin {
+        margin-bottom: 20px !important;
+    }
+}

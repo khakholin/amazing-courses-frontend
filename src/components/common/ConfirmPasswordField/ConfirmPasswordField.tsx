@@ -9,12 +9,12 @@ import CheckIcon from '@material-ui/icons/Check';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
-import './passwordFieldStyle.scss';
+import './confirmPasswordFieldStyle.scss';
 
-export interface IPasswordField {
+export interface IConfirmPasswordFieldd {
 }
 
-const PasswordField = (props: IPasswordField) => {
+const ConfirmPasswordField = (props: IConfirmPasswordFieldd) => {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState('');
     const [field, setField] = useState({ value: '', show: false });
@@ -64,7 +64,7 @@ const PasswordField = (props: IPasswordField) => {
     return (
         <div className="field-wrapper">
             <FormControl className="password-form">
-                <InputLabel htmlFor="password-field">Пароль</InputLabel>
+                <InputLabel htmlFor="password-field">Подтвердите пароль</InputLabel>
                 <Input
                     endAdornment={
                         <InputAdornment position="end">
@@ -90,11 +90,11 @@ const PasswordField = (props: IPasswordField) => {
                 />
                 {error ?
                     <FormHelperText className="password-error">{errorText}</FormHelperText> :
-                    <div className="empty-field empty-field_password"></div>
+                    <div className="empty-field_password"></div>
                 }
             </FormControl>
         </div>
     )
 }
 
-export default PasswordField;
+export default ConfirmPasswordField;

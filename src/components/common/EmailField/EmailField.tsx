@@ -6,12 +6,13 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import CheckIcon from '@material-ui/icons/Check';
 
-import './loginFieldStyle.scss';
+import './emailFieldStyle.scss';
+import { emailRegExp } from '../../../constants/common';
 
-export interface ILoginField {
+export interface IEmailField {
 }
 
-const LoginField = (props: ILoginField) => {
+const EmailField = (props: IEmailField) => {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState('');
     const [value, setValue] = useState('');
@@ -26,27 +27,28 @@ const LoginField = (props: ILoginField) => {
 
     const handleBlur = () => {
         if (value.length) {
-            if (value.length < 5) {
-                setError(true);
-                setErrorText('Минимальная длина логина - 5 символов');
-                setShowCheck(false);
-            } else {
+            if (emailRegExp.test(value)) {
                 setError(false);
                 setErrorText('');
                 setShowCheck(true);
+            } else {
+                setError(true);
+                setErrorText('Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com');
+                setShowCheck(false);
             }
         } else {
             setError(true);
-            setErrorText('Логин обязателен для заполнения');
+            setErrorText('E-mail обязателен для заполнения');
             setShowCheck(false);
         }
     }
+
     return (
         <div className="field-wrapper">
-            <FormControl className="login-form">
-                <InputLabel htmlFor="password-field">Логин</InputLabel>
+            <FormControl className="email-form">
+                <InputLabel htmlFor="email-field">E-mail</InputLabel>
                 <Input
-                    className="login-field"
+                    className="email-field"
                     endAdornment={
                         <InputAdornment position="end">
                             {showCheck ?
@@ -56,14 +58,14 @@ const LoginField = (props: ILoginField) => {
                         </InputAdornment>
                     }
                     error={error}
-                    id="login-field"
+                    id="email-field"
                     onBlur={event => handleBlur()}
                     onChange={event => handleChange(event)}
-                    placeholder="AmazingPotato"
+                    placeholder="email@domain.com"
                     value={value.trim()}
                 />
                 {error ?
-                    <FormHelperText className="login-error">{errorText}</FormHelperText> :
+                    <FormHelperText className="email-error">{errorText}</FormHelperText> :
                     <div className="empty-field"></div>
                 }
             </FormControl>
@@ -71,4 +73,4 @@ const LoginField = (props: ILoginField) => {
     )
 }
 
-export default LoginField;
+export default EmailField;

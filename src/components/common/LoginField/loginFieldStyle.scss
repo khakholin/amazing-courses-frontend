@@ -1,6 +1,8 @@
 @import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/icons.scss";
 @import "../../../theme/styles/layout.scss";
 @import "../../../theme/styles/pallete.scss";
+
 
 .login {
     &-form {
@@ -9,9 +11,5 @@
 
     &-error {
         color: red !important;
-    }
-
-    &__check-icon {
-        color: $secondaryColor;
     }
 }
