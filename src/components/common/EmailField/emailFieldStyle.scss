@@ -1,0 +1,17 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/icons.scss";
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+
+.email {
+
+    &-form {
+        width: 280px;
+    }
+
+    &-error {
+        color: red !important;
+    }
+
+}

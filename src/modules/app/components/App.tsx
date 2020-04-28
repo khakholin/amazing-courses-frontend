@@ -6,7 +6,8 @@ import AppRouter from '../../../routes/Router';
 
 import './App.scss';
 
-function App() {
+const App = () => {
+
   return (
     <Fragment>
       <Header />
