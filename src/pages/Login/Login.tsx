@@ -53,10 +53,13 @@ const Login = (props: TLogin) => {
             if (emailRegExp.test(email)) {
                 setEmailError({ showCheck: true, status: false, text: '' });
             } else {
-                setEmailError({ showCheck: false, status: true, text: 'Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com' });
+                setEmailError({ showCheck: false, status: true, text: translation.defaultTranslation.emailRequirements });
             }
         } else {
-            setEmailError({ showCheck: false, status: true, text: 'E-mail обязателен для заполнения' });
+            setEmailError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.email)
+            });
         }
     }
 

@@ -1,4 +1,6 @@
 export const defaultTranslation = {
+    email: 'E-mail',
+    emailRequirements: 'Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com',
     enterText: 'Войти',
     enterTitle: 'Вход',
     firstTimeWithUs: 'Впервые у нас?',

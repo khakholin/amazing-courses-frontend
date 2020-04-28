@@ -6,6 +6,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import CheckIcon from '@material-ui/icons/Check';
 
+import { defaultTranslation } from '../../../constants/translation';
 import { IErrorFormat } from '../../../types/inputPropsFormats';
 
 import './emailFieldStyle.scss';
@@ -21,7 +22,7 @@ const EmailField = (props: IEmailField) => {
     return (
         <div className="field-wrapper">
             <FormControl className="email-form">
-                <InputLabel htmlFor="email-field">E-mail</InputLabel>
+                <InputLabel htmlFor="email-field">{defaultTranslation.email}</InputLabel>
                 <Input
                     className="email-field"
                     endAdornment={
