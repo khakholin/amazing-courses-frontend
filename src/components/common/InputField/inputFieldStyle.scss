@@ -3,8 +3,7 @@
 @import "../../../theme/styles/layout.scss";
 @import "../../../theme/styles/pallete.scss";
 
-.password {
-
+.input {
     &-form {
         width: 280px;
     }
@@ -12,9 +11,4 @@
     &-error {
         color: red !important;
     }
-
-}
-
-.empty-field_password {
-    height: 54px !important;
 }
