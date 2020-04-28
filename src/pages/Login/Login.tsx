@@ -4,15 +4,12 @@ import { Link, withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import BGContent from '../../components/common/BGContent/BGContent';
-import ConfirmPasswordField from '../../components/common/ConfirmPasswordField/ConfirmPasswordField';
-import EmailField from '../../components/common/EmailField/EmailField';
-import LoginField from '../../components/common/LoginField/LoginField';
-import PasswordField from '../../components/common/PasswordField/PasswordField';
 import { REPLACEABLE_FIELD_NAME, emailRegExp } from '../../constants/common';
 import * as translation from '../../constants/translation';
 import * as routes from '../../routes/constants/routesConstants';
 
 import './loginStyle.scss';
+import InputField from '../../components/common/InputField/InputField';
 
 type TLogin = RouteComponentProps;
 
@@ -136,31 +133,51 @@ const Login = (props: TLogin) => {
                 <BGContent
                     title={translation.defaultTranslation.registrationTitle}
                 >
-                    <EmailField
+                    <InputField
                         error={emailError}
-                        emailBlur={emailBlur}
-                        emailChange={emailChange}
+                        field={{
+                            name: 'email',
+                            title: translation.defaultTranslation.email,
+                            placeholder: translation.defaultTranslation.emailPlaceholder,
+                        }}
+                        handleBlur={emailBlur}
+                        handleChange={emailChange}
                         value={email}
                     />
-                    <LoginField
+                    <InputField
                         error={loginError}
-                        loginBlur={loginBlur}
-                        loginChange={loginChange}
+                        field={{
+                            name: 'login',
+                            title: translation.defaultTranslation.login,
+                            placeholder: translation.defaultTranslation.loginPlaceholder,
+                        }}
+                        handleBlur={loginBlur}
+                        handleChange={loginChange}
                         value={login}
                     />
-                    <PasswordField
+                    <InputField
                         error={passwordError}
-                        passworBlur={passwordBlur}
-                        password={password}
-                        passwordChange={passwordChange}
+                        field={{
+                            name: 'password',
+                            title: translation.defaultTranslation.password,
+                            placeholder: translation.defaultTranslation.passwordPlaceholder,
+                        }}
+                        handleBlur={passwordBlur}
+                        handleChange={passwordChange}
                         passwordShowClick={passwordShowClick}
+                        value={password}
                     />
-                    <ConfirmPasswordField
+                    <InputField
                         error={confirmPasswordError}
-                        passworBlur={confirmPasswordBlur}
-                        password={confirmPassword}
-                        passwordChange={confirmPasswordChange}
+                        field={{
+                            name: 'confirm-password',
+                            title: translation.defaultTranslation.passwordAgain,
+                            placeholder: translation.defaultTranslation.passwordPlaceholder,
+                        }}
+                        handleBlur={confirmPasswordBlur}
+                        handleChange={confirmPasswordChange}
                         passwordShowClick={confirmPasswordShowClick}
+                        value={confirmPassword}
                     />
                     <div className="buttons-container_column">
                         {
@@ -197,10 +214,15 @@ const Login = (props: TLogin) => {
                     <BGContent
                         title={translation.defaultTranslation.passwordRecovery}
                     >
-                        <EmailField
+                        <InputField
                             error={emailError}
-                            emailBlur={emailBlur}
-                            emailChange={emailChange}
+                            field={{
+                                name: 'email',
+                                title: translation.defaultTranslation.email,
+                                placeholder: translation.defaultTranslation.emailPlaceholder,
+                            }}
+                            handleBlur={emailBlur}
+                            handleChange={emailChange}
                             value={email}
                         />
                         <div className="buttons-container_column">
@@ -224,7 +246,6 @@ const Login = (props: TLogin) => {
                                         {translation.defaultTranslation.sendPasswordToEmail}
                                     </Button>
                             }
-
                             <Button
                                 className="button-secondary button-secondary_full-width"
                                 variant="outlined"
@@ -242,18 +263,28 @@ const Login = (props: TLogin) => {
                             <BGContent
                                 title={translation.defaultTranslation.enterTitle}
                             >
-                                <LoginField
+                                <InputField
                                     error={loginError}
-                                    loginBlur={loginBlur}
-                                    loginChange={loginChange}
+                                    field={{
+                                        name: 'login',
+                                        title: translation.defaultTranslation.login,
+                                        placeholder: translation.defaultTranslation.loginPlaceholder,
+                                    }}
+                                    handleBlur={loginBlur}
+                                    handleChange={loginChange}
                                     value={login}
                                 />
-                                <PasswordField
+                                <InputField
                                     error={passwordError}
-                                    passworBlur={passwordBlur}
-                                    password={password}
-                                    passwordChange={passwordChange}
+                                    field={{
+                                        name: 'password',
+                                        title: translation.defaultTranslation.password,
+                                        placeholder: translation.defaultTranslation.passwordPlaceholder,
+                                    }}
+                                    handleBlur={passwordBlur}
+                                    handleChange={passwordChange}
                                     passwordShowClick={passwordShowClick}
+                                    value={password}
                                 />
                                 <div className="buttons-container_row">
                                     {
