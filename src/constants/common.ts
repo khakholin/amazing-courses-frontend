@@ -1,3 +1,5 @@
+export const REPLACEABLE_FIELD_NAME = '{fieldName}';
+
 /*
  * -------------------------------------------
  *        RegExps

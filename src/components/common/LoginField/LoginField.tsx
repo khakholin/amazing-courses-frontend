@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -6,64 +6,42 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import CheckIcon from '@material-ui/icons/Check';
 
+import { defaultTranslation } from '../../../constants/translation';
+import { IErrorFormat } from '../../../types/inputPropsFormats';
+
 import './loginFieldStyle.scss';
 
 export interface ILoginField {
+    error: IErrorFormat;
+    loginBlur: () => void;
+    loginChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    value: string;
 }
 
 const LoginField = (props: ILoginField) => {
-    const [error, setError] = useState(false);
-    const [errorText, setErrorText] = useState('');
-    const [value, setValue] = useState('');
-    const [showCheck, setShowCheck] = useState(false);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setError(false);
-        setErrorText('');
-        setValue(event.target.value);
-        setShowCheck(false);
-    };
-
-    const handleBlur = () => {
-        if (value.length) {
-            if (value.length < 5) {
-                setError(true);
-                setErrorText('Минимальная длина логина - 5 символов');
-                setShowCheck(false);
-            } else {
-                setError(false);
-                setErrorText('');
-                setShowCheck(true);
-            }
-        } else {
-            setError(true);
-            setErrorText('Логин обязателен для заполнения');
-            setShowCheck(false);
-        }
-    }
     return (
         <div className="field-wrapper">
             <FormControl className="login-form">
-                <InputLabel htmlFor="password-field">Логин</InputLabel>
+                <InputLabel htmlFor="password-field">{defaultTranslation.login}</InputLabel>
                 <Input
                     className="login-field"
                     endAdornment={
                         <InputAdornment position="end">
-                            {showCheck ?
+                            {props.error.showCheck ?
                                 <CheckIcon className="check-icon" /> :
                                 <Fragment />
                             }
                         </InputAdornment>
                     }
-                    error={error}
+                    error={props.error.status}
                     id="login-field"
-                    onBlur={event => handleBlur()}
-                    onChange={event => handleChange(event)}
-                    placeholder="AmazingPotato"
-                    value={value.trim()}
+                    onBlur={() => props.loginBlur()}
+                    onChange={event => props.loginChange(event)}
+                    placeholder={defaultTranslation.loginPlaceholder}
+                    value={props.value.trim()}
                 />
-                {error ?
-                    <FormHelperText className="login-error">{errorText}</FormHelperText> :
+                {props.error ?
+                    <FormHelperText className="login-error">{props.error.text}</FormHelperText> :
                     <div className="empty-field"></div>
                 }
             </FormControl>

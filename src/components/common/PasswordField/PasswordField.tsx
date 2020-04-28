@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,88 +9,50 @@ import CheckIcon from '@material-ui/icons/Check';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
+import { defaultTranslation } from '../../../constants/translation';
+import { IErrorFormat, IPasswordFormat } from '../../../types/inputPropsFormats';
+
 import './passwordFieldStyle.scss';
 
 export interface IPasswordField {
+    error: IErrorFormat;
+    passworBlur: () => void;
+    passwordChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    passwordShowClick: () => void;
+    password: IPasswordFormat;
 }
 
 const PasswordField = (props: IPasswordField) => {
-    const [error, setError] = useState(false);
-    const [errorText, setErrorText] = useState('');
-    const [field, setField] = useState({ value: '', show: false });
-    const [showCheck, setShowCheck] = useState(false);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setError(false);
-        setErrorText('');
-        setField({ ...field, value: event.target.value });
-        setShowCheck(false);
-    };
-
-    const handleBlur = () => {
-        if (field.value.length) {
-            for (let i = 0; i < field.value.length; i++) {
-                if (field.value[i] === ' ') {
-                    setError(true);
-                    setErrorText('Пароль может содержать только буквы, цифры и спец. символы (кроме пробела) и состоять из 6 символов или более');
-                    setShowCheck(false);
-                    return
-                }
-            }
-            if (field.value.length < 6) {
-                setError(true);
-                setErrorText('Слишком простой пароль — введено менее 6 символов');
-                setShowCheck(false);
-            } else {
-                setError(false);
-                setErrorText('');
-                setShowCheck(true);
-            }
-        } else {
-            setError(true);
-            setErrorText('Пароль обязателен для заполнения');
-            setShowCheck(false);
-        }
-    }
-
-    const handleClickShowPassword = () => {
-        setField({ ...field, show: !field.show });
-        const el = document.getElementById('password-field') as HTMLInputElement;
-        el.focus()
-        el.selectionStart = field.value.length;
-    };
-
-
     return (
         <div className="field-wrapper">
             <FormControl className="password-form">
-                <InputLabel htmlFor="password-field">Пароль</InputLabel>
+                <InputLabel htmlFor="password-field">{defaultTranslation.password}</InputLabel>
                 <Input
                     endAdornment={
                         <InputAdornment position="end">
                             <IconButton
                                 aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
+                                onClick={props.passwordShowClick}
                             >
-                                {field.show ? <Visibility /> : <VisibilityOff />}
+                                {props.password.show ? <Visibility /> : <VisibilityOff />}
                             </IconButton>
-                            {showCheck ?
+                            {props.error.showCheck ?
                                 <CheckIcon className="check-icon" /> :
                                 <Fragment />
                             }
                         </InputAdornment>
                     }
-                    error={error}
+                    error={props.error.status}
                     id="password-field"
-                    onBlur={event => handleBlur()}
-                    onChange={event => handleChange(event)}
-                    placeholder="StrongPassword1234"
-                    type={field.show ? 'text' : 'password'}
-                    value={field.value}
+                    onBlur={() => props.passworBlur()}
+                    onChange={event => props.passwordChange(event)}
+                    placeholder={defaultTranslation.passwordPlaceholder}
+                    type={props.password.show ? 'text' : 'password'}
+                    value={props.password.value}
                 />
-                {error ?
-                    <FormHelperText className="password-error">{errorText}</FormHelperText> :
-                    <div className="empty-field empty-field_password"></div>
+                {props.error.status ?
+                    <FormHelperText className="password-error">{props.error.text}</FormHelperText> :
+                    <div className="empty-field"></div>
                 }
             </FormControl>
         </div>

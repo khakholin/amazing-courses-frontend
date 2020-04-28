@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
@@ -6,43 +6,18 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import CheckIcon from '@material-ui/icons/Check';
 
+import { IErrorFormat } from '../../../types/inputPropsFormats';
+
 import './emailFieldStyle.scss';
-import { emailRegExp } from '../../../constants/common';
 
 export interface IEmailField {
+    error: IErrorFormat;
+    emailBlur: () => void;
+    emailChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    value: string;
 }
 
 const EmailField = (props: IEmailField) => {
-    const [error, setError] = useState(false);
-    const [errorText, setErrorText] = useState('');
-    const [value, setValue] = useState('');
-    const [showCheck, setShowCheck] = useState(false);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setError(false);
-        setErrorText('');
-        setValue(event.target.value);
-        setShowCheck(false);
-    };
-
-    const handleBlur = () => {
-        if (value.length) {
-            if (emailRegExp.test(value)) {
-                setError(false);
-                setErrorText('');
-                setShowCheck(true);
-            } else {
-                setError(true);
-                setErrorText('Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com');
-                setShowCheck(false);
-            }
-        } else {
-            setError(true);
-            setErrorText('E-mail обязателен для заполнения');
-            setShowCheck(false);
-        }
-    }
-
     return (
         <div className="field-wrapper">
             <FormControl className="email-form">
@@ -51,21 +26,21 @@ const EmailField = (props: IEmailField) => {
                     className="email-field"
                     endAdornment={
                         <InputAdornment position="end">
-                            {showCheck ?
+                            {props.error.showCheck ?
                                 <CheckIcon className="check-icon" /> :
                                 <Fragment />
                             }
                         </InputAdornment>
                     }
-                    error={error}
+                    error={props.error.status}
                     id="email-field"
-                    onBlur={event => handleBlur()}
-                    onChange={event => handleChange(event)}
+                    onBlur={() => props.emailBlur()}
+                    onChange={event => props.emailChange(event)}
                     placeholder="email@domain.com"
-                    value={value.trim()}
+                    value={props.value.trim()}
                 />
-                {error ?
-                    <FormHelperText className="email-error">{errorText}</FormHelperText> :
+                {props.error.status ?
+                    <FormHelperText className="email-error">{props.error.text}</FormHelperText> :
                     <div className="empty-field"></div>
                 }
             </FormControl>

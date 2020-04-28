@@ -26,18 +26,3 @@ $buttonHeight: 36px;
 .empty-field {
     height: 20px;
 }
-
-.buttons-container {
-    &_row {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    &_column {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-}

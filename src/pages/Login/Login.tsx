@@ -1,77 +1,309 @@
 import React, { useState, Fragment } from 'react';
-import { translate, TranslateProps } from 'react-polyglot';
 import { RouteComponentProps } from 'react-router';
 import { Link, withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import BGContent from '../../components/common/BGContent/BGContent';
+import ConfirmPasswordField from '../../components/common/ConfirmPasswordField/ConfirmPasswordField';
+import EmailField from '../../components/common/EmailField/EmailField';
+import LoginField from '../../components/common/LoginField/LoginField';
+import PasswordField from '../../components/common/PasswordField/PasswordField';
+import { REPLACEABLE_FIELD_NAME, emailRegExp } from '../../constants/common';
+import * as translation from '../../constants/translation';
 import * as routes from '../../routes/constants/routesConstants';
 
 import './loginStyle.scss';
-import LoginField from '../../components/common/LoginField/LoginField';
-import PasswordField from '../../components/common/PasswordField/PasswordField';
-import EmailField from '../../components/common/EmailField/EmailField';
-import ConfirmPasswordField from '../../components/common/ConfirmPasswordField/ConfirmPasswordField';
 
-type TLogin = TranslateProps & RouteComponentProps;
+type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
+    const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
+    const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' })
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' })
+    const [forgotPassword, setForgotPassword] = useState(false);
+    const [login, setLogin] = useState('');
+    const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' })
+    const [password, setPassword] = useState({ value: '', show: false });
+    const [passwordError, setPasswordError] = useState({ showCheck: false, status: false, text: '' })
     const [registration, setRegistration] = useState(false);
+
+    const confirmPasswordBlur = () => {
+        password.value ? (
+            confirmPassword.value === password.value ?
+                setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
+                setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
+        ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
+    }
+
+    const confirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setConfirmPasswordError({ showCheck: false, status: false, text: '' });
+        setConfirmPassword({ ...confirmPassword, value: event.target.value });
+    };
+
+    const confirmPasswordShowClick = () => {
+        setConfirmPassword({ ...confirmPassword, show: !confirmPassword.show });
+        const el = document.getElementById('confirm-password-field') as HTMLInputElement;
+        el.focus();
+        el.selectionStart = confirmPassword.value.length;
+    };
+
+    const emailBlur = () => {
+        if (email.length) {
+            if (emailRegExp.test(email)) {
+                setEmailError({ showCheck: true, status: false, text: '' });
+            } else {
+                setEmailError({ showCheck: false, status: true, text: 'Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com' });
+            }
+        } else {
+            setEmailError({ showCheck: false, status: true, text: 'E-mail обязателен для заполнения' });
+        }
+    }
+
+    const emailChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setEmailError({ showCheck: false, status: false, text: '' });
+        setEmail(event.target.value);
+    };
+
+    const loginBlur = () => {
+        login.length ? (
+            login.length < 5 ?
+                setLoginError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
+                setLoginError({ showCheck: true, status: false, text: '' })
+        ) : setLoginError({
+            showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+        })
+    }
+
+    const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setLoginError({ showCheck: false, status: false, text: '' });
+        setLogin(event.target.value);
+    };
+
+    const passwordBlur = () => {
+        if (password.value.length) {
+            confirmPasswordBlur();
+            for (let i = 0; i < password.value.length; i++) {
+                if (password.value[i] === ' ') {
+                    setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
+                    return
+                }
+            }
+            if (password.value.length < 6) {
+                setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.simplePassword });
+            } else {
+                setPasswordError({ showCheck: true, status: false, text: '' });
+            }
+        } else {
+            setPasswordError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.password)
+            });
+        }
+    }
+
+    const passwordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setPasswordError({ showCheck: false, status: false, text: '' });
+        setPassword({ ...password, value: event.target.value });
+    };
+
+
+    const passwordShowClick = () => {
+        setPassword({ ...password, show: !password.show });
+        const el = document.getElementById('password-field') as HTMLInputElement;
+        el.focus()
+        el.selectionStart = password.value.length;
+    };
+
+    const clearData = () => {
+        setConfirmPassword({ value: '', show: false });
+        setConfirmPasswordError({ showCheck: false, status: false, text: '' });
+        setEmail('');
+        setEmailError({ showCheck: false, status: false, text: '' });
+        setLogin('');
+        setLoginError({ showCheck: false, status: false, text: '' });
+        setPassword({ value: '', show: false });
+        setPasswordError({ showCheck: false, status: false, text: '' });
+    }
 
     return (
         <div className="login">
             {registration ?
                 <BGContent
-                    title='Регистрация'
+                    title={translation.defaultTranslation.registrationTitle}
                 >
-                    <EmailField />
-                    <LoginField />
-                    <PasswordField />
-                    <ConfirmPasswordField />
+                    <EmailField
+                        error={emailError}
+                        emailBlur={emailBlur}
+                        emailChange={emailChange}
+                        value={email}
+                    />
+                    <LoginField
+                        error={loginError}
+                        loginBlur={loginBlur}
+                        loginChange={loginChange}
+                        value={login}
+                    />
+                    <PasswordField
+                        error={passwordError}
+                        passworBlur={passwordBlur}
+                        password={password}
+                        passwordChange={passwordChange}
+                        passwordShowClick={passwordShowClick}
+                    />
+                    <ConfirmPasswordField
+                        error={confirmPasswordError}
+                        passworBlur={confirmPasswordBlur}
+                        password={confirmPassword}
+                        passwordChange={confirmPasswordChange}
+                        passwordShowClick={confirmPasswordShowClick}
+                    />
                     <div className="buttons-container_column">
-                        <Button className="button-primary button_column-margin" variant="outlined">Зарегистрироваться</Button>
+                        {
+                            emailError.showCheck && loginError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
+                                <Link to={routes.RoutePath.personalArea}>
+                                    <Button
+                                        className="button-primary button-primary_full-width button_column-margin"
+                                        variant="outlined"
+                                    >
+                                        {translation.defaultTranslation.registrationText}
+                                    </Button>
+                                </Link> :
+                                <Button
+                                    className="button_column-margin"
+                                    disabled
+                                    variant="outlined"
+                                >
+                                    {translation.defaultTranslation.registrationText}
+                                </Button>
+                        }
                         <Button
-                            className="button-secondary"
+                            className="button-secondary button-secondary_full-width"
                             variant="outlined"
-                            onClick={event => setRegistration(false)}
+                            onClick={() => {
+                                clearData();
+                                setRegistration(false);
+                            }}
                         >
-                            Есть аккаунт
-                            </Button>
+                            {translation.defaultTranslation.haveAccountText}
+                        </Button>
                     </div>
                 </BGContent>
-                :
-                <Fragment>
+                : forgotPassword ?
                     <BGContent
-                        title='Вход'
+                        title={translation.defaultTranslation.passwordRecovery}
                     >
-                        <LoginField />
-                        <PasswordField />
-                        <div className="buttons-container_row">
-                            <Link to={routes.RoutePath.personalArea}>
-                                <Button className="button-primary" variant="outlined">Войти</Button>
-                            </Link>
-                            <div className="button-text">Забыли пароль?</div>
+                        <EmailField
+                            error={emailError}
+                            emailBlur={emailBlur}
+                            emailChange={emailChange}
+                            value={email}
+                        />
+                        <div className="buttons-container_column">
+                            {
+                                emailError.showCheck ?
+                                    <Button
+                                        className="button-primary button-primary_full-width button_column-margin"
+                                        variant="outlined"
+                                        onClick={() => {
+                                            clearData();
+                                            setForgotPassword(false);
+                                        }}
+                                    >
+                                        {translation.defaultTranslation.sendPasswordToEmail}
+                                    </Button> :
+                                    <Button
+                                        className="button_column-margin"
+                                        disabled
+                                        variant="outlined"
+                                    >
+                                        {translation.defaultTranslation.sendPasswordToEmail}
+                                    </Button>
+                            }
+
+                            <Button
+                                className="button-secondary button-secondary_full-width"
+                                variant="outlined"
+                                onClick={() => {
+                                    clearData();
+                                    setForgotPassword(false);
+                                }}
+                            >
+                                {translation.defaultTranslation.rememberPassword}
+                            </Button>
                         </div>
                     </BGContent>
-                    <div className="login-registration">
-                        <BGContent
-                            title='Впервые у нас?'
-                        >
-                            <div className="buttons-container_row">
-                                <Button
-                                    className="button-secondary button-secondary_full-width"
-                                    variant="outlined"
-                                    onClick={event => setRegistration(true)}
+                    : (
+                        <Fragment>
+                            <BGContent
+                                title={translation.defaultTranslation.enterTitle}
+                            >
+                                <LoginField
+                                    error={loginError}
+                                    loginBlur={loginBlur}
+                                    loginChange={loginChange}
+                                    value={login}
+                                />
+                                <PasswordField
+                                    error={passwordError}
+                                    passworBlur={passwordBlur}
+                                    password={password}
+                                    passwordChange={passwordChange}
+                                    passwordShowClick={passwordShowClick}
+                                />
+                                <div className="buttons-container_row">
+                                    {
+                                        loginError.showCheck && passwordError.showCheck ?
+                                            <Link to={routes.RoutePath.personalArea}>
+                                                <Button
+                                                    className="button-primary"
+                                                    variant="outlined"
+                                                >
+                                                    {translation.defaultTranslation.enterText}
+                                                </Button>
+                                            </Link> :
+                                            <Button
+                                                disabled
+                                                variant="outlined"
+                                            >
+                                                {translation.defaultTranslation.enterText}
+                                            </Button>
+                                    }
+                                    <div
+                                        className="button-text"
+                                        onClick={() => {
+                                            clearData();
+                                            setForgotPassword(true);
+                                        }}
+                                    >
+                                        {translation.defaultTranslation.forgotPassword}
+                                    </div>
+                                </div>
+                            </BGContent>
+                            <div className="login-registration">
+                                <BGContent
+                                    title={translation.defaultTranslation.firstTimeWithUs}
                                 >
-                                    Зарегистрироваться
-                                </Button>
+                                    <div className="buttons-container_row">
+                                        <Button
+                                            className="button-secondary button-secondary_full-width"
+                                            onClick={() => {
+                                                clearData();
+                                                setRegistration(true);
+                                            }}
+                                            variant="outlined"
+                                        >
+                                            {translation.defaultTranslation.registrationText}
+                                        </Button>
+                                    </div>
+                                </BGContent>
                             </div>
-                        </BGContent>
-                    </div>
-                </Fragment>
+                        </Fragment>
+                    )
             }
         </div>
     );
 };
 
-export default translate()(withRouter(Login));
+export default (withRouter(Login));
