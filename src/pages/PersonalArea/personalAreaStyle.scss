@@ -4,8 +4,49 @@
 
 .personal-area {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     min-height: calc(100vh - 200px);
     background-color: $bgcPageDefault;
+
+    &-block {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    &-header {
+        width: 750px;
+        font-family: MullerRegular;
+        display: flex;
+        align-items: flex-end;
+        height: 40px;
+        margin-bottom: 20px;
+        color: $textColorDark;
+
+        &__left {
+            flex-basis: 50%;
+        }
+
+        &__number {
+            flex-basis: 50%;
+            text-align: right;
+        }
+
+        &__right {
+            flex-basis: 50%;
+            display: flex;
+        }
+
+
+        &__time {
+            flex-basis: 50%;
+            text-align: right;
+        }
+
+        &__title {
+            font-size: 24px;
+        }
+    }
 }
