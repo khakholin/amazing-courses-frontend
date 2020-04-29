@@ -1,0 +1,132 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/icons.scss";
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.dropdown-list {
+    position: relative;
+    width: 800px;
+    padding-left: 50px;
+    font-family: MullerRegular;
+    margin-bottom: 20px;
+
+    &-header {
+        width: 750px;
+        display: flex;
+        align-items: center;
+        height: 50px;
+        border: 1px solid rgb(210, 210, 210);
+        background-color: rgb(220, 220, 220);
+        padding: 0 20px;
+        color: $textColorDefault;
+
+        &__icon {
+            color: $mainColor;
+            flex-basis: 5%;
+            font-size: 24px;
+        }
+
+        &__left {
+            flex-basis: 65%;
+            display: flex;
+            align-items: center;
+        }
+
+        &__number {
+            flex-basis: 50%;
+            text-align: right;
+        }
+
+        &__right {
+            flex-basis: 35%;
+            display: flex;
+        }
+
+        &__time {
+            flex-basis: 50%;
+            text-align: right;
+        }
+
+        &__title {
+            flex-basis: 95%;
+            font-family: MullerBold;
+        }
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &-item {
+        &__right {
+            width: 750px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 50px;
+            border: 1px solid rgb(210, 210, 210);
+            border-top: 0;
+        }
+
+        &__progress {
+            position: absolute;
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+
+            &_active {
+                color: $secondaryColor;
+
+            }
+
+            &_inactive {
+                color: $textColorSecondary;
+            }
+
+            &:hover {
+                cursor: default;
+            }
+        }
+
+        &__line {
+            position: absolute;
+            bottom: calc(50% + 8px);
+            width: 1px;
+            height: calc(100% - 17px);
+
+            &_active {
+                background-color: $secondaryColor;
+
+            }
+
+            &_inactive {
+                background-color: $textColorSecondary;
+            }
+        }
+
+        &_available {
+            color: $mainColor;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        &_not-available {
+            color: $textColorSecondary;
+        }
+
+        &__name {
+            display: flex;
+            align-items: center;
+        }
+
+        &__title {
+            padding-top: 4px;
+        }
+    }
+}

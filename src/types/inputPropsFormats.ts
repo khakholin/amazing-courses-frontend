@@ -14,3 +14,10 @@ export interface IPasswordFormat {
     value: string;
     show: boolean;
 }
+
+export interface IDropdownListItem {
+    available: boolean;
+    checked: boolean;
+    title: string;
+    time: string;
+}
