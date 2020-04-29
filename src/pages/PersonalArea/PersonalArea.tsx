@@ -54,10 +54,10 @@ const PersonalArea = (props: IPersonalArea) => {
                     mockData.data.map(item => {
                         return (
                             <DropdownList
+                                items={item.lectures}
                                 numberItems={item.numOfLectures}
                                 time={item.time}
                                 title={item.title}
-                                items={item.lectures}
                             />
                         )
                     })

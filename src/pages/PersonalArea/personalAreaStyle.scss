@@ -26,7 +26,20 @@
         color: $textColorDark;
 
         &__left {
-            flex-basis: 50%;
+            flex-basis: 65%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        &__title {
+            font-size: 24px;
+        }
+
+
+        &__right {
+            flex-basis: 35%;
+            display: flex;
         }
 
         &__number {
@@ -34,19 +47,10 @@
             text-align: right;
         }
 
-        &__right {
-            flex-basis: 50%;
-            display: flex;
-        }
-
 
         &__time {
             flex-basis: 50%;
             text-align: right;
-        }
-
-        &__title {
-            font-size: 24px;
         }
     }
 }

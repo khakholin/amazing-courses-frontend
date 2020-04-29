@@ -11,10 +11,10 @@ import endingForNumber from '../../../utils/endingForNumber';
 import './dropdownListStyle.scss';
 
 export interface IDropdownList {
+    items: IDropdownListItem[];
     numberItems: number;
     time: string;
     title: string;
-    items: IDropdownListItem[]
 }
 
 
@@ -24,9 +24,6 @@ const DropdownList = (props: IDropdownList) => {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
-
-
-
 
     return (
         <div className="dropdown-list">
@@ -65,8 +62,12 @@ const DropdownList = (props: IDropdownList) => {
 
                         return (
                             <div className={dropDownListItemClass}>
-                                <div className={dropDownListItemProgressClass}>
-                                    <CheckCircleIcon className="dropdown-list-item__check" />
+                                <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
+                                    {
+                                        item.checked ?
+                                            <CheckCircleIcon className="dropdown-list-item__check" /> :
+                                            <RadioButtonCheckedIcon className="dropdown-list-item__check" />
+                                    }
                                     {index !== 0 ?
                                         <div className={dropDownListItemLineClass}></div> :
                                         <Fragment />
