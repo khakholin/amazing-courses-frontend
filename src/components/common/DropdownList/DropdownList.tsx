@@ -5,6 +5,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 
+import timeConversion from '../../../utils/timeConversion';
 import { IDropdownListItem } from '../../../types/inputPropsFormats';
 import endingForNumber from '../../../utils/endingForNumber';
 
@@ -13,7 +14,7 @@ import './dropdownListStyle.scss';
 export interface IDropdownList {
     items: IDropdownListItem[];
     numberItems: number;
-    time: string;
+    time: number;
     title: string;
 }
 
@@ -39,7 +40,7 @@ const DropdownList = (props: IDropdownList) => {
                 </div>
                 <div className="dropdown-list-header__right">
                     <span className="dropdown-list-header__number">{props.numberItems + ' лекци' + endingForNumber(props.numberItems)}</span>
-                    <span className="dropdown-list-header__time">{props.time}</span>
+                    <span className="dropdown-list-header__time">{timeConversion(props.time)}</span>
                 </div>
             </div>
             <Collapse in={expanded} timeout="auto" unmountOnExit className="test">
@@ -61,7 +62,10 @@ const DropdownList = (props: IDropdownList) => {
                         });
 
                         return (
-                            <div className={dropDownListItemClass}>
+                            <div
+                                className={dropDownListItemClass}
+                                key={item.title}
+                            >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
                                         item.checked ?
@@ -78,7 +82,7 @@ const DropdownList = (props: IDropdownList) => {
                                         <PlayArrowIcon className="dropdown-list-item__icon" />
                                         <span className="dropdown-list-item__title">{item.title}</span>
                                     </div>
-                                    <span className="dropdown-list-item__time">{item.time}</span>
+                                    <span className="dropdown-list-item__time">{timeConversion(item.time)}</span>
 
                                 </div>
                             </div>

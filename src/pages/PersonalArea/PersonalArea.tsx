@@ -1,43 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import DropdownList from '../../components/common/DropdownList/DropdownList';
 import endingForNumber from '../../utils/endingForNumber';
 
+import timeConversion from '../../utils/timeConversion';
+
 import './personalAreaStyle.scss';
+import { appRequest } from '../../modules/app/appRequest';
+import { IUserData } from '../../types/inputPropsFormats';
 
 export interface IPersonalArea { };
 
-const mockData = {
-    totalNumOfLectures: 8,
-    totalTime: '01:16:41',
-    data: [
-        {
-            title: 'React',
-            numOfLectures: 5,
-            time: '00:39:11',
-            lectures: [
-                { available: true, checked: true, title: 'Hooks', time: '00:03:02' },
-                { available: true, checked: true, title: 'Router', time: '00:05:18' },
-                { available: true, checked: false, title: 'Redux', time: '00:12:54' },
-                { available: false, checked: false, title: 'Saga', time: '00:10:14' },
-                { available: false, checked: false, title: 'Result', time: '00:07:43' },
-            ],
-        },
-        {
-            title: 'Кулинария',
-            numOfLectures: 3,
-            time: '00:37:31',
-            lectures: [
-                { available: true, checked: true, title: 'Яйца', time: '00:12:31' },
-                { available: true, checked: false, title: 'Пончики', time: '00:15:49' },
-                { available: false, checked: false, title: 'Блины', time: '00:09:11' },
-            ],
-        },
-    ]
-}
-
-
 const PersonalArea = (props: IPersonalArea) => {
+    const [dataList, setDataList] = useState<{ data: IUserData }>();
+    useEffect(() => {
+        const l = localStorage.getItem('userLogin') || '';
+        const p = localStorage.getItem('userPassword') || '';
+        appRequest('/api/user/authentication', 'POST', { user: l.substring(1, l.length - 1), password: p.substring(1, p.length - 1) })
+            .then((item) => {
+                setDataList(item);
+            });
+    }, []);
+
     return (
         <div className="personal-area">
             <div className="personal-area-block">
@@ -46,15 +30,16 @@ const PersonalArea = (props: IPersonalArea) => {
                         <span className="personal-area-header__title">Материалы курса</span>
                     </div>
                     <div className="personal-area-header__right">
-                        <span className="personal-area-header__number">{mockData.totalNumOfLectures + ' лекци' + endingForNumber(mockData.totalNumOfLectures)}</span>
-                        <span className="personal-area-header__time">{mockData.totalTime}</span>
+                        <span className="personal-area-header__number">{dataList?.data.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.data.totalNumOfLectures)}</span>
+                        <span className="personal-area-header__time">{timeConversion(dataList?.data.totalTime)}</span>
                     </div>
                 </div>
                 {
-                    mockData.data.map(item => {
+                    dataList?.data.data.map((item: any) => {
                         return (
                             <DropdownList
                                 items={item.lectures}
+                                key={item.title}
                                 numberItems={item.numOfLectures}
                                 time={item.time}
                                 title={item.title}

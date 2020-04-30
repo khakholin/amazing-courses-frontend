@@ -19,7 +19,7 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
             : body;
     }
 
-    return fetch('localhost:3000' + endpoint, defaultOptions)
+    return fetch('http://localhost:3001' + endpoint, defaultOptions)
         .then((resp) => resp.json())
         .then((data) => {
             return {

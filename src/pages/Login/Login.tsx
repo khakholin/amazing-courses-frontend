@@ -4,16 +4,20 @@ import { Link, withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import BGContent from '../../components/common/BGContent/BGContent';
+import InputField from '../../components/common/InputField/InputField';
 import { REPLACEABLE_FIELD_NAME, emailRegExp } from '../../constants/common';
 import * as translation from '../../constants/translation';
+import appHistory from '../../modules/app/appHistory';
+import { appRequest } from '../../modules/app/appRequest';
 import * as routes from '../../routes/constants/routesConstants';
 
 import './loginStyle.scss';
-import InputField from '../../components/common/InputField/InputField';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
+
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
     const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' })
     const [email, setEmail] = useState('');
@@ -24,6 +28,22 @@ const Login = (props: TLogin) => {
     const [password, setPassword] = useState({ value: '', show: false });
     const [passwordError, setPasswordError] = useState({ showCheck: false, status: false, text: '' })
     const [registration, setRegistration] = useState(false);
+    // eslint-disable-next-line
+    const [userLogin, setUserLogin] = useLocalStorage('userLogin', '');
+    // eslint-disable-next-line
+    const [userPassword, setUserPassword] = useLocalStorage('userPassword', '');
+
+
+    const clearData = () => {
+        setConfirmPassword({ value: '', show: false });
+        setConfirmPasswordError({ showCheck: false, status: false, text: '' });
+        setEmail('');
+        setEmailError({ showCheck: false, status: false, text: '' });
+        setLogin('');
+        setLoginError({ showCheck: false, status: false, text: '' });
+        setPassword({ value: '', show: false });
+        setPasswordError({ showCheck: false, status: false, text: '' });
+    }
 
     const confirmPasswordBlur = () => {
         password.value ? (
@@ -90,7 +110,7 @@ const Login = (props: TLogin) => {
                     return
                 }
             }
-            if (password.value.length < 6) {
+            if (password.value.length < 5) {
                 setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.simplePassword });
             } else {
                 setPasswordError({ showCheck: true, status: false, text: '' });
@@ -116,15 +136,13 @@ const Login = (props: TLogin) => {
         el.selectionStart = password.value.length;
     };
 
-    const clearData = () => {
-        setConfirmPassword({ value: '', show: false });
-        setConfirmPasswordError({ showCheck: false, status: false, text: '' });
-        setEmail('');
-        setEmailError({ showCheck: false, status: false, text: '' });
-        setLogin('');
-        setLoginError({ showCheck: false, status: false, text: '' });
-        setPassword({ value: '', show: false });
-        setPasswordError({ showCheck: false, status: false, text: '' });
+    const onEnterClickHandler = () => {
+        appRequest('/api/user/authentication', 'POST', { user: login, password: password.value })
+            .then(() => {
+                setUserLogin(login);
+                setUserPassword(password.value);
+                appHistory.push('/personal-area');
+            });
     }
 
     return (
@@ -289,14 +307,14 @@ const Login = (props: TLogin) => {
                                 <div className="buttons-container_row">
                                     {
                                         loginError.showCheck && passwordError.showCheck ?
-                                            <Link to={routes.RoutePath.personalArea}>
-                                                <Button
-                                                    className="button-primary"
-                                                    variant="outlined"
-                                                >
-                                                    {translation.defaultTranslation.enterText}
-                                                </Button>
-                                            </Link> :
+                                            <Button
+                                                className="button-primary"
+                                                variant="outlined"
+                                                onClick={() => onEnterClickHandler()}
+                                            >
+                                                {translation.defaultTranslation.enterText}
+                                            </Button>
+                                            :
                                             <Button
                                                 disabled
                                                 variant="outlined"
