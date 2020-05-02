@@ -146,7 +146,7 @@ const Login = (props: TLogin) => {
     }
 
     return (
-        <div className="login">
+        <div className="login page-container">
             {registration ?
                 <BGContent
                     title={translation.defaultTranslation.registrationTitle}

@@ -23,7 +23,7 @@ const PersonalArea = (props: IPersonalArea) => {
     }, []);
 
     return (
-        <div className="personal-area">
+        <div className="personal-area page-container">
             <div className="personal-area-block">
                 <div className="personal-area-header">
                     <div className="personal-area-header__left">
