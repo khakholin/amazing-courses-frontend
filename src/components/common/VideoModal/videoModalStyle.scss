@@ -1,0 +1,29 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/icons.scss";
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.video-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-content {
+
+        &__title {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: MullerBold;
+            color: $secondaryColor;
+            font-size: 20px;
+            height: 40px;
+        }
+
+        &__video {
+            height: 450px;
+            width: 800px;
+        }
+
+    }
+}

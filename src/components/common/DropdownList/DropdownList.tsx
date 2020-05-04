@@ -10,6 +10,7 @@ import { IDropdownListItem } from '../../../types/inputPropsFormats';
 import endingForNumber from '../../../utils/endingForNumber';
 
 import './dropdownListStyle.scss';
+import VideoModal from '../VideoModal/VideoModal';
 
 export interface IDropdownList {
     items: IDropdownListItem[];
@@ -21,6 +22,17 @@ export interface IDropdownList {
 
 const DropdownList = (props: IDropdownList) => {
     const [expanded, setExpanded] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+
+    const handleOpenModal = (title: string) => {
+        setModalTitle(title);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
 
     const handleExpandClick = () => {
         setExpanded(!expanded);
@@ -65,6 +77,11 @@ const DropdownList = (props: IDropdownList) => {
                             <div
                                 className={dropDownListItemClass}
                                 key={item.title}
+                                onClick={() => {
+                                    if (item.available) {
+                                        handleOpenModal(item.title);
+                                    }
+                                }}
                             >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
@@ -83,13 +100,17 @@ const DropdownList = (props: IDropdownList) => {
                                         <span className="dropdown-list-item__title">{item.title}</span>
                                     </div>
                                     <span className="dropdown-list-item__time">{timeConversion(item.time)}</span>
-
                                 </div>
                             </div>
                         )
                     })
                 }
             </Collapse>
+            <VideoModal
+                closeHandler={handleCloseModal}
+                isOpen={openModal}
+                title={modalTitle}
+            />
         </div>
     )
 }
