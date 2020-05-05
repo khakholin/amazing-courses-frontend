@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
 import DropdownList from '../../components/common/DropdownList/DropdownList';
+import { appRequest } from '../../modules/app/appRequest';
+import { IUserData } from '../../types/inputPropsFormats';
 import endingForNumber from '../../utils/endingForNumber';
-
 import timeConversion from '../../utils/timeConversion';
 
 import './personalAreaStyle.scss';
-import { appRequest } from '../../modules/app/appRequest';
-import { IUserData } from '../../types/inputPropsFormats';
 
 export interface IPersonalArea { };
 

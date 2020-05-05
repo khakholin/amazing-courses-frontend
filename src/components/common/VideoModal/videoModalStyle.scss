@@ -9,13 +9,18 @@
     align-items: center;
 
     &-content {
+        position: relative;
 
         &__title {
+            z-index: 1;
+            position: absolute;
+            top: -40px;
+            left: 10px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            font-family: MullerBold;
-            color: $secondaryColor;
+            font-family: MullerRegular;
+            color: white;
             font-size: 20px;
             height: 40px;
         }
@@ -23,6 +28,24 @@
         &__video {
             height: 450px;
             width: 800px;
+        }
+
+        &__border {
+            position: absolute;
+            left: 0;
+            height: 40px;
+            width: 100%;
+
+            &_top {
+                top: -40px;
+                background: linear-gradient(transparent, black);
+            }
+
+            &_bottom {
+                bottom: -38px;
+                background: linear-gradient(black, transparent);
+
+            }
         }
 
     }

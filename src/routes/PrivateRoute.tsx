@@ -1,5 +1,8 @@
 import React, { ComponentType } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
+
+import { getCookieByName } from '../utils/operationsWithCookie';
+
 import { RoutePath } from './constants/routesConstants';
 
 interface IPrivateRouteProps extends RouteProps {
@@ -9,8 +12,21 @@ interface IPrivateRouteProps extends RouteProps {
 type Props = IPrivateRouteProps;
 
 const PrivateRoute = (props: Props) => {
-    // TODO write how to get token
-    const isLogin = true;
+    // const token = getCookieByName('auth');
+
+    // return (
+    //     <Route
+    //         render={(routeProps: any) =>
+    //             token && Object.keys(token).length ?
+    //                 React.createElement(props.component, { ...routeProps, ...props })
+    //                 :
+    //                 <Redirect to={RoutePath.login} />
+    //         } />
+    // );
+
+
+
+    const isLogin = false;
 
     return (
         <Route

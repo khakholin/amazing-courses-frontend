@@ -28,7 +28,9 @@ const VideoModal = (props: IVideoModal) => {
             <Fade style={{ outline: 'none' }} in={props.isOpen}>
                 <div className="video-modal-content">
                     <div className="video-modal-content__title">{props.title}</div>
+                    <div className="video-modal-content__border video-modal-content__border_top"></div>
                     <video className="video-modal-content__video" src={require('../../../trimmed.mp4')} controls />
+                    <div className="video-modal-content__border video-modal-content__border_bottom"></div>
                 </div>
             </Fade>
         </Modal>

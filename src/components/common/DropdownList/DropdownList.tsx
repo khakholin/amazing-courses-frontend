@@ -55,7 +55,7 @@ const DropdownList = (props: IDropdownList) => {
                     <span className="dropdown-list-header__time">{timeConversion(props.time)}</span>
                 </div>
             </div>
-            <Collapse in={expanded} timeout="auto" unmountOnExit className="test">
+            <Collapse in={expanded} timeout="auto" unmountOnExit >
                 {
                     props.items.map((item: IDropdownListItem, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
