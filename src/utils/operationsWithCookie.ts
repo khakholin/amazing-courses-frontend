@@ -19,18 +19,25 @@ export const setCookie = (
         path: '/',
         ...options,
     };
-    let updatedCookie: string = encodeURIComponent(name) + '=' + encodeURIComponent(value);
+    let updatedCookie: string =
+        encodeURIComponent(name) + '=' + encodeURIComponent(value);
 
     // tslint:disable-next-line:forin
     for (const optionKey in options) {
-        updatedCookie += '; ' + optionKey;
-        const propValue = options[optionKey];
-        if (propValue !== true) {
-            updatedCookie += '=' + propValue;
+        updatedCookie += '; ' + optionKey + ';Max-Age=' + maxAge;
+        if (maxAge) {
+            updatedCookie += '; ' + optionKey + ';Max-Age=' + maxAge;
+        } else {
+            updatedCookie += '; ' + optionKey;
+        }
+        const optionValue = options[optionKey];
+        if (optionValue !== true) {
+            updatedCookie += '=' + optionValue;
         }
     }
-    if (maxAge) {
-        updatedCookie += '; Max-Age=' + maxAge;
-    }
     document.cookie = updatedCookie;
+};
+
+export const removeCookie = (name: string) => {
+    setCookie(name, '', { 'max-age': -1 });
 };
