@@ -6,7 +6,7 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
             'Content-Type': 'application/json',
             Pragma: 'no-cache',
         },
-        // mode: 'cors',
+        mode: 'cors',
     };
 
     defaultOptions = { ...defaultOptions, ...options };
@@ -17,6 +17,11 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
         defaultOptions.body = headers.includes('json')
             ? JSON.stringify(body)
             : body;
+    }
+
+    if (options?.token) {
+        console.log(options.token);
+        defaultOptions.headers['Authorization'] = `Bearer ${options.token}`
     }
 
     return fetch('http://localhost:3001' + endpoint, defaultOptions)

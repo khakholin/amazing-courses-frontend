@@ -12,6 +12,8 @@ export interface IPersonalArea { };
 
 const PersonalArea = (props: IPersonalArea) => {
     const [dataList, setDataList] = useState<{ data: IUserData }>();
+    const [token, setToken] = useState('');
+
     useEffect(() => {
         const l = localStorage.getItem('userLogin') || '';
         const p = localStorage.getItem('userPassword') || '';
@@ -23,6 +25,40 @@ const PersonalArea = (props: IPersonalArea) => {
 
     return (
         <div className="personal-area page-container">
+            <div
+                onClick={() => {
+                    appRequest('/api/auth/login', 'POST', { username: "john", password: "changeme" })
+                        .then((item) => {
+                            if (item.data.access_token) {
+                                setToken(item.data.access_token);
+                            }
+                        });
+
+                }}
+            >
+                LOGIN
+        </div>
+            <br></br>
+            <div
+                onClick={() => {
+                    appRequest('/api/profile', 'GET', undefined, { token })
+                        .then((item) => {
+                            console.log(item);
+
+                        });
+
+                }}
+            >
+                GET PROFILE
+            </div>
+            <br></br>
+            <div
+                onClick={() => {
+                    setToken('');
+                }}
+            >
+                DEL TOKEN
+            </div>
             <div className="personal-area-block">
                 <div className="personal-area-header">
                     <div className="personal-area-header__left">
