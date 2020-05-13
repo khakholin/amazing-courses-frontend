@@ -1,0 +1,14 @@
+@import "../../../theme/styles/fonts.scss";
+@import "../../../theme/styles/icons.scss";
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-card {
+        background-color: white;
+    }
+}

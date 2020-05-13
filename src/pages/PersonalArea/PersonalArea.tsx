@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import DropdownList from '../../components/common/DropdownList/DropdownList';
+import { endpoints } from '../../constants/endpoints';
 import { appRequest } from '../../modules/app/appRequest';
 import { IUserData } from '../../types/inputPropsFormats';
 import endingForNumber from '../../utils/endingForNumber';
+import { removeCookie } from '../../utils/operationsWithCookie';
 import timeConversion from '../../utils/timeConversion';
 
 import './personalAreaStyle.scss';
@@ -12,14 +14,11 @@ export interface IPersonalArea { };
 
 const PersonalArea = (props: IPersonalArea) => {
     const [dataList, setDataList] = useState<{ data: IUserData }>();
-    const [token, setToken] = useState('');
 
     useEffect(() => {
-        const l = localStorage.getItem('userLogin') || '';
-        const p = localStorage.getItem('userPassword') || '';
-        appRequest('/api/user/authentication', 'POST', { user: l.substring(1, l.length - 1), password: p.substring(1, p.length - 1) })
+        appRequest(endpoints.getProfile, 'GET')
             .then((item) => {
-                setDataList(item);
+                console.log(item);
             });
     }, []);
 
@@ -27,34 +26,7 @@ const PersonalArea = (props: IPersonalArea) => {
         <div className="personal-area page-container">
             <div
                 onClick={() => {
-                    appRequest('/api/auth/login', 'POST', { username: "john", password: "changeme" })
-                        .then((item) => {
-                            if (item.data.access_token) {
-                                setToken(item.data.access_token);
-                            }
-                        });
-
-                }}
-            >
-                LOGIN
-        </div>
-            <br></br>
-            <div
-                onClick={() => {
-                    appRequest('/api/profile', 'GET', undefined, { token })
-                        .then((item) => {
-                            console.log(item);
-
-                        });
-
-                }}
-            >
-                GET PROFILE
-            </div>
-            <br></br>
-            <div
-                onClick={() => {
-                    setToken('');
+                    removeCookie('auth');
                 }}
             >
                 DEL TOKEN
