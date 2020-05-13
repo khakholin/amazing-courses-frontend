@@ -5,34 +5,32 @@ import Button from '@material-ui/core/Button';
 
 import BGContent from '../../components/common/BGContent/BGContent';
 import InputField from '../../components/common/InputField/InputField';
+import ModalComponent from '../../components/common/ModalComponent/ModalComponent';
 import { REPLACEABLE_FIELD_NAME, emailRegExp } from '../../constants/common';
+import { endpoints } from '../../constants/endpoints';
 import * as translation from '../../constants/translation';
 import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
 import * as routes from '../../routes/constants/routesConstants';
+import { setCookie } from '../../utils/operationsWithCookie';
 
 import './loginStyle.scss';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
 
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
-    const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' })
+    const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [email, setEmail] = useState('');
-    const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' })
+    const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' });
     const [forgotPassword, setForgotPassword] = useState(false);
     const [login, setLogin] = useState('');
-    const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' })
+    const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' });
+    const [openModal, setOpenModal] = useState(false);
     const [password, setPassword] = useState({ value: '', show: false });
-    const [passwordError, setPasswordError] = useState({ showCheck: false, status: false, text: '' })
+    const [passwordError, setPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [registration, setRegistration] = useState(false);
-    // eslint-disable-next-line
-    const [userLogin, setUserLogin] = useLocalStorage('userLogin', '');
-    // eslint-disable-next-line
-    const [userPassword, setUserPassword] = useLocalStorage('userPassword', '');
-
 
     const clearData = () => {
         setConfirmPassword({ value: '', show: false });
@@ -85,6 +83,17 @@ const Login = (props: TLogin) => {
         setEmail(event.target.value);
     };
 
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+
+    const handleOpenModal = () => {
+        setOpenModal(true);
+        setTimeout(() => {
+            handleCloseModal();
+        }, 2000)
+    };
+
     const loginBlur = () => {
         login.length ? (
             login.length < 5 ?
@@ -99,6 +108,19 @@ const Login = (props: TLogin) => {
     const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setLoginError({ showCheck: false, status: false, text: '' });
         setLogin(event.target.value);
+    };
+
+    const onEnterClickHandler = () => {
+        appRequest(endpoints.authLogin, 'POST', { username: login, password: password.value })
+            .then((response) => {
+                const authCookie = response.data?.access_token;
+                setCookie('auth', authCookie ? authCookie : '', {}, 60);
+                if (response.data.message === 'Unauthorized') {
+                    handleOpenModal();
+                } else {
+                    appHistory.push('/personal-area');
+                }
+            });
     };
 
     const passwordBlur = () => {
@@ -135,15 +157,6 @@ const Login = (props: TLogin) => {
         el.focus()
         el.selectionStart = password.value.length;
     };
-
-    const onEnterClickHandler = () => {
-        appRequest('/api/user/authentication', 'POST', { user: login, password: password.value })
-            .then(() => {
-                setUserLogin(login);
-                setUserPassword(password.value);
-                appHistory.push('/personal-area');
-            });
-    }
 
     return (
         <div className="login page-container">
@@ -354,6 +367,13 @@ const Login = (props: TLogin) => {
                         </Fragment>
                     )
             }
+            <ModalComponent
+                closeHandler={handleCloseModal}
+                error
+                isOpen={openModal}
+                text='Неверный пользователь или пароль'
+                title='Ошибка'
+            />
         </div>
     );
 };

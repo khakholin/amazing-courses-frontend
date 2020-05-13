@@ -1,0 +1,21 @@
+@import "../../../theme/styles/layout.scss";
+@import "../../../theme/styles/pallete.scss";
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    background-color: $bgcPageDefault;
+
+    min-height: calc(100vh - 200px);
+    width: 100%;
+
+    &__spinner {
+        color: $mainColor !important;
+    }
+
+    &__text {
+        margin-top: $margin-1;
+    }
+}

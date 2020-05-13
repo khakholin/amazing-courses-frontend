@@ -12,32 +12,16 @@ interface IPrivateRouteProps extends RouteProps {
 type Props = IPrivateRouteProps;
 
 const PrivateRoute = (props: Props) => {
-    // const token = getCookieByName('auth');
-
-    // return (
-    //     <Route
-    //         render={(routeProps: any) =>
-    //             token && Object.keys(token).length ?
-    //                 React.createElement(props.component, { ...routeProps, ...props })
-    //                 :
-    //                 <Redirect to={RoutePath.login} />
-    //         } />
-    // );
-
-
-
-    const isLogin = false;
+    const token = getCookieByName('auth');
 
     return (
         <Route
-            {...props}
             render={(routeProps: any) =>
-                (isLogin ?
-                    React.createElement(props.component, { ...routeProps, ...props }) :
+                token && Object.keys(token).length ?
+                    React.createElement(props.component, { ...routeProps, ...props })
+                    :
                     <Redirect to={RoutePath.login} />
-                )
-            }
-        />
+            } />
     );
 };
 

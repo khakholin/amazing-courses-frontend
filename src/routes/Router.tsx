@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import appHistory from '../modules/app/appHistory';
-import PersonalArea from '../pages/PersonalArea/PersonalArea';
+import PersonalArea from '../pages/PersonalArea/PersonalAreaLoadable';
 
 import LoginRouter from './LoginRouter';
 import PrivateRoute from './PrivateRoute';

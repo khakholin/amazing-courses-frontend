@@ -7,17 +7,9 @@ import { getCookieByName } from '../utils/operationsWithCookie';
 import { RoutePath } from './constants/routesConstants';
 
 const LoginRouter: FC = () => {
-    // const token = getCookieByName('auth');
+    const token = getCookieByName('auth');
 
-    // if (token && Object.keys(token).length) {
-    //     return <Redirect to={RoutePath.personalArea} />;
-    // } else {
-    //     return <Route component={Login} path={RoutePath.login} exact />;
-    // }
-
-    const isLogin = false;
-
-    if (isLogin) {
+    if (token && Object.keys(token).length) {
         return <Redirect to={RoutePath.personalArea} />;
     } else {
         return <Route component={Login} path={RoutePath.login} exact />;

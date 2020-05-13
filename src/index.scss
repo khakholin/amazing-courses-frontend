@@ -42,7 +42,7 @@ body {
   -ms-text-size-adjust: 100%;
   -moz-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-  font-family: gothamPro, sans-serif;
+  font-family: MullerRegular, sans-serif;
 }
 
 input,
@@ -54,6 +54,7 @@ textarea {
 input::-ms-clear {
   display: none;
 }
+
 button {
   cursor: pointer;
 }

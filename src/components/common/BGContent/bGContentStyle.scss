@@ -17,5 +17,9 @@
         font-size: 20px;
         color: $textColorDark;
         margin-bottom: 20px;
+
+        &_error {
+            color: $mainColor;
+        }
     }
 }

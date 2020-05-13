@@ -1,8 +1,10 @@
 @import "../../../theme/styles/fonts.scss";
+@import '../../../theme/fonts/fonts';
 @import "../../../theme/styles/pallete.scss";
 
 .header {
     display: flex;
+    font-family: gothamPro;
     justify-content: center;
     align-items: center;
     height: 100px;
