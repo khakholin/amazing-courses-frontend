@@ -13,6 +13,7 @@ import './dropdownListStyle.scss';
 import VideoModal from '../VideoModal/VideoModal';
 
 export interface IDropdownList {
+    availableCourses: any;
     items: IDropdownListItem[];
     numberItems: number;
     time: number;
@@ -59,18 +60,18 @@ const DropdownList = (props: IDropdownList) => {
                 {
                     props.items.map((item: IDropdownListItem, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
-                            'dropdown-list-item_available': item.available,
-                            'dropdown-list-item_not-available': !item.available,
+                            'dropdown-list-item_available': index < props.availableCourses.numAvailableLectures,
+                            'dropdown-list-item_not-available': index >= props.availableCourses.numAvailableLectures,
                         });
 
                         const dropDownListItemProgressClass = clsx('dropdown-list-item__progress', {
-                            'dropdown-list-item__progress_active': item.checked,
-                            'dropdown-list-item__progress_inactive': !item.checked,
+                            'dropdown-list-item__progress_active': index < props.availableCourses.numCheckedLectures,
+                            'dropdown-list-item__progress_inactive': index >= props.availableCourses.numCheckedLectures,
                         });
 
                         const dropDownListItemLineClass = clsx('dropdown-list-item__line', {
-                            'dropdown-list-item__line_active': item.checked,
-                            'dropdown-list-item__line_inactive': !item.checked,
+                            'dropdown-list-item__line_active': index < props.availableCourses.numCheckedLectures,
+                            'dropdown-list-item__line_inactive': index >= props.availableCourses.numCheckedLectures,
                         });
 
                         return (
@@ -78,14 +79,14 @@ const DropdownList = (props: IDropdownList) => {
                                 className={dropDownListItemClass}
                                 key={item.title}
                                 onClick={() => {
-                                    if (item.available) {
+                                    if (index < props.availableCourses.numAvailableLectures) {
                                         handleOpenModal(item.title);
                                     }
                                 }}
                             >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
-                                        item.checked ?
+                                        index < props.availableCourses.numCheckedLectures ?
                                             <CheckCircleIcon className="dropdown-list-item__check" /> :
                                             <RadioButtonCheckedIcon className="dropdown-list-item__check" />
                                     }
