@@ -13,14 +13,21 @@ import './personalAreaStyle.scss';
 export interface IPersonalArea { };
 
 const PersonalArea = (props: IPersonalArea) => {
-    const [dataList, setDataList] = useState<{ data: IUserData }>();
+    const [dataList, setDataList] = useState<IUserData[]>();
 
     useEffect(() => {
         appRequest(endpoints.getProfile, 'GET')
-            .then((item) => {
-                console.log(item);
+            .then((response) => {
+                if (response.data.availableCourses) {
+                    appRequest(endpoints.getCourses, 'POST', { availableCourses: response.data.availableCourses })
+                        .then((response) => {
+                            setDataList(response.data);
+
+                        });
+                }
             });
     }, []);
+    console.log(dataList);
 
     return (
         <div className="personal-area page-container">
@@ -32,7 +39,7 @@ const PersonalArea = (props: IPersonalArea) => {
                 DEL TOKEN
             </div>
             <div className="personal-area-block">
-                <div className="personal-area-header">
+                {/* <div className="personal-area-header">
                     <div className="personal-area-header__left">
                         <span className="personal-area-header__title">Материалы курса</span>
                     </div>
@@ -40,9 +47,9 @@ const PersonalArea = (props: IPersonalArea) => {
                         <span className="personal-area-header__number">{dataList?.data.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.data.totalNumOfLectures)}</span>
                         <span className="personal-area-header__time">{timeConversion(dataList?.data.totalTime)}</span>
                     </div>
-                </div>
+                </div> */}
                 {
-                    dataList?.data.data.map((item: any) => {
+                    dataList?.map((item: any) => {
                         return (
                             <DropdownList
                                 items={item.lectures}
