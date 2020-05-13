@@ -1,6 +1,7 @@
 {
   "name": "amazing-course-frontend",
   "version": "0.1.0",
+  "description": "Amazing Courses Frontend",
   "private": true,
   "dependencies": {
     "@material-ui/core": "4.9.11",
