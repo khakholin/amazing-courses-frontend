@@ -6,7 +6,6 @@ export function useLocalStorage(key: string, initialValue: any): any[] {
             const item: string | null = window.localStorage.getItem(key);
             return item ? JSON.parse(item) : initialValue;
         } catch (error) {
-            console.log(error);
             return initialValue;
         }
     });
@@ -16,12 +15,11 @@ export function useLocalStorage(key: string, initialValue: any): any[] {
                 value instanceof Function
                     ? value(storedValue)
                     : typeof value === 'object'
-                    ? getTrimedValue(value)
-                    : value;
+                        ? getTrimedValue(value)
+                        : value;
             setStoredValue(valueToStore);
             window.localStorage.setItem(key, JSON.stringify(valueToStore));
         } catch (error) {
-            console.log(error);
         }
     };
 
