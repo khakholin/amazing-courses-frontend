@@ -114,7 +114,7 @@ const Login = (props: TLogin) => {
         appRequest(endpoints.authLogin, 'POST', { username: login, password: password.value })
             .then((response) => {
                 const authCookie = response.data?.access_token;
-                setCookie('auth', authCookie ? authCookie : '', {}, 60);
+                setCookie('auth', authCookie ? authCookie : '', {}, 300);
                 if (response.data.message === 'Unauthorized') {
                     handleOpenModal();
                 } else {

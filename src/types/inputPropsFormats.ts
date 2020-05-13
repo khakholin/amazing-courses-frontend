@@ -16,14 +16,11 @@ export interface IPasswordFormat {
 }
 
 export interface IDropdownListItem {
-    available: boolean;
-    checked: boolean;
     title: string;
     time: number;
 }
 
 export interface IUserData {
-    user: string;
     totalNumOfLectures: number;
     totalTime: number;
     data: ICourseData[];
