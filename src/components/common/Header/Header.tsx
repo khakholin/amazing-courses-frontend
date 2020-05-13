@@ -13,7 +13,7 @@ const Header = (props: IHeaderComponent) => {
                     <div className="header-icon__text">>_</div>
                 </div>
                 <div className="header-logo__dash">|</div>
-                <div className="header-logo__text">fatykhov course</div>
+                <div className="header-logo__text">amazing courses</div>
             </div>
         </header>
     );
