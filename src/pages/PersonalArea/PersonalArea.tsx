@@ -22,11 +22,9 @@ const PersonalArea = (props: IPersonalArea) => {
             .then((response) => {
                 if (response.data.availableCourses) {
                     setAvailableCourses(response.data.availableCourses);
-                    console.log('resp1', response.data.availableCourses);
                     appRequest(endpoints.getCourses, 'POST', { availableCourses: response.data.availableCourses })
                         .then((response) => {
                             setDataList(response.data)
-                            console.log('resp2', response.data);
                         });
                 }
             });

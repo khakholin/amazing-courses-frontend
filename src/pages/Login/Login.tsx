@@ -27,6 +27,8 @@ const Login = (props: TLogin) => {
     const [forgotPassword, setForgotPassword] = useState(false);
     const [login, setLogin] = useState('');
     const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' });
+    const [modalText, setModalText] = useState('');
+    const [modalTitle, setModalTitle] = useState('');
     const [openModal, setOpenModal] = useState(false);
     const [password, setPassword] = useState({ value: '', show: false });
     const [passwordError, setPasswordError] = useState({ showCheck: false, status: false, text: '' });
@@ -84,10 +86,14 @@ const Login = (props: TLogin) => {
     };
 
     const handleCloseModal = () => {
+        setModalText('');
+        setModalTitle('');
         setOpenModal(false);
     };
 
-    const handleOpenModal = () => {
+    const handleOpenModal = (text: string, title: string) => {
+        setModalText(text);
+        setModalTitle(title);
         setOpenModal(true);
         setTimeout(() => {
             handleCloseModal();
@@ -116,7 +122,7 @@ const Login = (props: TLogin) => {
                 const authCookie = response.data?.access_token;
                 setCookie('auth', authCookie ? authCookie : '', {}, 300);
                 if (response.data.message === 'Unauthorized') {
-                    handleOpenModal();
+                    handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {
                     appHistory.push('/personal-area');
                 }
@@ -265,6 +271,11 @@ const Login = (props: TLogin) => {
                                         onClick={() => {
                                             clearData();
                                             setForgotPassword(false);
+                                            appRequest('/user/recovery', 'POST', { email })
+                                                .then((response) => {
+                                                    response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
+                                                        handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
+                                                })
                                         }}
                                     >
                                         {translation.defaultTranslation.sendPasswordToEmail}
@@ -371,8 +382,8 @@ const Login = (props: TLogin) => {
                 closeHandler={handleCloseModal}
                 error
                 isOpen={openModal}
-                text='Неверный пользователь или пароль'
-                title='Ошибка'
+                text={modalText}
+                title={modalTitle}
             />
         </div>
     );
