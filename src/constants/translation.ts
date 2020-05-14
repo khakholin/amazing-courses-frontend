@@ -21,5 +21,5 @@ export const defaultTranslation = {
     rememberPassword: 'Вспомнил пароль',
     requiredField: '{fieldName} обязателен для заполнения',
     sendPasswordToEmail: 'Выслать пароль на почту',
-    simplePassword: 'Слишком простой пароль — введено менее 6 символов',
+    simplePassword: 'Слишком простой пароль — введено менее 5 символов',
 }

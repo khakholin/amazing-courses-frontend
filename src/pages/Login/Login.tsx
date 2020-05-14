@@ -45,17 +45,21 @@ const Login = (props: TLogin) => {
         setPasswordError({ showCheck: false, status: false, text: '' });
     }
 
-    const confirmPasswordBlur = () => {
-        password.value ? (
-            confirmPassword.value === password.value ?
+    const passwordComparison = (realPassword: any) => {
+        realPassword ? (
+            confirmPassword.value === realPassword ?
                 setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
                 setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
         ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
     }
 
     const confirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setConfirmPasswordError({ showCheck: false, status: false, text: '' });
         setConfirmPassword({ ...confirmPassword, value: event.target.value });
+        password.value ? (
+            event.target.value === password.value ?
+                setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
+                setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
+        ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
     };
 
     const confirmPasswordShowClick = () => {
@@ -65,29 +69,34 @@ const Login = (props: TLogin) => {
         el.selectionStart = confirmPassword.value.length;
     };
 
-    const emailBlur = () => {
-        if (email.length) {
-            if (emailRegExp.test(email)) {
-                setEmailError({ showCheck: true, status: false, text: '' });
+    const emailChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setEmail(event.target.value);
+        if (registration) {
+            if (event.target.value.length) {
+                if (emailRegExp.test(event.target.value)) {
+                    setEmailError({ showCheck: true, status: false, text: '' });
+                } else {
+                    setEmailError({ showCheck: false, status: true, text: translation.defaultTranslation.emailRequirements });
+                }
             } else {
-                setEmailError({ showCheck: false, status: true, text: translation.defaultTranslation.emailRequirements });
+                setEmailError({
+                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.email)
+                });
             }
         } else {
-            setEmailError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.email)
-            });
+            if (event.target.value.length) {
+                setEmailError({ showCheck: true, status: false, text: '' });
+            } else {
+                setEmailError({
+                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.email)
+                });
+            }
         }
-    }
-
-    const emailChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setEmailError({ showCheck: false, status: false, text: '' });
-        setEmail(event.target.value);
     };
 
     const handleCloseModal = () => {
-        setModalText('');
-        setModalTitle('');
         setOpenModal(false);
     };
 
@@ -100,20 +109,35 @@ const Login = (props: TLogin) => {
         }, 2000)
     };
 
-    const loginBlur = () => {
-        login.length ? (
-            login.length < 5 ?
-                setLoginError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
-                setLoginError({ showCheck: true, status: false, text: '' })
-        ) : setLoginError({
-            showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
-        })
+    const handleRecoveryPassword = () => {
+        clearData();
+        setForgotPassword(false);
+        appRequest('/user/recovery', 'POST', { email })
+            .then((response) => {
+                response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
+                    handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
+            })
     }
 
     const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setLoginError({ showCheck: false, status: false, text: '' });
         setLogin(event.target.value);
+        if (registration) {
+            event.target.value.length ? (
+                event.target.value.length < 5 ?
+                    setLoginError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
+                    setLoginError({ showCheck: true, status: false, text: '' })
+            ) : setLoginError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+            })
+        } else {
+            event.target.value.length ? (
+                setLoginError({ showCheck: true, status: false, text: '' })
+            ) : setLoginError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+            })
+        }
     };
 
     const onEnterClickHandler = () => {
@@ -129,33 +153,39 @@ const Login = (props: TLogin) => {
             });
     };
 
-    const passwordBlur = () => {
-        if (password.value.length) {
-            confirmPasswordBlur();
-            for (let i = 0; i < password.value.length; i++) {
-                if (password.value[i] === ' ') {
-                    setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
-                    return
+    const passwordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setPassword({ ...password, value: event.target.value });
+        if (registration) {
+            if (event.target.value.length) {
+                passwordComparison(event.target.value);
+                for (let i = 0; i < event.target.value.length; i++) {
+                    if (event.target.value[i] === ' ') {
+                        setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
+                        return
+                    }
                 }
-            }
-            if (password.value.length < 5) {
-                setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.simplePassword });
+                if (event.target.value.length < 5) {
+                    setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.simplePassword });
+                } else {
+                    setPasswordError({ showCheck: true, status: false, text: '' });
+                }
             } else {
-                setPasswordError({ showCheck: true, status: false, text: '' });
+                setPasswordError({
+                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.password)
+                });
             }
         } else {
-            setPasswordError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.password)
-            });
+            if (event.target.value.length) {
+                setPasswordError({ showCheck: true, status: false, text: '' });
+            } else {
+                setPasswordError({
+                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.password)
+                });
+            }
         }
-    }
-
-    const passwordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setPasswordError({ showCheck: false, status: false, text: '' });
-        setPassword({ ...password, value: event.target.value });
     };
-
 
     const passwordShowClick = () => {
         setPassword({ ...password, show: !password.show });
@@ -177,7 +207,6 @@ const Login = (props: TLogin) => {
                             title: translation.defaultTranslation.email,
                             placeholder: translation.defaultTranslation.emailPlaceholder,
                         }}
-                        handleBlur={emailBlur}
                         handleChange={emailChange}
                         value={email}
                     />
@@ -188,7 +217,6 @@ const Login = (props: TLogin) => {
                             title: translation.defaultTranslation.login,
                             placeholder: translation.defaultTranslation.loginPlaceholder,
                         }}
-                        handleBlur={loginBlur}
                         handleChange={loginChange}
                         value={login}
                     />
@@ -199,7 +227,6 @@ const Login = (props: TLogin) => {
                             title: translation.defaultTranslation.password,
                             placeholder: translation.defaultTranslation.passwordPlaceholder,
                         }}
-                        handleBlur={passwordBlur}
                         handleChange={passwordChange}
                         passwordShowClick={passwordShowClick}
                         value={password}
@@ -211,7 +238,6 @@ const Login = (props: TLogin) => {
                             title: translation.defaultTranslation.passwordAgain,
                             placeholder: translation.defaultTranslation.passwordPlaceholder,
                         }}
-                        handleBlur={confirmPasswordBlur}
                         handleChange={confirmPasswordChange}
                         passwordShowClick={confirmPasswordShowClick}
                         value={confirmPassword}
@@ -223,6 +249,26 @@ const Login = (props: TLogin) => {
                                     <Button
                                         className="button-primary button-primary_full-width button_column-margin"
                                         variant="outlined"
+                                        onClick={() => {
+                                            clearData();
+                                            setRegistration(false);
+                                            appRequest('/user/registration', 'POST', { email, login, password: password.value })
+                                                .then((response) => {
+                                                    switch (response.data.message) {
+                                                        case ('SUCCESS'):
+                                                            handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
+                                                            break;
+                                                        case ('EMAIL_DUPLICATE'):
+                                                            handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка')
+                                                            break;
+                                                        case ('USER_DUPLICATE'):
+                                                            handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка')
+                                                            break;
+                                                        default:
+                                                            break;
+                                                    }
+                                                })
+                                        }}
                                     >
                                         {translation.defaultTranslation.registrationText}
                                     </Button>
@@ -258,7 +304,6 @@ const Login = (props: TLogin) => {
                                 title: translation.defaultTranslation.email,
                                 placeholder: translation.defaultTranslation.emailPlaceholder,
                             }}
-                            handleBlur={emailBlur}
                             handleChange={emailChange}
                             value={email}
                         />
@@ -268,15 +313,7 @@ const Login = (props: TLogin) => {
                                     <Button
                                         className="button-primary button-primary_full-width button_column-margin"
                                         variant="outlined"
-                                        onClick={() => {
-                                            clearData();
-                                            setForgotPassword(false);
-                                            appRequest('/user/recovery', 'POST', { email })
-                                                .then((response) => {
-                                                    response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
-                                                        handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
-                                                })
-                                        }}
+                                        onClick={() => handleRecoveryPassword()}
                                     >
                                         {translation.defaultTranslation.sendPasswordToEmail}
                                     </Button> :
@@ -312,7 +349,6 @@ const Login = (props: TLogin) => {
                                         title: translation.defaultTranslation.login,
                                         placeholder: translation.defaultTranslation.loginPlaceholder,
                                     }}
-                                    handleBlur={loginBlur}
                                     handleChange={loginChange}
                                     value={login}
                                 />
@@ -323,7 +359,6 @@ const Login = (props: TLogin) => {
                                         title: translation.defaultTranslation.password,
                                         placeholder: translation.defaultTranslation.passwordPlaceholder,
                                     }}
-                                    handleBlur={passwordBlur}
                                     handleChange={passwordChange}
                                     passwordShowClick={passwordShowClick}
                                     value={password}
