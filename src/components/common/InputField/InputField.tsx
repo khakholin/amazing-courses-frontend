@@ -16,7 +16,6 @@ import './inputFieldStyle.scss';
 export interface IInputField {
     error: IErrorFormat;
     field: IFieldFormat;
-    handleBlur: () => void;
     handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     passwordShowClick?: () => void;
     value: string | IPasswordFormat;
@@ -49,7 +48,6 @@ const InputField = (props: any) => {
                     }
                     error={props.error.status}
                     id={inputId}
-                    onBlur={() => props.handleBlur()}
                     onChange={event => props.handleChange(event)}
                     placeholder={props.field.placeholder}
                     type={(props.field.name === 'password' || props.field.name === 'confirm-password') ? (props.value.show ? 'text' : 'password') : 'text'}
