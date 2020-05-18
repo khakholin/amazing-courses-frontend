@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import BGContent from '../../components/common/BGContent/BGContent';
@@ -11,10 +11,11 @@ import { endpoints } from '../../constants/endpoints';
 import * as translation from '../../constants/translation';
 import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
-import * as routes from '../../routes/constants/routesConstants';
 import { setCookie } from '../../utils/operationsWithCookie';
+import { IResponse } from '../../types/responseTypes';
 
 import './loginStyle.scss';
+import { EResponseMessages } from '../../constants/responseMessages';
 
 type TLogin = RouteComponentProps;
 
@@ -45,13 +46,6 @@ const Login = (props: TLogin) => {
         setPasswordError({ showCheck: false, status: false, text: '' });
     }
 
-    const passwordComparison = (realPassword: any) => {
-        realPassword ? (
-            confirmPassword.value === realPassword ?
-                setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
-                setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
-        ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
-    }
 
     const confirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setConfirmPassword({ ...confirmPassword, value: event.target.value });
@@ -110,13 +104,31 @@ const Login = (props: TLogin) => {
     };
 
     const handleRecoveryPassword = () => {
-        clearData();
-        setForgotPassword(false);
         appRequest('/user/recovery', 'POST', { email })
-            .then((response) => {
+            .then((response: IResponse) => {
                 response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
                     handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
             })
+        clearData();
+    }
+
+    const handleRegistration = () => {
+        appRequest('/user/registration', 'POST', { email, login, password: password.value })
+            .then((response: IResponse) => {
+                if (response.data.status === 201) {
+                    handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
+                } else {
+                    if (response.data.message === 'EMAIL_DUPLICATE') {
+                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка')
+
+                    }
+                    if (response.data.message === 'USER_DUPLICATE') {
+                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка')
+
+                    }
+                }
+            })
+        clearData();
     }
 
     const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -142,15 +154,23 @@ const Login = (props: TLogin) => {
 
     const onEnterClickHandler = () => {
         appRequest(endpoints.authLogin, 'POST', { username: login, password: password.value })
-            .then((response) => {
+            .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
                 setCookie('auth', authCookie ? authCookie : '', {}, 300);
-                if (response.data.message === 'Unauthorized') {
+                if (response.data.message === EResponseMessages.Unauthorized) {
                     handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {
                     appHistory.push('/personal-area');
                 }
             });
+    };
+
+    const passwordComparison = (realPassword: string) => {
+        realPassword ? (
+            confirmPassword.value === realPassword ?
+                setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
+                setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
+        ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
     };
 
     const passwordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -245,34 +265,13 @@ const Login = (props: TLogin) => {
                     <div className="buttons-container_column">
                         {
                             emailError.showCheck && loginError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
-                                <Link to={routes.RoutePath.personalArea}>
-                                    <Button
-                                        className="button-primary button-primary_full-width button_column-margin"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            clearData();
-                                            setRegistration(false);
-                                            appRequest('/user/registration', 'POST', { email, login, password: password.value })
-                                                .then((response) => {
-                                                    switch (response.data.message) {
-                                                        case ('SUCCESS'):
-                                                            handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
-                                                            break;
-                                                        case ('EMAIL_DUPLICATE'):
-                                                            handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка')
-                                                            break;
-                                                        case ('USER_DUPLICATE'):
-                                                            handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка')
-                                                            break;
-                                                        default:
-                                                            break;
-                                                    }
-                                                })
-                                        }}
-                                    >
-                                        {translation.defaultTranslation.registrationText}
-                                    </Button>
-                                </Link> :
+                                <Button
+                                    className="button-primary button-primary_full-width button_column-margin"
+                                    variant="outlined"
+                                    onClick={() => handleRegistration()}
+                                >
+                                    {translation.defaultTranslation.registrationText}
+                                </Button> :
                                 <Button
                                     className="button_column-margin"
                                     disabled

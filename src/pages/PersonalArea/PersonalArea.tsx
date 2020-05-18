@@ -52,7 +52,7 @@ const PersonalArea = (props: IPersonalArea) => {
                     </div>
                 </div>
                 {
-                    dataList?.data.map((item: any, index: number) => {
+                    dataList?.data.map((item: any) => {
                         const curCourse = availableCourses.find((course: any) => course.title === item.title);
                         return (
                             <DropdownList
