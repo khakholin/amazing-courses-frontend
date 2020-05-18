@@ -20,7 +20,6 @@ import { EResponseMessages } from '../../constants/responseMessages';
 type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
-
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
     const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [email, setEmail] = useState('');
@@ -216,6 +215,76 @@ const Login = (props: TLogin) => {
 
     return (
         <div className="login page-container">
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testcreate', 'POST', { email: 'test1@mail.ru', login: 'Test1', password: 'Pass1' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>CREAT1</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testcreate', 'POST', { email: 'test2@mail.ru', login: 'Test2', password: 'Pass2' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>CREAT3</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testcreate', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>CREAT3</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testremove', 'POST', { email: 'test1@mail.ru', login: 'Test1', password: 'Pass1' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>REM1</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testremove', 'POST', { email: 'test2@mail.ru', login: 'Test2', password: 'Pass2' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>REM2</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testremove', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>REM3</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testfindall', 'GET')
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+            }}>FINDALL</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testremoveall', 'GET')
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+            }}>REMOVEALL</div>
             {registration ?
                 <BGContent
                     title={translation.defaultTranslation.registrationTitle}
