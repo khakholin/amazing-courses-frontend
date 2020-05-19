@@ -105,8 +105,12 @@ const Login = (props: TLogin) => {
     const handleRecoveryPassword = () => {
         appRequest('/user/recovery', 'POST', { email })
             .then((response: IResponse) => {
-                response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
+                if (response.data) {
+                    setForgotPassword(false);
+                    handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание');
+                } else {
                     handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
+                }
             })
         clearData();
     }
@@ -115,15 +119,14 @@ const Login = (props: TLogin) => {
         appRequest('/user/registration', 'POST', { email, login, password: password.value })
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
+                    setRegistration(false);
                     handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
                 } else {
                     if (response.data.message === 'EMAIL_DUPLICATE') {
-                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка')
-
+                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка');
                     }
                     if (response.data.message === 'USER_DUPLICATE') {
-                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка')
-
+                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка');
                     }
                 }
             })
@@ -235,7 +238,7 @@ const Login = (props: TLogin) => {
             }}>CREAT3</div>
             <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
 
-                appRequest('/user/testcreate', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
+                appRequest('/user/testcreate', 'POST', { email: 'test5@mail.ru', login: 'Test3', password: 'Pass3' })
                     .then((resp) => {
                         console.log(resp);
 
@@ -285,6 +288,15 @@ const Login = (props: TLogin) => {
 
                     });
             }}>REMOVEALL</div>
+            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
+
+                appRequest('/user/testfind', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
+                    .then((resp) => {
+                        console.log(resp);
+
+                    });
+
+            }}>FIND3</div>
             {registration ?
                 <BGContent
                     title={translation.defaultTranslation.registrationTitle}
