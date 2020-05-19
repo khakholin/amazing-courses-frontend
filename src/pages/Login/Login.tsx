@@ -20,14 +20,13 @@ import { EResponseMessages } from '../../constants/responseMessages';
 type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
-
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
     const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' });
     const [forgotPassword, setForgotPassword] = useState(false);
-    const [login, setLogin] = useState('');
-    const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' });
+    const [userName, setUserName] = useState('');
+    const [userNameError, setUserNameError] = useState({ showCheck: false, status: false, text: '' });
     const [modalText, setModalText] = useState('');
     const [modalTitle, setModalTitle] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -40,8 +39,8 @@ const Login = (props: TLogin) => {
         setConfirmPasswordError({ showCheck: false, status: false, text: '' });
         setEmail('');
         setEmailError({ showCheck: false, status: false, text: '' });
-        setLogin('');
-        setLoginError({ showCheck: false, status: false, text: '' });
+        setUserName('');
+        setUserNameError({ showCheck: false, status: false, text: '' });
         setPassword({ value: '', show: false });
         setPasswordError({ showCheck: false, status: false, text: '' });
     }
@@ -100,60 +99,63 @@ const Login = (props: TLogin) => {
         setOpenModal(true);
         setTimeout(() => {
             handleCloseModal();
-        }, 2000)
+        }, 4000)
     };
 
     const handleRecoveryPassword = () => {
         appRequest('/user/recovery', 'POST', { email })
             .then((response: IResponse) => {
-                response.data ? handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание') :
+                if (response.data) {
+                    setForgotPassword(false);
+                    handleOpenModal('Ваш пароль успешно выслан на почту', 'Внимание');
+                } else {
                     handleOpenModal('Пользователь с таким почтовым ящиком не зарегистрирован', 'Ошибка');
+                }
             })
         clearData();
     }
 
     const handleRegistration = () => {
-        appRequest('/user/registration', 'POST', { email, login, password: password.value })
+        appRequest('/user/registration', 'POST', { email, username: userName, password: password.value })
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
+                    setRegistration(false);
                     handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
                 } else {
                     if (response.data.message === 'EMAIL_DUPLICATE') {
-                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка')
-
+                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка');
                     }
                     if (response.data.message === 'USER_DUPLICATE') {
-                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка')
-
+                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка');
                     }
                 }
             })
         clearData();
     }
 
-    const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setLogin(event.target.value);
+    const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setUserName(event.target.value.trim());
         if (registration) {
-            event.target.value.length ? (
-                event.target.value.length < 5 ?
-                    setLoginError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
-                    setLoginError({ showCheck: true, status: false, text: '' })
-            ) : setLoginError({
+            event.target.value.trim().length ? (
+                event.target.value.trim().length < 5 ?
+                    setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
+                    setUserNameError({ showCheck: true, status: false, text: '' })
+            ) : setUserNameError({
                 showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
             })
         } else {
-            event.target.value.length ? (
-                setLoginError({ showCheck: true, status: false, text: '' })
-            ) : setLoginError({
+            event.target.value.trim().length ? (
+                setUserNameError({ showCheck: true, status: false, text: '' })
+            ) : setUserNameError({
                 showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
             })
         }
     };
 
     const onEnterClickHandler = () => {
-        appRequest(endpoints.authLogin, 'POST', { username: login, password: password.value })
+        appRequest(endpoints.authLogin, 'POST', { username: userName, password: password.value })
             .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
                 setCookie('auth', authCookie ? authCookie : '', {}, 300);
@@ -231,14 +233,14 @@ const Login = (props: TLogin) => {
                         value={email}
                     />
                     <InputField
-                        error={loginError}
+                        error={userNameError}
                         field={{
                             name: 'login',
-                            title: translation.defaultTranslation.login,
-                            placeholder: translation.defaultTranslation.loginPlaceholder,
+                            title: translation.defaultTranslation.userName,
+                            placeholder: translation.defaultTranslation.userNamePlaceholder,
                         }}
-                        handleChange={loginChange}
-                        value={login}
+                        handleChange={userNameChange}
+                        value={userName}
                     />
                     <InputField
                         error={passwordError}
@@ -264,7 +266,7 @@ const Login = (props: TLogin) => {
                     />
                     <div className="buttons-container_column">
                         {
-                            emailError.showCheck && loginError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
+                            emailError.showCheck && userNameError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
                                 <Button
                                     className="button-primary button-primary_full-width button_column-margin"
                                     variant="outlined"
@@ -342,14 +344,14 @@ const Login = (props: TLogin) => {
                                 title={translation.defaultTranslation.enterTitle}
                             >
                                 <InputField
-                                    error={loginError}
+                                    error={userNameError}
                                     field={{
                                         name: 'login',
-                                        title: translation.defaultTranslation.login,
-                                        placeholder: translation.defaultTranslation.loginPlaceholder,
+                                        title: translation.defaultTranslation.userName,
+                                        placeholder: translation.defaultTranslation.userNamePlaceholder,
                                     }}
-                                    handleChange={loginChange}
-                                    value={login}
+                                    handleChange={userNameChange}
+                                    value={userName}
                                 />
                                 <InputField
                                     error={passwordError}
@@ -364,7 +366,7 @@ const Login = (props: TLogin) => {
                                 />
                                 <div className="buttons-container_row">
                                     {
-                                        loginError.showCheck && passwordError.showCheck ?
+                                        userNameError.showCheck && passwordError.showCheck ?
                                             <Button
                                                 className="button-primary"
                                                 variant="outlined"
