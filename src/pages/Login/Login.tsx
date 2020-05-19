@@ -25,8 +25,8 @@ const Login = (props: TLogin) => {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' });
     const [forgotPassword, setForgotPassword] = useState(false);
-    const [login, setLogin] = useState('');
-    const [loginError, setLoginError] = useState({ showCheck: false, status: false, text: '' });
+    const [userName, setUserName] = useState('');
+    const [userNameError, setUserNameError] = useState({ showCheck: false, status: false, text: '' });
     const [modalText, setModalText] = useState('');
     const [modalTitle, setModalTitle] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -39,8 +39,8 @@ const Login = (props: TLogin) => {
         setConfirmPasswordError({ showCheck: false, status: false, text: '' });
         setEmail('');
         setEmailError({ showCheck: false, status: false, text: '' });
-        setLogin('');
-        setLoginError({ showCheck: false, status: false, text: '' });
+        setUserName('');
+        setUserNameError({ showCheck: false, status: false, text: '' });
         setPassword({ value: '', show: false });
         setPasswordError({ showCheck: false, status: false, text: '' });
     }
@@ -99,7 +99,7 @@ const Login = (props: TLogin) => {
         setOpenModal(true);
         setTimeout(() => {
             handleCloseModal();
-        }, 2000)
+        }, 4000)
     };
 
     const handleRecoveryPassword = () => {
@@ -116,7 +116,7 @@ const Login = (props: TLogin) => {
     }
 
     const handleRegistration = () => {
-        appRequest('/user/registration', 'POST', { email, login, password: password.value })
+        appRequest('/user/registration', 'POST', { email, username: userName, password: password.value })
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
                     setRegistration(false);
@@ -133,29 +133,29 @@ const Login = (props: TLogin) => {
         clearData();
     }
 
-    const loginChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setLogin(event.target.value);
+    const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setUserName(event.target.value.trim());
         if (registration) {
-            event.target.value.length ? (
-                event.target.value.length < 5 ?
-                    setLoginError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
-                    setLoginError({ showCheck: true, status: false, text: '' })
-            ) : setLoginError({
+            event.target.value.trim().length ? (
+                event.target.value.trim().length < 5 ?
+                    setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
+                    setUserNameError({ showCheck: true, status: false, text: '' })
+            ) : setUserNameError({
                 showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
             })
         } else {
-            event.target.value.length ? (
-                setLoginError({ showCheck: true, status: false, text: '' })
-            ) : setLoginError({
+            event.target.value.trim().length ? (
+                setUserNameError({ showCheck: true, status: false, text: '' })
+            ) : setUserNameError({
                 showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.login)
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
             })
         }
     };
 
     const onEnterClickHandler = () => {
-        appRequest(endpoints.authLogin, 'POST', { username: login, password: password.value })
+        appRequest(endpoints.authLogin, 'POST', { username: userName, password: password.value })
             .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
                 setCookie('auth', authCookie ? authCookie : '', {}, 300);
@@ -218,85 +218,6 @@ const Login = (props: TLogin) => {
 
     return (
         <div className="login page-container">
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testcreate', 'POST', { email: 'test1@mail.ru', login: 'Test1', password: 'Pass1' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>CREAT1</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testcreate', 'POST', { email: 'test2@mail.ru', login: 'Test2', password: 'Pass2' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>CREAT3</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testcreate', 'POST', { email: 'test5@mail.ru', login: 'Test3', password: 'Pass3' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>CREAT3</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testremove', 'POST', { email: 'test1@mail.ru', login: 'Test1', password: 'Pass1' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>REM1</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testremove', 'POST', { email: 'test2@mail.ru', login: 'Test2', password: 'Pass2' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>REM2</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testremove', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>REM3</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testfindall', 'GET')
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-            }}>FINDALL</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testremoveall', 'GET')
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-            }}>REMOVEALL</div>
-            <div style={{ fontWeight: 700, border: '1px solid black' }} onClick={() => {
-
-                appRequest('/user/testfind', 'POST', { email: 'test3@mail.ru', login: 'Test3', password: 'Pass3' })
-                    .then((resp) => {
-                        console.log(resp);
-
-                    });
-
-            }}>FIND3</div>
             {registration ?
                 <BGContent
                     title={translation.defaultTranslation.registrationTitle}
@@ -312,14 +233,14 @@ const Login = (props: TLogin) => {
                         value={email}
                     />
                     <InputField
-                        error={loginError}
+                        error={userNameError}
                         field={{
                             name: 'login',
-                            title: translation.defaultTranslation.login,
-                            placeholder: translation.defaultTranslation.loginPlaceholder,
+                            title: translation.defaultTranslation.userName,
+                            placeholder: translation.defaultTranslation.userNamePlaceholder,
                         }}
-                        handleChange={loginChange}
-                        value={login}
+                        handleChange={userNameChange}
+                        value={userName}
                     />
                     <InputField
                         error={passwordError}
@@ -345,7 +266,7 @@ const Login = (props: TLogin) => {
                     />
                     <div className="buttons-container_column">
                         {
-                            emailError.showCheck && loginError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
+                            emailError.showCheck && userNameError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
                                 <Button
                                     className="button-primary button-primary_full-width button_column-margin"
                                     variant="outlined"
@@ -423,14 +344,14 @@ const Login = (props: TLogin) => {
                                 title={translation.defaultTranslation.enterTitle}
                             >
                                 <InputField
-                                    error={loginError}
+                                    error={userNameError}
                                     field={{
                                         name: 'login',
-                                        title: translation.defaultTranslation.login,
-                                        placeholder: translation.defaultTranslation.loginPlaceholder,
+                                        title: translation.defaultTranslation.userName,
+                                        placeholder: translation.defaultTranslation.userNamePlaceholder,
                                     }}
-                                    handleChange={loginChange}
-                                    value={login}
+                                    handleChange={userNameChange}
+                                    value={userName}
                                 />
                                 <InputField
                                     error={passwordError}
@@ -445,7 +366,7 @@ const Login = (props: TLogin) => {
                                 />
                                 <div className="buttons-container_row">
                                     {
-                                        loginError.showCheck && passwordError.showCheck ?
+                                        userNameError.showCheck && passwordError.showCheck ?
                                             <Button
                                                 className="button-primary"
                                                 variant="outlined"
