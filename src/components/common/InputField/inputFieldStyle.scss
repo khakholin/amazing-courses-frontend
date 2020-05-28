@@ -2,10 +2,15 @@
 @import "../../../theme/styles/icons.scss";
 @import "../../../theme/styles/layout.scss";
 @import "../../../theme/styles/pallete.scss";
+@import '../../../sass/mixins.scss';
 
 .input {
     &-form {
         width: 280px;
+
+        @include breakpoint(xs) {
+            width: 100%;
+        }
     }
 
     &-error {

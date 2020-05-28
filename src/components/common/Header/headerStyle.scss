@@ -1,6 +1,7 @@
 @import "../../../theme/styles/fonts.scss";
 @import '../../../theme/fonts/fonts';
 @import "../../../theme/styles/pallete.scss";
+@import '../../../sass/mixins.scss';
 
 .header {
     display: flex;
@@ -9,6 +10,7 @@
     align-items: center;
     height: 100px;
     background-color: white;
+    padding: 0 80px;
 
     &-icon {
         background-color: $mainColor;
@@ -36,11 +38,67 @@
         }
 
         &__text {
-            display: flex;
             font-size: $text-huge;
             font-weight: $text-bold;
             text-transform: uppercase;
         }
 
+    }
+}
+
+
+@media (max-width: 660px) {
+    .header {
+        padding: 0;
+
+        &-icon {
+            height: 32px;
+            width: 40px;
+
+            &__text {
+                font-size: 12px;
+            }
+        }
+
+        &-logo {
+
+            &__dash {
+                font-size: 48px;
+
+            }
+
+            &__text {
+                font-size: 32px;
+            }
+
+        }
+    }
+}
+
+@media (max-width: 424px) {
+    .header {
+        padding: 0;
+
+        &-icon {
+            height: 24px;
+            width: 30px;
+
+            &__text {
+                font-size: 10px;
+            }
+        }
+
+        &-logo {
+
+            &__dash {
+                font-size: 36px;
+
+            }
+
+            &__text {
+                font-size: 24px;
+            }
+
+        }
     }
 }
