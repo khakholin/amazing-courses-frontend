@@ -1,4 +1,5 @@
-@import "../..//theme/styles/buttons.scss";
+@import '../../sass/mixins.scss';
+@import "../../theme/styles/buttons.scss";
 @import "../../theme/styles/layout.scss";
 @import "../../theme/styles/fonts.scss";
 @import "../..//theme/styles/pallete.scss";
@@ -23,7 +24,7 @@
         background: linear-gradient(to top left, $bgcPageDefault, $secondaryColor);
     }
 
-    &-registration {
-        margin-top: 40px;
+    @include breakpoint(xs) {
+        min-height: 0;
     }
 }

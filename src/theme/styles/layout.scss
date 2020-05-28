@@ -1,3 +1,5 @@
+@import '../../sass/mixins.scss';
+
 $margin-0_5: 4px;
 $margin-1: 8px;
 $margin-2: 16px;
@@ -20,11 +22,16 @@ $containerWidth: 1010px;
 $buttonHeight: 36px;
 
 .page-container {
-    padding: 40px 0;
+    padding-top: 40px;
+
+    @include breakpoint(xs) {
+        padding: 0;
+    }
 }
 
 .field-wrapper {
     min-height: 85px;
+    width: 100%;
 }
 
 .empty-field {

@@ -393,24 +393,22 @@ const Login = (props: TLogin) => {
                                     </div>
                                 </div>
                             </BGContent>
-                            <div className="login-registration">
-                                <BGContent
-                                    title={translation.defaultTranslation.firstTimeWithUs}
-                                >
-                                    <div className="buttons-container_row">
-                                        <Button
-                                            className="button-secondary button-secondary_full-width"
-                                            onClick={() => {
-                                                clearData();
-                                                setRegistration(true);
-                                            }}
-                                            variant="outlined"
-                                        >
-                                            {translation.defaultTranslation.registrationText}
-                                        </Button>
-                                    </div>
-                                </BGContent>
-                            </div>
+                            <BGContent
+                                title={translation.defaultTranslation.firstTimeWithUs}
+                            >
+                                <div className="buttons-container_row">
+                                    <Button
+                                        className="button-secondary button-secondary_full-width"
+                                        onClick={() => {
+                                            clearData();
+                                            setRegistration(true);
+                                        }}
+                                        variant="outlined"
+                                    >
+                                        {translation.defaultTranslation.registrationText}
+                                    </Button>
+                                </div>
+                            </BGContent>
                         </Fragment>
                     )
             }
