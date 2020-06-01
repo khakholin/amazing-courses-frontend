@@ -6,21 +6,34 @@
 .header {
     display: flex;
     font-family: gothamPro;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100px;
     background-color: white;
     padding: 0 80px;
 
-    &-icon {
-        background-color: $mainColor;
-        height: 48px;
-        width: 60px;
-        border-radius: 4px;
+    &__empty-field {
+        width: 72px;
+        height: 1px;
+    }
 
-        &__text {
-            color: $secondaryColor;
-            font-size: 16px;
+    &__buttons-block {
+        display: flex;
+        align-items: center;
+    }
+
+    &__button {
+        cursor: pointer;
+        color: $secondaryColor;
+        font-size: 32px !important;
+        margin-left: 8px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &_primary {
+            color: $mainColor;
         }
     }
 
@@ -29,7 +42,6 @@
         justify-content: center;
         align-items: center;
         color: $secondaryColor;
-
 
         &__dash {
             font-weight: $text-thin;
@@ -43,6 +55,18 @@
             text-transform: uppercase;
         }
 
+        &-icon {
+            background-color: $mainColor;
+            height: 48px;
+            width: 60px;
+            border-radius: 4px;
+
+            &__text {
+                color: $secondaryColor;
+                font-size: 16px;
+            }
+        }
+
     }
 }
 
@@ -50,15 +74,6 @@
 @media (max-width: 660px) {
     .header {
         padding: 0;
-
-        &-icon {
-            height: 32px;
-            width: 40px;
-
-            &__text {
-                font-size: 12px;
-            }
-        }
 
         &-logo {
 
@@ -71,6 +86,14 @@
                 font-size: 32px;
             }
 
+            &-icon {
+                height: 32px;
+                width: 40px;
+
+                &__text {
+                    font-size: 12px;
+                }
+            }
         }
     }
 }
@@ -78,15 +101,6 @@
 @media (max-width: 424px) {
     .header {
         padding: 0;
-
-        &-icon {
-            height: 24px;
-            width: 30px;
-
-            &__text {
-                font-size: 10px;
-            }
-        }
 
         &-logo {
 
@@ -99,6 +113,14 @@
                 font-size: 24px;
             }
 
+            &-icon {
+                height: 24px;
+                width: 30px;
+
+                &__text {
+                    font-size: 10px;
+                }
+            }
         }
     }
 }

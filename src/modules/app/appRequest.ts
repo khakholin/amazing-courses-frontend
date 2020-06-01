@@ -1,5 +1,6 @@
 import { getCookieByName, removeCookie } from "../../utils/operationsWithCookie";
-import { RoutePath } from "../../routes/constants/routesConstants";
+import * as routes from "../../routes/constants/routesConstants";
+import { API_URL } from "../../constants/endpoints";
 
 export const appRequest = (endpoint: string, method: string, body?: any, options?: any, ): Promise<any> => {
     let defaultOptions: any = {
@@ -27,7 +28,7 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
         defaultOptions.headers['Authorization'] = `Bearer ${authToken}`
     }
 
-    return fetch('http://localhost:3001' + endpoint, defaultOptions)
+    return fetch(API_URL + endpoint, defaultOptions)
         .then((resp) => resp.json())
         .then((data) => {
             return {
@@ -37,7 +38,7 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
         .catch((error: any) => {
             if (error?.status === 401) {
                 removeCookie('auth');
-                window.open(RoutePath.login, '_self');
+                window.open(routes.LOGIN, '_self');
             }
             throw error;
         });

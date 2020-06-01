@@ -2,23 +2,25 @@ import React, { FC } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import appHistory from '../modules/app/appHistory';
-import PersonalArea from '../pages/PersonalArea/PersonalAreaLoadable';
+import PersonalAccount from '../pages/PersonalAccount/PersonalAccountLoadable';
+import Courses from '../pages/Courses/CoursesLoadable';
 
 import LoginRouter from './LoginRouter';
 import PrivateRoute from './PrivateRoute';
-import { RoutePath } from './constants/routesConstants';
+import * as routes from './constants/routesConstants';
 
 const AppRouter: FC = () => {
     return (
         <Router history={appHistory}>
             <Switch>
                 <Route exact path="/">
-                    <Redirect to={RoutePath.login} />
+                    <Redirect to={routes.LOGIN} />
                 </Route>
-                <Route exact path={RoutePath.login} component={LoginRouter} />
-                <PrivateRoute exact path={RoutePath.personalArea} component={PersonalArea} />
+                <Route exact path={routes.LOGIN} component={LoginRouter} />
+                <PrivateRoute exact path={routes.PERSONAL_ACCOUNT} component={PersonalAccount} />
+                <PrivateRoute exact path={routes.COURSES} component={Courses} />
                 <Route path="*">
-                    <Redirect to={RoutePath.personalArea} />
+                    <Redirect to={routes.PERSONAL_ACCOUNT} />
                 </Route>
             </Switch>
         </Router>

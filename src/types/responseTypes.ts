@@ -9,3 +9,11 @@ export interface IResponseData {
 export interface IResponse {
     data: IResponseData;
 }
+
+export interface IUserProfileResponse {
+    _id?: string;
+    username: string;
+    email: string;
+    role: string;
+    availableCourses: Array<string>;
+}

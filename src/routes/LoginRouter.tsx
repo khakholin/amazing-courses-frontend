@@ -4,15 +4,15 @@ import { Redirect, Route } from 'react-router-dom';
 import Login from '../pages/Login/Login';
 import { getCookieByName } from '../utils/operationsWithCookie';
 
-import { RoutePath } from './constants/routesConstants';
+import * as routes from './constants/routesConstants';
 
 const LoginRouter: FC = () => {
     const token = getCookieByName('auth');
 
     if (token && Object.keys(token).length) {
-        return <Redirect to={RoutePath.personalArea} />;
+        return <Redirect to={routes.PERSONAL_ACCOUNT} />;
     } else {
-        return <Route component={Login} path={RoutePath.login} exact />;
+        return <Route component={Login} path={routes.LOGIN} exact />;
     }
 };
 

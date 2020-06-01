@@ -1,9 +1,10 @@
-import React, { ComponentType } from 'react';
+import React, { ComponentType, Fragment } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 
 import { getCookieByName } from '../utils/operationsWithCookie';
 
-import { RoutePath } from './constants/routesConstants';
+import * as routes from './constants/routesConstants';
+import Header from '../components/common/Header/Header';
 
 interface IPrivateRouteProps extends RouteProps {
     component: ComponentType;
@@ -18,9 +19,12 @@ const PrivateRoute = (props: Props) => {
         <Route
             render={(routeProps: any) =>
                 token && Object.keys(token).length ?
-                    React.createElement(props.component, { ...routeProps, ...props })
+                    <Fragment>
+                        <Header />
+                        {React.createElement(props.component, { ...routeProps, ...props })}
+                    </Fragment>
                     :
-                    <Redirect to={RoutePath.login} />
+                    <Redirect to={routes.LOGIN} />
             } />
     );
 };
