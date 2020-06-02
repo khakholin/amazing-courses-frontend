@@ -21,13 +21,13 @@ const UserList = (props: IUserListProps) => {
     return (
         <div className="user-list-component">
             {
-                users.length && users.map((user: any, index: number) => {
+                users.length && users.map((user: IUserProfileResponse, index: number) => {
                     return (
                         <div
                             className="user-list-component__item"
                             onClick={() => props.onUserProfileClick(user)}
                         >
-                            {index + '. ' + user.username}
+                            {user.username}
                         </div>
                     )
                 })

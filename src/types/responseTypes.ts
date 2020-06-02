@@ -9,11 +9,22 @@ export interface IResponseData {
 export interface IResponse {
     data: IResponseData;
 }
+export interface ICourseProgress {
+    courseName: string;
+    numAvailableLectures: number;
+    numCheckedLectures: number;
+}
 
 export interface IUserProfileResponse {
+    availableCourses: string[];
     _id?: string;
-    username: string;
+    courseProgress: ICourseProgress[];
     email: string;
+    realName: string;
+    realSurname: string;
     role: string;
-    availableCourses: Array<string>;
+    school: string;
+    university: string;
+    username: string;
+    workPlace: string;
 }

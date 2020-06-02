@@ -103,7 +103,7 @@ const Login = (props: TLogin) => {
     };
 
     const handleRecoveryPassword = () => {
-        appRequest('/user/recovery', 'POST', { email })
+        appRequest('/api/user/recovery', 'POST', { email })
             .then((response: IResponse) => {
                 if (response.data) {
                     setForgotPassword(false);
@@ -116,7 +116,7 @@ const Login = (props: TLogin) => {
     }
 
     const handleRegistration = () => {
-        appRequest('/user/registration', 'POST', { email, username: userName, password: password.value })
+        appRequest('/api/user/registration', 'POST', { email, username: userName, password: password.value })
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
                     setRegistration(false);

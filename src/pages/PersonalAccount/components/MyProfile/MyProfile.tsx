@@ -3,15 +3,28 @@ import React from 'react';
 import './myProfileStyle.scss';
 
 export interface IMyProfileProps {
+    realName: string | undefined;
+    realSurname: string | undefined;
+    school: string | undefined;
+    university: string | undefined;
     userName: string | undefined;
+    workPlace: string | undefined;
 }
 
 const MyProfile = (props: IMyProfileProps) => {
     return (
         <div className="my-profile-component">
-            {props.userName}
+            Логин: {props.userName}
             <br></br>
-            возможен ввод более полных данных (фамилия, место учебы), на будущее: загрузка фото
+            Имя: {props.realName}
+            <br></br>
+            Фамилия: {props.realSurname}
+            <br></br>
+            Школа: {props.school}
+            <br></br>
+            Университет: {props.university}
+            <br></br>
+            Место работы: {props.workPlace}
         </div>
     );
 };
