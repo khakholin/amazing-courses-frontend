@@ -1,0 +1,95 @@
+@import "../../theme/styles/layout.scss";
+@import "../../theme/styles/fonts.scss";
+@import "../..//theme/styles/pallete.scss";
+@import "../..//theme/styles/buttons.scss";
+
+.personal-account {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+    background-color: $bgcPageDefault;
+
+    &-profile {
+        display: flex;
+        justify-content: space-between;
+        width: 840px;
+        height: 600px;
+        background-color: $bgcPageDefault;
+
+        &__bar {
+            width: 25%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            border-right: 1px solid $bgcPageDefault;
+            box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+            border-radius: 4px;
+        }
+
+        &__info {
+            width: 70%;
+            background-color: #fff;
+            box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+            border-radius: 4px;
+        }
+
+        &__avatar {
+            width: 100%;
+            font-size: 140px;
+        }
+
+        &__name {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            font-weight: 700;
+            min-height: 30px;
+        }
+
+        &__menu {
+            width: 100%;
+
+            &-item {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                height: 30px;
+                color: $secondaryColor;
+
+                &:hover {
+                    background-color: $secondaryColorHover;
+                    transition: all 0.5s ease;
+                }
+
+                &_active {
+                    background-color: $secondaryColorActive;
+
+                    &:hover {
+                        background-color: $secondaryColorActive;
+                    }
+                }
+
+                &_private {
+                    color: $mainColor;
+                }
+            }
+
+            &-icon {
+                min-width: 30px;
+            }
+
+            &-title {
+                margin-left: 10px;
+            }
+        }
+    }
+}
+
+li {
+    list-style: none;
+}

@@ -1,9 +1,3 @@
-export interface IRoutePath {
-    login: string;
-    personalArea: string;
-}
-
-export const RoutePath: IRoutePath = {
-    login: '/login',
-    personalArea: '/personal-area',
-};
+export const COURSES = '/courses';
+export const LOGIN = '/login';
+export const PERSONAL_ACCOUNT = '/personal-account';

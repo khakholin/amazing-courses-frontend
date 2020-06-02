@@ -1,0 +1,12 @@
+@import "../../../../theme/styles/layout.scss";
+@import "../../../../theme/styles/fonts.scss";
+@import "../../../../theme/styles/pallete.scss";
+@import "../../../../theme/styles/buttons.scss";
+
+.my-profile-component {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

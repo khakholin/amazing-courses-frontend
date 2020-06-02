@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
-import DropdownList from '../../components/common/DropdownList/DropdownList';
 import { endpoints } from '../../constants/endpoints';
 import { appRequest } from '../../modules/app/appRequest';
 import { IUserData } from '../../types/inputPropsFormats';
-import endingForNumber from '../../utils/endingForNumber';
-import { removeCookie } from '../../utils/operationsWithCookie';
+
+import './coursesStyle.scss';
+import DropdownList from '../../components/common/DropdownList/DropdownList';
 import timeConversion from '../../utils/timeConversion';
+import endingForNumber from '../../utils/endingForNumber';
 
-import './personalAreaStyle.scss';
-import appHistory from '../../modules/app/appHistory';
+export interface ICourses { };
 
-export interface IPersonalArea { };
-
-const PersonalArea = (props: IPersonalArea) => {
+const Courses = (props: ICourses) => {
     const [dataList, setDataList] = useState<IUserData>();
     const [availableCourses, setAvailableCourses] = useState([]);
 
@@ -31,24 +29,15 @@ const PersonalArea = (props: IPersonalArea) => {
     }, []);
 
     return (
-        <div className="personal-area page-container">
-            <div
-                onClick={() => {
-                    removeCookie('auth');
-                    appHistory.push('/login');
-                }}
-                style={{ cursor: 'pointer', marginBottom: '20px', fontWeight: 700 }}
-            >
-                ВЫЙТИ
-            </div>
-            <div className="personal-area-block">
-                <div className="personal-area-header">
-                    <div className="personal-area-header__left">
-                        <span className="personal-area-header__title">Материалы курса</span>
+        <div className="courses page-container">
+            <div className="courses-block">
+                <div className="courses-header">
+                    <div className="courses-header__left">
+                        <span className="courses-header__title">Материалы курса</span>
                     </div>
-                    <div className="personal-area-header__right">
-                        <span className="personal-area-header__number">{dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures)}</span>
-                        <span className="personal-area-header__time">{timeConversion(dataList?.totalTime)}</span>
+                    <div className="courses-header__right">
+                        <span className="courses-header__number">{dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures)}</span>
+                        <span className="courses-header__time">{timeConversion(dataList?.totalTime)}</span>
                     </div>
                 </div>
                 {
@@ -71,4 +60,4 @@ const PersonalArea = (props: IPersonalArea) => {
     );
 };
 
-export default PersonalArea;
+export default Courses;

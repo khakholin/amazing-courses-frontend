@@ -16,6 +16,7 @@ import { IResponse } from '../../types/responseTypes';
 
 import './loginStyle.scss';
 import { EResponseMessages } from '../../constants/responseMessages';
+import Header from '../../components/common/Header/Header';
 
 type TLogin = RouteComponentProps;
 
@@ -44,7 +45,6 @@ const Login = (props: TLogin) => {
         setPassword({ value: '', show: false });
         setPasswordError({ showCheck: false, status: false, text: '' });
     }
-
 
     const confirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setConfirmPassword({ ...confirmPassword, value: event.target.value });
@@ -103,7 +103,7 @@ const Login = (props: TLogin) => {
     };
 
     const handleRecoveryPassword = () => {
-        appRequest('/user/recovery', 'POST', { email })
+        appRequest('/api/user/recovery', 'POST', { email })
             .then((response: IResponse) => {
                 if (response.data) {
                     setForgotPassword(false);
@@ -116,7 +116,7 @@ const Login = (props: TLogin) => {
     }
 
     const handleRegistration = () => {
-        appRequest('/user/registration', 'POST', { email, username: userName, password: password.value })
+        appRequest('/api/user/registration', 'POST', { email, username: userName, password: password.value })
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
                     setRegistration(false);
@@ -158,7 +158,7 @@ const Login = (props: TLogin) => {
         appRequest(endpoints.authLogin, 'POST', { username: userName, password: password.value })
             .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
-                setCookie('auth', authCookie ? authCookie : '', {}, 300);
+                setCookie('auth', authCookie ? authCookie : '', {}, 900);
                 if (response.data.message === EResponseMessages.Unauthorized) {
                     handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {
@@ -217,86 +217,12 @@ const Login = (props: TLogin) => {
     };
 
     return (
-        <div className="login page-container">
-            {registration ?
-                <BGContent
-                    title={translation.defaultTranslation.registrationTitle}
-                >
-                    <InputField
-                        error={emailError}
-                        field={{
-                            name: 'email',
-                            title: translation.defaultTranslation.email,
-                            placeholder: translation.defaultTranslation.emailPlaceholder,
-                        }}
-                        handleChange={emailChange}
-                        value={email}
-                    />
-                    <InputField
-                        error={userNameError}
-                        field={{
-                            name: 'login',
-                            title: translation.defaultTranslation.userName,
-                            placeholder: translation.defaultTranslation.userNamePlaceholder,
-                        }}
-                        handleChange={userNameChange}
-                        value={userName}
-                    />
-                    <InputField
-                        error={passwordError}
-                        field={{
-                            name: 'password',
-                            title: translation.defaultTranslation.password,
-                            placeholder: translation.defaultTranslation.passwordPlaceholder,
-                        }}
-                        handleChange={passwordChange}
-                        passwordShowClick={passwordShowClick}
-                        value={password}
-                    />
-                    <InputField
-                        error={confirmPasswordError}
-                        field={{
-                            name: 'confirm-password',
-                            title: translation.defaultTranslation.passwordAgain,
-                            placeholder: translation.defaultTranslation.passwordPlaceholder,
-                        }}
-                        handleChange={confirmPasswordChange}
-                        passwordShowClick={confirmPasswordShowClick}
-                        value={confirmPassword}
-                    />
-                    <div className="buttons-container_column">
-                        {
-                            emailError.showCheck && userNameError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
-                                <Button
-                                    className="button-primary button-primary_full-width button_column-margin"
-                                    variant="outlined"
-                                    onClick={() => handleRegistration()}
-                                >
-                                    {translation.defaultTranslation.registrationText}
-                                </Button> :
-                                <Button
-                                    className="button_column-margin"
-                                    disabled
-                                    variant="outlined"
-                                >
-                                    {translation.defaultTranslation.registrationText}
-                                </Button>
-                        }
-                        <Button
-                            className="button-secondary button-secondary_full-width"
-                            variant="outlined"
-                            onClick={() => {
-                                clearData();
-                                setRegistration(false);
-                            }}
-                        >
-                            {translation.defaultTranslation.haveAccountText}
-                        </Button>
-                    </div>
-                </BGContent>
-                : forgotPassword ?
+        <Fragment>
+            <Header login />
+            <div className="login page-container">
+                {registration ?
                     <BGContent
-                        title={translation.defaultTranslation.passwordRecovery}
+                        title={translation.defaultTranslation.registrationTitle}
                     >
                         <InputField
                             error={emailError}
@@ -308,22 +234,54 @@ const Login = (props: TLogin) => {
                             handleChange={emailChange}
                             value={email}
                         />
+                        <InputField
+                            error={userNameError}
+                            field={{
+                                name: 'login',
+                                title: translation.defaultTranslation.userName,
+                                placeholder: translation.defaultTranslation.userNamePlaceholder,
+                            }}
+                            handleChange={userNameChange}
+                            value={userName}
+                        />
+                        <InputField
+                            error={passwordError}
+                            field={{
+                                name: 'password',
+                                title: translation.defaultTranslation.password,
+                                placeholder: translation.defaultTranslation.passwordPlaceholder,
+                            }}
+                            handleChange={passwordChange}
+                            passwordShowClick={passwordShowClick}
+                            value={password}
+                        />
+                        <InputField
+                            error={confirmPasswordError}
+                            field={{
+                                name: 'confirm-password',
+                                title: translation.defaultTranslation.passwordAgain,
+                                placeholder: translation.defaultTranslation.passwordPlaceholder,
+                            }}
+                            handleChange={confirmPasswordChange}
+                            passwordShowClick={confirmPasswordShowClick}
+                            value={confirmPassword}
+                        />
                         <div className="buttons-container_column">
                             {
-                                emailError.showCheck ?
+                                emailError.showCheck && userNameError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
                                     <Button
                                         className="button-primary button-primary_full-width button_column-margin"
                                         variant="outlined"
-                                        onClick={() => handleRecoveryPassword()}
+                                        onClick={() => handleRegistration()}
                                     >
-                                        {translation.defaultTranslation.sendPasswordToEmail}
+                                        {translation.defaultTranslation.registrationText}
                                     </Button> :
                                     <Button
                                         className="button_column-margin"
                                         disabled
                                         variant="outlined"
                                     >
-                                        {translation.defaultTranslation.sendPasswordToEmail}
+                                        {translation.defaultTranslation.registrationText}
                                     </Button>
                             }
                             <Button
@@ -331,95 +289,140 @@ const Login = (props: TLogin) => {
                                 variant="outlined"
                                 onClick={() => {
                                     clearData();
-                                    setForgotPassword(false);
+                                    setRegistration(false);
                                 }}
                             >
-                                {translation.defaultTranslation.rememberPassword}
+                                {translation.defaultTranslation.haveAccountText}
                             </Button>
                         </div>
                     </BGContent>
-                    : (
-                        <Fragment>
-                            <BGContent
-                                title={translation.defaultTranslation.enterTitle}
-                            >
-                                <InputField
-                                    error={userNameError}
-                                    field={{
-                                        name: 'login',
-                                        title: translation.defaultTranslation.userName,
-                                        placeholder: translation.defaultTranslation.userNamePlaceholder,
+                    : forgotPassword ?
+                        <BGContent
+                            title={translation.defaultTranslation.passwordRecovery}
+                        >
+                            <InputField
+                                error={emailError}
+                                field={{
+                                    name: 'email',
+                                    title: translation.defaultTranslation.email,
+                                    placeholder: translation.defaultTranslation.emailPlaceholder,
+                                }}
+                                handleChange={emailChange}
+                                value={email}
+                            />
+                            <div className="buttons-container_column">
+                                {
+                                    emailError.showCheck ?
+                                        <Button
+                                            className="button-primary button-primary_full-width button_column-margin"
+                                            variant="outlined"
+                                            onClick={() => handleRecoveryPassword()}
+                                        >
+                                            {translation.defaultTranslation.sendPasswordToEmail}
+                                        </Button> :
+                                        <Button
+                                            className="button_column-margin"
+                                            disabled
+                                            variant="outlined"
+                                        >
+                                            {translation.defaultTranslation.sendPasswordToEmail}
+                                        </Button>
+                                }
+                                <Button
+                                    className="button-secondary button-secondary_full-width"
+                                    variant="outlined"
+                                    onClick={() => {
+                                        clearData();
+                                        setForgotPassword(false);
                                     }}
-                                    handleChange={userNameChange}
-                                    value={userName}
-                                />
-                                <InputField
-                                    error={passwordError}
-                                    field={{
-                                        name: 'password',
-                                        title: translation.defaultTranslation.password,
-                                        placeholder: translation.defaultTranslation.passwordPlaceholder,
-                                    }}
-                                    handleChange={passwordChange}
-                                    passwordShowClick={passwordShowClick}
-                                    value={password}
-                                />
-                                <div className="buttons-container_row">
-                                    {
-                                        userNameError.showCheck && passwordError.showCheck ?
-                                            <Button
-                                                className="button-primary"
-                                                variant="outlined"
-                                                onClick={() => onEnterClickHandler()}
-                                            >
-                                                {translation.defaultTranslation.enterText}
-                                            </Button>
-                                            :
-                                            <Button
-                                                disabled
-                                                variant="outlined"
-                                            >
-                                                {translation.defaultTranslation.enterText}
-                                            </Button>
-                                    }
-                                    <div
-                                        className="button-text"
-                                        onClick={() => {
-                                            clearData();
-                                            setForgotPassword(true);
+                                >
+                                    {translation.defaultTranslation.rememberPassword}
+                                </Button>
+                            </div>
+                        </BGContent>
+                        : (
+                            <Fragment>
+                                <BGContent
+                                    title={translation.defaultTranslation.enterTitle}
+                                >
+                                    <InputField
+                                        error={userNameError}
+                                        field={{
+                                            name: 'login',
+                                            title: translation.defaultTranslation.userName,
+                                            placeholder: translation.defaultTranslation.userNamePlaceholder,
                                         }}
-                                    >
-                                        {translation.defaultTranslation.forgotPassword}
+                                        handleChange={userNameChange}
+                                        value={userName}
+                                    />
+                                    <InputField
+                                        error={passwordError}
+                                        field={{
+                                            name: 'password',
+                                            title: translation.defaultTranslation.password,
+                                            placeholder: translation.defaultTranslation.passwordPlaceholder,
+                                        }}
+                                        handleChange={passwordChange}
+                                        passwordShowClick={passwordShowClick}
+                                        value={password}
+                                    />
+                                    <div className="buttons-container_row">
+                                        {
+                                            userNameError.showCheck && passwordError.showCheck ?
+                                                <Button
+                                                    className="button-primary"
+                                                    variant="outlined"
+                                                    onClick={() => onEnterClickHandler()}
+                                                >
+                                                    {translation.defaultTranslation.enterText}
+                                                </Button>
+                                                :
+                                                <Button
+                                                    disabled
+                                                    variant="outlined"
+                                                >
+                                                    {translation.defaultTranslation.enterText}
+                                                </Button>
+                                        }
+                                        <div
+                                            className="button-text"
+                                            onClick={() => {
+                                                clearData();
+                                                setForgotPassword(true);
+                                            }}
+                                        >
+                                            {translation.defaultTranslation.forgotPassword}
+                                        </div>
                                     </div>
-                                </div>
-                            </BGContent>
-                            <BGContent
-                                title={translation.defaultTranslation.firstTimeWithUs}
-                            >
-                                <div className="buttons-container_row">
-                                    <Button
-                                        className="button-secondary button-secondary_full-width"
-                                        onClick={() => {
-                                            clearData();
-                                            setRegistration(true);
-                                        }}
-                                        variant="outlined"
-                                    >
-                                        {translation.defaultTranslation.registrationText}
-                                    </Button>
-                                </div>
-                            </BGContent>
-                        </Fragment>
-                    )
-            }
-            <ModalComponent
-                closeHandler={handleCloseModal}
-                error
-                isOpen={openModal}
-                text={modalText}
-                title={modalTitle}
-            />
-        </div>
+                                </BGContent>
+                                <BGContent
+                                    title={translation.defaultTranslation.firstTimeWithUs}
+                                >
+                                    <div className="buttons-container_row">
+                                        <Button
+                                            className="button-secondary button-secondary_full-width"
+                                            onClick={() => {
+                                                clearData();
+                                                setRegistration(true);
+                                            }}
+                                            variant="outlined"
+                                        >
+                                            {translation.defaultTranslation.registrationText}
+                                        </Button>
+                                    </div>
+                                </BGContent>
+                            </Fragment>
+                        )
+                }
+                <ModalComponent
+                    closeHandler={handleCloseModal}
+                    error
+                    isOpen={openModal}
+                    text={modalText}
+                    title={modalTitle}
+                />
+            </div>
+        </Fragment>
     );
 };
 
