@@ -71,6 +71,7 @@ const Courses = (props: ICourses) => {
                                 numberItems={item.numOfLectures}
                                 time={item.courseTime}
                                 title={item.courseName}
+                                folder={item.courseFolder}
                             />
                         )
                     })

@@ -135,8 +135,9 @@ const UserInformation = (props: IUserInformationProps) => {
                         if (item.courseName === course.courseName) {
                             availableLectures = item.availableLectures;
                             checkedLectures = item.checkedLectures;
+                            return true
                         }
-                        return true;
+                        return false
                     })
                     return (
                         <div className="user-information-component-lectures">

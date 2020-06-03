@@ -28,28 +28,15 @@ const PersonalAccount = (props: IPersonalAccount) => {
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
-    // const [videoTest, setVideoTest] = useState();
 
     useEffect(() => {
         appRequest(endpoints.getProfile, 'GET')
             .then((response: { data: IUserProfileResponse }) => {
                 setUserData(response.data)
             });
-
-        // appRequestFile('/api/course/video/React/1', 'GET')
-        //     .then(response => {
-        //         const reader = new FileReader()
-        //         reader.readAsDataURL(response.data);
-        //         reader.onload = (event: any) => {
-        //             const result = event?.target.result;
-        //             setVideoTest(result);
-        //         }
-
-        //     });
         if (currentMenuItem === 'UserInformation') {
             setCurrentMenuItem('UserList');
         }
-
         // eslint-disable-next-line
     }, []);
 
@@ -129,7 +116,6 @@ const PersonalAccount = (props: IPersonalAccount) => {
         <div className="personal-account page-container">
             <div className="personal-account-profile">
                 <div className="personal-account-profile__bar">
-                    {/* <FaceIcon className="personal-account-profile__avatar" /> */}
                     <Man className="personal-account-profile__avatar" />
                     <div className="personal-account-profile__name">{userData?.username}</div>
                     <div className="personal-account-profile__menu">
@@ -166,7 +152,6 @@ const PersonalAccount = (props: IPersonalAccount) => {
                     {infoForm()}
                 </div>
             </div>
-            {/* <video className="video-modal-content__video" src={videoTest} controls /> */}
         </div>
     );
 };
