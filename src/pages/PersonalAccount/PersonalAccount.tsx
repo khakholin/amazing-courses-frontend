@@ -4,6 +4,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import clsx from 'clsx';
 
 import { ReactComponent as Man } from '../../theme/icons/Man.svg';
@@ -13,7 +14,6 @@ import { IUserProfileResponse } from '../../types/responseTypes';
 
 import './personalAccountStyle.scss';
 import Account from './components/Account/Account';
-import MyCourses from './components/MyCourses/MyCourses';
 import MyProfile from './components/MyProfile/MyProfile';
 import MySuccess from './components/MySuccess/MySuccess';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
@@ -21,6 +21,7 @@ import UserList from './components/UserList/UserList';
 import UserInformation from './components/UserInformation/UserInformation';
 import { getCookieByName } from '../../utils/operationsWithCookie';
 import appHistory from '../../modules/app/appHistory';
+import CourseList from './components/CourseList/CourseList';
 
 export interface IPersonalAccount { };
 
@@ -45,7 +46,6 @@ const PersonalAccount = (props: IPersonalAccount) => {
             setCurrentMenuItem('MyProfile')
             appHistory.push('/login');
         }
-
         // eslint-disable-next-line
     }, [getCookieByName('auth')])
 
@@ -71,15 +71,9 @@ const PersonalAccount = (props: IPersonalAccount) => {
                         workPlace={userData?.workPlace}
                     />
                 )
-            case 'MyCourses':
-                return (
-                    <MyCourses />
-                )
             case 'MySuccess':
                 return (
-                    <MySuccess
-                        availableCourses={userData?.availableCourses}
-                    />
+                    <MySuccess />
                 )
             case 'Account':
                 return (
@@ -98,6 +92,10 @@ const PersonalAccount = (props: IPersonalAccount) => {
                     <UserInformation
                         user={currentUserProfile}
                     />
+                )
+            case 'CourseList':
+                return (
+                    <CourseList />
                 )
             default:
                 break;
@@ -123,7 +121,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
                             <PersonIcon className="personal-account-profile__menu-icon" />
                             <span className="personal-account-profile__menu-title">Мой профиль</span>
                         </li>
-                        <li className={menuItemClasses('MyCourses')} onClick={() => onMenuItemClick('MyCourses')}>
+                        <li className={menuItemClasses('MyCourses')} onClick={() => appHistory.push('/courses')}>
                             <ImportContactsIcon className="personal-account-profile__menu-icon" />
                             <span className="personal-account-profile__menu-title">Мои курсы</span>
                         </li>
@@ -137,13 +135,22 @@ const PersonalAccount = (props: IPersonalAccount) => {
                         </li>
                         {
                             userData?.role === 'admin' ?
-                                <li
-                                    className={menuItemClasses('UserList', true)}
-                                    onClick={() => onMenuItemClick('UserList')}
-                                >
-                                    <PeopleIcon className="personal-account-profile__menu-icon" />
-                                    <span className="personal-account-profile__menu-title">Список пользователей</span>
-                                </li>
+                                <Fragment>
+                                    <li
+                                        className={menuItemClasses('UserList', true)}
+                                        onClick={() => onMenuItemClick('UserList')}
+                                    >
+                                        <PeopleIcon className="personal-account-profile__menu-icon" />
+                                        <span className="personal-account-profile__menu-title">Список пользователей</span>
+                                    </li>
+                                    <li
+                                        className={menuItemClasses('CourseList', true)}
+                                        onClick={() => onMenuItemClick('CourseList')}
+                                    >
+                                        <MenuBookIcon className="personal-account-profile__menu-icon" />
+                                        <span className="personal-account-profile__menu-title">Список курсов</span>
+                                    </li>
+                                </Fragment>
                                 : <Fragment />
                         }
                     </div>
