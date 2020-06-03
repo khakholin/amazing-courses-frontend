@@ -44,7 +44,7 @@ export const appRequest = (endpoint: string, method: string, body?: any, options
         });
 };
 
-export const appRequest2 = (endpoint: string, method: string, body?: any, options?: any, ): Promise<any> => {
+export const appRequestFile = (endpoint: string, method: string, body?: any, options?: any, ): Promise<any> => {
     let defaultOptions: any = {
         method,
         headers: {

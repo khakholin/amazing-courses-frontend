@@ -15,27 +15,20 @@ export interface IPasswordFormat {
     show: boolean;
 }
 
-export interface IDropdownListItem {
-    title: string;
-    time: number;
-}
-
-export interface IUserData {
+export interface IUserCoursesData {
     totalNumOfLectures: number;
     totalTime: number;
-    data: ICourseData[];
+    courses: ICourseData[];
 }
 
 export interface ICourseData {
-    title: string;
+    courseLectures: ILectureData[];
+    courseName: string;
+    courseTime: number;
     numOfLectures: number;
-    time: number;
-    lectures: ILectureData[];
 }
 
 export interface ILectureData {
-    available: boolean;
-    checked: boolean;
-    title: string;
-    time: number;
+    lectureTime: number;
+    lectureTitle: string;
 }

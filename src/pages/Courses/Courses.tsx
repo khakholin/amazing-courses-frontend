@@ -2,31 +2,50 @@ import React, { useEffect, useState } from 'react';
 
 import { endpoints } from '../../constants/endpoints';
 import { appRequest } from '../../modules/app/appRequest';
-import { IUserData } from '../../types/inputPropsFormats';
 
 import './coursesStyle.scss';
 import DropdownList from '../../components/common/DropdownList/DropdownList';
 import timeConversion from '../../utils/timeConversion';
 import endingForNumber from '../../utils/endingForNumber';
+import { getCookieByName } from '../../utils/operationsWithCookie';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import appHistory from '../../modules/app/appHistory';
+import { ICourseData, IUserCoursesData } from '../../types/inputPropsFormats';
+import { IUserCourseProgress } from '../../types/responseTypes';
 
 export interface ICourses { };
 
 const Courses = (props: ICourses) => {
-    const [dataList, setDataList] = useState<IUserData>();
-    const [availableCourses, setAvailableCourses] = useState([]);
+    // eslint-disable-next-line
+    const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
+    const [dataList, setDataList] = useState<IUserCoursesData>();
+    const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
 
     useEffect(() => {
+        // TODO get userProgress
         appRequest(endpoints.getProfile, 'GET')
             .then((response) => {
-                if (response.data.availableCourses) {
-                    setAvailableCourses(response.data.availableCourses);
-                    appRequest(endpoints.getCourses, 'POST', { availableCourses: response.data.availableCourses })
-                        .then((response) => {
-                            setDataList(response.data)
-                        });
-                }
+                appRequest('/api/user/available-courses', 'POST', { username: response.data.username })
+                    .then(response => {
+                        appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
+                            .then(response => {
+                                setDataList(response.data);
+                            });
+                    });
+                appRequest('/api/user/course-progress', 'POST', { username: response.data.username })
+                    .then(response => {
+                        setUserCourseProgress(response.data);
+                    });
             });
     }, []);
+
+    useEffect(() => {
+        if (!getCookieByName('auth')) {
+            setCurrentMenuItem('MyProfile')
+            appHistory.push('/login');
+        }
+        // eslint-disable-next-line
+    }, [getCookieByName('auth')])
 
     return (
         <div className="courses page-container">
@@ -41,16 +60,17 @@ const Courses = (props: ICourses) => {
                     </div>
                 </div>
                 {
-                    dataList?.data.map((item: any) => {
-                        const curCourse = availableCourses.find((course: any) => course.title === item.title);
+                    dataList && dataList.courses.map((item: ICourseData) => {
+                        const curCourse = userCourseProgress?.find((course: IUserCourseProgress) => course.courseName === item.courseName);
+                        // TODO get userProgress
                         return (
                             <DropdownList
-                                availableCourses={curCourse}
-                                items={item.lectures}
-                                key={item.title}
+                                courseProgress={curCourse}
+                                items={item.courseLectures}
+                                key={item.courseName}
                                 numberItems={item.numOfLectures}
-                                time={item.time}
-                                title={item.title}
+                                time={item.courseTime}
+                                title={item.courseName}
                             />
                         )
                     })

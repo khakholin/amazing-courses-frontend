@@ -5,8 +5,12 @@
 
 .my-profile-component {
     width: 100%;
-    height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        padding: 40px 80px;
+    }
 }

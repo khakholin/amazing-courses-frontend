@@ -158,7 +158,7 @@ const Login = (props: TLogin) => {
         appRequest(endpoints.authLogin, 'POST', { username: userName, password: password.value })
             .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
-                setCookie('auth', authCookie ? authCookie : '', {}, 900);
+                setCookie('auth', authCookie ? authCookie : '', {}, 3600);
                 if (response.data.message === EResponseMessages.Unauthorized) {
                     handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {

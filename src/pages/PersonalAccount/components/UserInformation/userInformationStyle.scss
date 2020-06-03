@@ -9,6 +9,173 @@
     display: flex;
     flex-direction: column;
 
+    &-profile {
+        display: flex;
+        flex-direction: column;
+        margin: 40px 20px;
+
+        &__item {
+            display: flex;
+            margin-bottom: 10px;
+
+            &-title {
+                flex-basis: 40%;
+                color: $secondaryTextColorDefault;
+
+            }
+
+            &-data {
+                flex-basis: 60%;
+                color: $secondaryColor;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    &-courses {
+        margin: 0 20px 40px;
+        background-color: white;
+        height: 200px;
+        border: 1px solid $bgcPageDefault;
+
+        &__header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            background-color: white;
+            border-bottom: 1px solid $bgcPageDefault;
+
+            &-icon {
+                cursor: pointer;
+                margin-left: 10px;
+            }
+        }
+
+        &-list {
+            height: 160px;
+            overflow: auto;
+
+            &__item {
+                padding: 0 10px;
+                min-height: 40px;
+                display: flex;
+                align-items: center;
+                transition: all 0.5s ease;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: $secondaryColorHover;
+                }
+            }
+
+            &__checkbox {
+                margin-right: 10px;
+                color: $mainColor;
+            }
+
+            &__title {
+                padding-top: 4px;
+            }
+        }
+    }
+
+    &-lectures {
+        margin: 0 20px 40px;
+        background-color: white;
+        height: 200px;
+        border: 1px solid $bgcPageDefault;
+
+        &__header {
+            display: flex;
+            padding: 0 10px;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            background-color: white;
+            border-bottom: 1px solid $bgcPageDefault;
+
+            &-course {
+                color: $secondaryColor;
+            }
+
+            &-description {
+                display: flex;
+                align-items: center;
+            }
+
+            &-icon {
+                cursor: pointer;
+                margin-left: 10px;
+            }
+        }
+
+        &-list {
+            height: 160px;
+            overflow: auto;
+
+            &-progress {
+                display: flex;
+                align-items: center;
+
+                &__item {
+                    display: flex;
+                    align-items: center;
+                    min-height: 40px;
+                    padding: 0 10px;
+                    transition: all 0.5s ease;
+
+                    &:last-child {
+                        margin-right: 0;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: $secondaryColorHover;
+                    }
+                }
+
+                &__checkbox {
+                    margin-right: 10px;
+                    color: $mainColor;
+                }
+
+                &__title {
+                    padding-top: 4px;
+                    color: $secondaryColor;
+                }
+            }
+
+            &__title {
+                display: flex;
+
+                &-description {
+                    color: $secondaryTextColorDefault;
+                    margin-right: 10px;
+                }
+
+                &-data {
+                    color: $secondaryColor;
+
+                }
+            }
+
+            &__item {
+                padding-left: 10px;
+                min-height: 40px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid $bgcPageDefault;
+            }
+
+        }
+
+    }
+
     &__multiselect {
         width: 280px;
     }

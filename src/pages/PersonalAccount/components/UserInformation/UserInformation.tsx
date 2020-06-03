@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
+import HelpIcon from '@material-ui/icons/Help';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import { IUserProfileResponse } from '../../../../types/responseTypes';
+import { IUserProfileResponse, IUserCourseProgress } from '../../../../types/responseTypes';
+import { ICourseData, ILectureData } from '../../../../types/inputPropsFormats';
 
 import './userInformationStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
@@ -17,61 +15,182 @@ export interface IUserInformationProps {
 }
 
 const UserInformation = (props: IUserInformationProps) => {
-    //запросы на монтировании:
-    // 1. Полный список курсов на сайте
-    // 2. Список курсов пользователя по его имени/email
-    // 3. После каждого нажатия чекбокса уходит POST с удалением/добавление курса,
-    //    при этом прогресс курса, если он удален, не сбрасывается, прогресс должен
-    //    храниться в БД всегда, доступ к курсу может быть восстановлен
-
     useEffect(() => {
         appRequest('/api/course/list', 'GET')
             .then(response => {
                 setCourseList(response.data)
             });
+        setUserAvailableCourses(props.user?.availableCourses);
+        setUserCourseProgress(props.user?.courseProgress);
+        appRequest('/api/user/courses', 'POST', { availableCourses: props.user?.availableCourses })
+            .then((response) => {
+                setCoursesDataList(response.data.courses);
+            });
+        // eslint-disable-next-line
     }, [])
 
     const [courseList, setCourseList] = useState([]);
-    const [personName, setPersonName] = useState<string[]>([]);
+    const [userAvailableCourses, setUserAvailableCourses] = useState<string[] | undefined>([]);
+    const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
+    const [coursesDataList, setCoursesDataList] = useState<ICourseData[]>([]);
 
-    const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setPersonName(event.target.value as string[]);
-    };
+    const onCourseClick = (course: string) => {
+        appRequest('/api/user/change-courses', 'POST', { username: props.user?.username, courseName: course })
+            .then(response => {
+                appRequest('/api/user/available-courses', 'POST', { username: props.user?.username })
+                    .then(response => {
+                        setUserAvailableCourses(response.data);
+                        appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
+                            .then(response => {
+                                setCoursesDataList(response.data.courses);
+                            });
+                    });
+            });
+    }
+
+    const onLectureAvailableClick = (course: string, availableLecture: number) => {
+        appRequest('/api/user/change-available-lecture', 'POST', { username: props.user?.username, courseName: course, availableLecture })
+            .then(response => {
+                appRequest('/api/user/course-progress', 'POST', { username: props.user?.username })
+                    .then(response => {
+                        setUserCourseProgress(response.data);
+                    });
+            });
+    }
+
+    const onLectureCheckedClick = (course: string, checkedLecture: number) => {
+        appRequest('/api/user/change-check-lecture', 'POST', { username: props.user?.username, courseName: course, checkedLecture })
+            .then(response => {
+                appRequest('/api/user/course-progress', 'POST', { username: props.user?.username })
+                    .then(response => {
+                        setUserCourseProgress(response.data);
+                    });
+            });
+    }
 
     return (
-        <div className="user-information-component">
-            Логин: {props.user?.username}
-            <br></br>
-            email: {props.user?.email}
-            <br></br>
-            Имя: {props.user?.realName}
-            <br></br>
-            Фамилия: {props.user?.realSurname}
-            <br></br>
-            Школа: {props.user?.school}
-            <br></br>
-            Университет: {props.user?.university}
-            <br></br>
-            Место работы: {props.user?.workPlace}
-            <FormControl className='user-information-component__multiselect'>
-                <InputLabel id="demo-mutiple-checkbox-label">Доступные курсы</InputLabel>
-                <Select
-                    labelId="demo-mutiple-checkbox-label"
-                    id="demo-mutiple-checkbox"
-                    multiple
-                    value={personName}
-                    onChange={handleChange}
-                    input={<Input />}
-                    renderValue={(selected: any) => selected.length > 1 ? (selected[0] + ', +' + (selected.length - 1)) : selected[0]}
-                >
-                    {courseList.map((name) => (
-                        <MenuItem key={name} value={name}>
-                            <Checkbox checked={personName.indexOf(name) > -1} />
-                            <ListItemText primary={name} />
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+        <div className="user-information-component personal-account-info-body">
+            <div className="user-information-component-profile">
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Логин:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.username}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Email:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.email}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Имя:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.realName}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Фамилия:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.realSurname}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Школа:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.school}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Университет:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.university}</div>
+                </div>
+                <div className="user-information-component-profile__item">
+                    <div className="user-information-component-profile__item-title">Место работы:</div>
+                    <div className="user-information-component-profile__item-data">{props.user?.workPlace}</div>
+                </div>
+            </div>
+            <div className="user-information-component-courses">
+                <div className="user-information-component-courses__header">
+                    <div className="user-information-component-courses__header-text">Изменить доступ пользователя к курсам</div>
+                    <Tooltip title="Доступ к курсу изменяется нажатием на него">
+                        <HelpIcon className="user-information-component-courses__header-icon" />
+                    </Tooltip>
+                </div>
+                <div className="user-information-component-courses-list">
+                    {userAvailableCourses && courseList.map((course) => {
+                        const checked = userAvailableCourses.find((availableCourse) => availableCourse === course);
+                        return (
+                            <div
+                                className="user-information-component-courses-list__item"
+                                onClick={() => onCourseClick(course)}
+                            >
+                                {
+                                    checked ?
+                                        <CheckBoxIcon className="user-information-component-courses-list__checkbox" /> :
+                                        <CheckBoxOutlineBlankIcon className="user-information-component-courses-list__checkbox" />
+
+                                }
+                                <div className="user-information-component-courses-list__title" >{course}</div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+            {
+                coursesDataList && coursesDataList.map((course: ICourseData) => {
+                    let availableLectures: number[] = [];
+                    let checkedLectures: number[] = [];
+                    userCourseProgress && userCourseProgress.find((item) => {
+                        if (item.courseName === course.courseName) {
+                            availableLectures = item.availableLectures;
+                            checkedLectures = item.checkedLectures;
+                        }
+                        return true;
+                    })
+                    return (
+                        <div className="user-information-component-lectures">
+                            <div className="user-information-component-lectures__header">
+                                <div className="user-information-component-lectures__header-course">{course.courseName}</div>
+                                <div className="user-information-component-lectures__header-description">
+                                    <div className="user-information-component-lectures__header-text">Изменить прогресс курса для пользователя</div>
+                                    <Tooltip title="Доступ к лекции и ее статус изменяются нажатием на соответствующие кнопки">
+                                        <HelpIcon className="user-information-component-lectures__header-icon" />
+                                    </Tooltip>
+                                </div>
+                            </div>
+                            <div className="user-information-component-lectures-list">
+                                {
+                                    course.courseLectures.map((lecture: ILectureData, index: number) => {
+                                        return (
+                                            <div className="user-information-component-lectures-list__item">
+                                                <div className="user-information-component-lectures-list__title">
+                                                    <div className="user-information-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
+                                                    <div className="user-information-component-lectures-list__title-data">{lecture.lectureTitle}</div>
+                                                </div>
+                                                <div className="user-information-component-lectures-list-progress">
+                                                    <div
+                                                        className="user-information-component-lectures-list-progress__item"
+                                                        onClick={() => onLectureAvailableClick(course.courseName, index)}
+                                                    >
+                                                        {
+                                                            (availableLectures.find(item => item === index) !== undefined) ?
+                                                                <CheckBoxIcon className="user-information-component-lectures-list-progress__checkbox" /> :
+                                                                <CheckBoxOutlineBlankIcon className="user-information-component-lectures-list-progress__checkbox" />
+                                                        }
+                                                        <div className="user-information-component-lectures-list-progress__title">Доступна</div>
+                                                    </div>
+                                                    <div
+                                                        className="user-information-component-lectures-list-progress__item"
+                                                        onClick={() => onLectureCheckedClick(course.courseName, index)}
+                                                    >
+                                                        {
+                                                            (checkedLectures.find(item => item === index) !== undefined) ?
+                                                                <CheckBoxIcon className="user-information-component-lectures-list-progress__checkbox" /> :
+                                                                <CheckBoxOutlineBlankIcon className="user-information-component-lectures-list-progress__checkbox" />
+                                                        }
+                                                        <div className="user-information-component-lectures-list-progress__title">Проверена</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                        </div>
+                    )
+                })
+            }
         </div>
     );
 };

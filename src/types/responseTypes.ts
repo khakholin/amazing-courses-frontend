@@ -18,7 +18,7 @@ export interface ICourseProgress {
 export interface IUserProfileResponse {
     availableCourses: string[];
     _id?: string;
-    courseProgress: ICourseProgress[];
+    courseProgress: IUserCourseProgress[];
     email: string;
     realName: string;
     realSurname: string;
@@ -27,4 +27,11 @@ export interface IUserProfileResponse {
     university: string;
     username: string;
     workPlace: string;
+}
+
+export interface IUserCourseProgress {
+    _id?: string;
+    availableLectures: number[];
+    checkedLectures: number[];
+    courseName: string;
 }
