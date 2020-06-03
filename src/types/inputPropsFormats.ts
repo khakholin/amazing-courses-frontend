@@ -22,6 +22,8 @@ export interface IUserCoursesData {
 }
 
 export interface ICourseData {
+    _id?: string;
+    courseFolder: string;
     courseLectures: ILectureData[];
     courseName: string;
     courseTime: number;

@@ -19,6 +19,7 @@ export interface IDropdownList {
     numberItems: number;
     time: number;
     title: string;
+    folder: string;
 }
 
 
@@ -26,9 +27,11 @@ const DropdownList = (props: IDropdownList) => {
     const [expanded, setExpanded] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
+    const [openedLecture, setOpenedLecture] = useState(-1);
 
-    const handleOpenModal = (title: string) => {
+    const handleOpenModal = (title: string, lecture: number) => {
         setModalTitle(title);
+        setOpenedLecture(lecture);
         setOpenModal(true);
     };
 
@@ -81,7 +84,7 @@ const DropdownList = (props: IDropdownList) => {
                                 key={item.lectureTitle}
                                 onClick={() => {
                                     if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
-                                        handleOpenModal(item.lectureTitle);
+                                        handleOpenModal(item.lectureTitle, index);
                                     }
                                 }}
                             >
@@ -108,11 +111,15 @@ const DropdownList = (props: IDropdownList) => {
                     })
                 }
             </Collapse>
-            <VideoModal
-                closeHandler={handleCloseModal}
-                isOpen={openModal}
-                title={modalTitle}
-            />
+            {openModal ?
+                <VideoModal
+                    closeHandler={handleCloseModal}
+                    isOpen={openModal}
+                    lectureTitle={modalTitle}
+                    lectureNumber={openedLecture + 1}
+                    lectureFolder={props.folder}
+                /> : <Fragment />
+            }
         </div>
     )
 }
