@@ -7,7 +7,7 @@ export const defaultTranslation = {
     firstTimeWithUs: 'Впервые у нас?',
     forgotPassword: 'Забыли пароль?',
     haveAccountText: 'Есть аккаунт',
-    userName: 'Имя пользователя',
+    userName: 'Логин',
     userNamePlaceholder: 'AmazingPotato',
     minimumLoginLength: 'Минимальная длина логина - 5 символов',
     password: 'Пароль',

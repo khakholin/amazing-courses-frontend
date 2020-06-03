@@ -51,7 +51,15 @@ const InputField = (props: any) => {
                     onChange={event => props.handleChange(event)}
                     placeholder={props.field.placeholder}
                     type={(props.field.name === 'password' || props.field.name === 'confirm-password') ? (props.value.show ? 'text' : 'password') : 'text'}
-                    value={(props.field.name === 'password' || props.field.name === 'confirm-password') ? props.value.value : props.value.trim()}
+                    value={
+                        (
+                            props.field.name === 'password' ||
+                            props.field.name === 'confirm-password' ||
+                            props.field.name === 'school' ||
+                            props.field.name === 'university' ||
+                            props.field.name === 'workPlace'
+                        ) ? props.value.value : props.value.trim()
+                    }
                 />
                 {props.error.status ?
                     <FormHelperText className="input-error">{props.error.text}</FormHelperText> :

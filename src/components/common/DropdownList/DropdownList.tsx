@@ -6,15 +6,16 @@ import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 
 import timeConversion from '../../../utils/timeConversion';
-import { IDropdownListItem } from '../../../types/inputPropsFormats';
+import { ILectureData } from '../../../types/inputPropsFormats';
 import endingForNumber from '../../../utils/endingForNumber';
 
 import './dropdownListStyle.scss';
 import VideoModal from '../VideoModal/VideoModal';
+import { IUserCourseProgress } from '../../../types/responseTypes';
 
 export interface IDropdownList {
-    availableCourses: any;
-    items: IDropdownListItem[];
+    courseProgress: IUserCourseProgress | undefined;
+    items: ILectureData[];
     numberItems: number;
     time: number;
     title: string;
@@ -58,35 +59,35 @@ const DropdownList = (props: IDropdownList) => {
             </div>
             <Collapse in={expanded} timeout="auto" unmountOnExit >
                 {
-                    props.items.map((item: IDropdownListItem, index: number) => {
+                    props.items.map((item: ILectureData, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
-                            'dropdown-list-item_available': index < props.availableCourses.numAvailableLectures,
-                            'dropdown-list-item_not-available': index >= props.availableCourses.numAvailableLectures,
+                            'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(item => item === index) !== undefined),
+                            'dropdown-list-item_not-available': (props.courseProgress?.availableLectures.find(item => item === index) === undefined),
                         });
 
                         const dropDownListItemProgressClass = clsx('dropdown-list-item__progress', {
-                            'dropdown-list-item__progress_active': index < props.availableCourses.numCheckedLectures,
-                            'dropdown-list-item__progress_inactive': index >= props.availableCourses.numCheckedLectures,
+                            'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(item => item === index) !== undefined),
+                            'dropdown-list-item__progress_inactive': (props.courseProgress?.availableLectures.find(item => item === index) === undefined),
                         });
 
                         const dropDownListItemLineClass = clsx('dropdown-list-item__line', {
-                            'dropdown-list-item__line_active': index < props.availableCourses.numCheckedLectures,
-                            'dropdown-list-item__line_inactive': index >= props.availableCourses.numCheckedLectures,
+                            'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(item => item === index) !== undefined),
+                            'dropdown-list-item__line_inactive': (props.courseProgress?.checkedLectures.find(item => item === index) === undefined),
                         });
 
                         return (
                             <div
                                 className={dropDownListItemClass}
-                                key={item.title}
+                                key={item.lectureTitle}
                                 onClick={() => {
-                                    if (index < props.availableCourses.numAvailableLectures) {
-                                        handleOpenModal(item.title);
+                                    if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
+                                        handleOpenModal(item.lectureTitle);
                                     }
                                 }}
                             >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
-                                        index < props.availableCourses.numCheckedLectures ?
+                                        (props.courseProgress?.checkedLectures.find(item => item === index) !== undefined) ?
                                             <CheckCircleIcon className="dropdown-list-item__check" /> :
                                             <RadioButtonCheckedIcon className="dropdown-list-item__check" />
                                     }
@@ -98,9 +99,9 @@ const DropdownList = (props: IDropdownList) => {
                                 <div className="dropdown-list-item__right">
                                     <div className="dropdown-list-item__name">
                                         <PlayArrowIcon className="dropdown-list-item__icon" />
-                                        <span className="dropdown-list-item__title">{item.title}</span>
+                                        <span className="dropdown-list-item__title">{item.lectureTitle}</span>
                                     </div>
-                                    <span className="dropdown-list-item__time">{timeConversion(item.time)}</span>
+                                    <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
                                 </div>
                             </div>
                         )

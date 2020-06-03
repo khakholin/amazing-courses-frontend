@@ -7,7 +7,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: flex-start;
     flex-wrap: wrap;
     overflow: auto;
@@ -22,11 +22,11 @@
         color: $secondaryColor;
         border-radius: 4px;
         border: 1px solid $bgcPageDefault;
+        transition: all 0.5s ease;
 
         &:hover {
             cursor: pointer;
             background-color: $secondaryColorHover;
-            transition: all 0.5s ease;
         }
     }
 }
