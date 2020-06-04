@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { endpoints } from '../../constants/endpoints';
 import { appRequest } from '../../modules/app/appRequest';
 
 import './coursesStyle.scss';
@@ -35,11 +34,13 @@ const Courses = (props: ICourses) => {
             .then(response => {
                 setUserCourseProgress(response.data);
             });
+        // eslint-disable-next-line
     }, []);
 
     useEffect(() => {
         if (!getCookieByName('auth')) {
-            setCurrentMenuItem('MyProfile')
+            setCurrentMenuItem('MyProfile');
+            setInitialUserName('');
             appHistory.push('/login');
         }
         // eslint-disable-next-line

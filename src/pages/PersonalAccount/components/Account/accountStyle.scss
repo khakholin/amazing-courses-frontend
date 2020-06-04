@@ -4,9 +4,43 @@
 @import "../../../../theme/styles/buttons.scss";
 
 .account-component {
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        padding: 40px 80px;
+
+        &_top {
+            margin-bottom: 20px;
+        }
+
+        &_bottom {
+            margin-top: 20px;
+        }
+    }
+
+    &__line {
+        position: absolute;
+        top: 145px;
+        left: 5%;
+        width: 90%;
+        height: 1px;
+        background-color: $bgcPageDefault;
+    }
+
+    &-edit-email {
+        max-width: 280px;
+
+        &__description {
+            text-align: center;
+            margin: 8px 0;
+            font-size: 11px;
+            color: $mainColor;
+        }
+    }
 }

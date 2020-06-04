@@ -6,3 +6,11 @@ $icon-normal: 32px;
 .check-icon {
     color: $mainColor;
 }
+
+.edit-icon {
+    color: $secondaryColor;
+
+    &:hover {
+        cursor: pointer;
+    }
+}

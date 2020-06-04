@@ -30,6 +30,8 @@ $buttonHeight: 36px;
 }
 
 .field-wrapper {
+    display: flex;
+    justify-content: center;
     min-height: 85px;
     width: 100%;
 }

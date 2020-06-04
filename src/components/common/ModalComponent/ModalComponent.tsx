@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Modal from '@material-ui/core/Modal';
@@ -12,6 +12,7 @@ export interface IModalComponent {
     isOpen: boolean;
     text: string;
     title: string;
+    children?: ReactNode;
 }
 
 const ModalComponent = (props: IModalComponent) => {
@@ -34,6 +35,7 @@ const ModalComponent = (props: IModalComponent) => {
                     title={props.title}
                 >
                     {props.text}
+                    {props.children}
                 </BGContent>
             </Fade>
         </Modal>

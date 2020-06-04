@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import BGContent from '../../components/common/BGContent/BGContent';
 import InputField from '../../components/common/InputField/InputField';
 import ModalComponent from '../../components/common/ModalComponent/ModalComponent';
-import { REPLACEABLE_FIELD_NAME, emailRegExp } from '../../constants/common';
+import { REPLACEABLE_FIELD_NAME, emailRegExp, textEngRegExp } from '../../constants/common';
 import { endpoints } from '../../constants/endpoints';
 import * as translation from '../../constants/translation';
 import appHistory from '../../modules/app/appHistory';
@@ -139,14 +139,28 @@ const Login = (props: TLogin) => {
     const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setUserName(event.target.value.trim());
         if (registration) {
-            event.target.value.trim().length ? (
-                event.target.value.trim().length < 5 ?
-                    setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
-                    setUserNameError({ showCheck: true, status: false, text: '' })
-            ) : setUserNameError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
-            })
+            if (event.target.value.trim().length) {
+                for (let i = 0; i < event.target.value.trim().length; i++) {
+                    if (event.target.value[i] === ' ') {
+                        setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
+                        return
+                    }
+                }
+                if (!textEngRegExp.test(event.target.value)) {
+                    setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
+                } else {
+                    if (event.target.value.trim().length < 5) {
+                        setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength })
+                    } else {
+                        setUserNameError({ showCheck: true, status: false, text: '' })
+                    }
+                }
+            } else {
+                setUserNameError({
+                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
+                })
+            }
         } else {
             event.target.value.trim().length ? (
                 setUserNameError({ showCheck: true, status: false, text: '' })
@@ -203,6 +217,12 @@ const Login = (props: TLogin) => {
             }
         } else {
             if (event.target.value.length) {
+                for (let i = 0; i < event.target.value.length; i++) {
+                    if (event.target.value[i] === ' ') {
+                        setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
+                        return
+                    }
+                }
                 setPasswordError({ showCheck: true, status: false, text: '' });
             } else {
                 setPasswordError({

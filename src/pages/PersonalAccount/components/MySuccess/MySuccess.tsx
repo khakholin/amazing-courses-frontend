@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import { CircularProgress } from '@material-ui/core';
 
 import './mySuccessStyle.scss';
-import { CircularProgress } from '@material-ui/core';
 
 export interface IMySuccessProps { }
 
