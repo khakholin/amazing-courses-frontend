@@ -8,15 +8,19 @@ import InputLabel from '@material-ui/core/InputLabel';
 import CheckIcon from '@material-ui/icons/Check';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import CreateIcon from '@material-ui/icons/Create';
 
 import { IErrorFormat, IPasswordFormat, IFieldFormat } from '../../../types/inputPropsFormats';
 
 import './inputFieldStyle.scss';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export interface IInputField {
+    disabled?: boolean;
     error: IErrorFormat;
     field: IFieldFormat;
     handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onEditClick?: () => void;
     passwordShowClick?: () => void;
     value: string | IPasswordFormat;
 }
@@ -29,6 +33,7 @@ const InputField = (props: any) => {
             <FormControl className="input-form">
                 <InputLabel htmlFor={inputId}>{props.field.title}</InputLabel>
                 <Input
+                    disabled={props.disabled}
                     endAdornment={
                         <InputAdornment position="end">
                             {(props.field.name === 'password' || props.field.name === 'confirm-password') ?
@@ -40,9 +45,18 @@ const InputField = (props: any) => {
                                 </IconButton> :
                                 <Fragment />
                             }
-                            {props.error.showCheck ?
-                                <CheckIcon className="check-icon" /> :
-                                <Fragment />
+                            {props.disabled ?
+                                <Tooltip title="Изменить адрес электронной почты">
+                                    <CreateIcon
+                                        className="edit-icon"
+                                        onClick={() => props.onEditClick()}
+                                    />
+                                </Tooltip>
+                                : <Fragment />
+                            }
+                            {(props.error.showCheck && !props.disabled) ?
+                                <CheckIcon className="check-icon" />
+                                : <Fragment />
                             }
                         </InputAdornment>
                     }

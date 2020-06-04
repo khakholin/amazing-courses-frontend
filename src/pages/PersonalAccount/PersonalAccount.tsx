@@ -45,7 +45,8 @@ const PersonalAccount = (props: IPersonalAccount) => {
 
     useEffect(() => {
         if (!getCookieByName('auth')) {
-            setCurrentMenuItem('MyProfile')
+            setCurrentMenuItem('MyProfile');
+            setInitialUserName('');
             appHistory.push('/login');
         }
         // eslint-disable-next-line

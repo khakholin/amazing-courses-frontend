@@ -203,6 +203,12 @@ const Login = (props: TLogin) => {
             }
         } else {
             if (event.target.value.length) {
+                for (let i = 0; i < event.target.value.length; i++) {
+                    if (event.target.value[i] === ' ') {
+                        setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
+                        return
+                    }
+                }
                 setPasswordError({ showCheck: true, status: false, text: '' });
             } else {
                 setPasswordError({

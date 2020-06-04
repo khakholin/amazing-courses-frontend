@@ -8,5 +8,21 @@
     height: 100%;
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        padding: 40px 80px;
+    }
+
+    &-edit-email {
+        max-width: 280px;
+
+        &__description {
+            text-align: center;
+            margin: 8px 0;
+            font-size: 11px;
+            color: $mainColor;
+        }
+    }
 }

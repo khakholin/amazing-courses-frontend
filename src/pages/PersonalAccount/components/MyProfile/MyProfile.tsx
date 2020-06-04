@@ -6,7 +6,6 @@ import * as translation from '../../../../constants/translation';
 import './myProfileStyle.scss';
 import { Button, CircularProgress } from '@material-ui/core';
 import { appRequest } from '../../../../modules/app/appRequest';
-import { endpoints } from '../../../../constants/endpoints';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 
