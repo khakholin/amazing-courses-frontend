@@ -9,6 +9,7 @@ import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
 
 import './myProfileStyle.scss';
+import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
 
 export interface IMyProfileProps { }
 
@@ -47,6 +48,7 @@ const MyProfile = (props: IMyProfileProps) => {
     const [userNameError, setUserNameError] = useState({ showCheck: false, status: false, text: '' });
     const [workPlace, setWorkPlace] = useState('');
     const [workPlaceError, setWorkPlaceError] = useState({ showCheck: false, status: false, text: '' });
+    const [openModal, setOpenModal] = useState(false);
 
     const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setUserName(event.target.value.trim());
@@ -89,10 +91,7 @@ const MyProfile = (props: IMyProfileProps) => {
                 setRealNameError({ showCheck: false, status: true, text: 'Имя должно состоять из букв русского алфавита и не содержать пробелы' });
             }
         } else {
-            setRealNameError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, 'Имя')
-            })
+            setRealNameError({ showCheck: false, status: false, text: '' });
         }
     };
 
@@ -111,28 +110,49 @@ const MyProfile = (props: IMyProfileProps) => {
                 setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия должна состоять из букв русского алфавита, тире и не содержать пробелы' });
             }
         } else {
-            setRealSurnameError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, 'Имя')
-            })
+            setRealSurnameError({ showCheck: false, status: false, text: '' });
         }
     };
     const schoolChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setSchool(event.target.value);
+        if (event.target.value.length) {
+            setSchoolError({ showCheck: true, status: false, text: '' });
+        } else {
+            setSchoolError({ showCheck: false, status: false, text: '' });
+        }
     };
     const universityChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setUniversity(event.target.value);
+        if (event.target.value.length) {
+            setUniversityError({ showCheck: true, status: false, text: '' });
+        } else {
+            setUniversityError({ showCheck: false, status: false, text: '' });
+        }
     };
     const workPlaceChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setWorkPlace(event.target.value);
+        if (event.target.value.length) {
+            setWorkPlaceError({ showCheck: true, status: false, text: '' });
+        } else {
+            setWorkPlaceError({ showCheck: false, status: false, text: '' });
+        }
     };
 
     const onSaveClick = () => {
+        setOpenModal(true);
+        setTimeout(() => {
+            handleCloseModal();
+        }, 4000);
         appRequest('/api/user/data-update', 'POST', { oldUserName: initialUserName, newUserName: userName, realName, realSurname, school, university, workPlace })
             .then(response => {
                 setInitialUserName(userName);
             });
     }
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    };
+
 
     return (
         <Fragment>
@@ -212,13 +232,31 @@ const MyProfile = (props: IMyProfileProps) => {
                                 handleChange={workPlaceChange}
                                 value={workPlace}
                             />
-                            <Button
-                                className="button-primary button-primary_full-width"
-                                variant="outlined"
-                                onClick={() => onSaveClick()}
-                            >
-                                Сохранить
-                            </Button>
+                            {
+                                (userName && !userNameError.status) ?
+                                    <Button
+                                        className="button-primary button-primary_full-width"
+                                        variant="outlined"
+                                        onClick={() => onSaveClick()}
+                                    >
+                                        Сохранить
+                                    </Button>
+                                    :
+                                    <Button
+                                        disabled
+                                        variant="outlined"
+                                        className="button-secondary_full-width"
+                                    >
+                                        Сохранить
+                                    </Button>
+                            }
+                            <ModalComponent
+                                closeHandler={handleCloseModal}
+                                error
+                                isOpen={openModal}
+                                text={'Информация о вас успешно обновлена'}
+                                title={'Внимание'}
+                            />
                         </div>
                 }
             </div>
