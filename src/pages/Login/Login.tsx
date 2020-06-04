@@ -17,10 +17,13 @@ import { IResponse } from '../../types/responseTypes';
 import './loginStyle.scss';
 import { EResponseMessages } from '../../constants/responseMessages';
 import Header from '../../components/common/Header/Header';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
+    // eslint-disable-next-line
+    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
     const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [email, setEmail] = useState('');
@@ -162,6 +165,7 @@ const Login = (props: TLogin) => {
                 if (response.data.message === EResponseMessages.Unauthorized) {
                     handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {
+                    setInitialUserName(userName);
                     appHistory.push('/personal-area');
                 }
             });

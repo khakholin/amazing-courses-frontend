@@ -7,6 +7,37 @@
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    overflow: auto;
+
+    &__item {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 160px;
+        max-width: 160px;
+        min-height: 60px;
+        max-height: 60px;
+        margin: 10px;
+        color: $secondaryColor;
+        border-radius: 4px;
+        border: 1px solid $bgcPageDefault;
+        transition: all 0.5s ease;
+
+        &:hover {
+            cursor: pointer;
+            background-color: $secondaryColorHover;
+        }
+    }
+
+    &__button {
+        min-width: 160px;
+        max-width: 160px;
+        min-height: 60px;
+        max-height: 60px;
+        margin: 10px;
+    }
 }

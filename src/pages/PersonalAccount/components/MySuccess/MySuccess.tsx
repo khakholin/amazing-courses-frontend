@@ -1,10 +1,15 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 import './mySuccessStyle.scss';
+import { CircularProgress } from '@material-ui/core';
 
 export interface IMySuccessProps { }
 
 const MySuccess = (props: IMySuccessProps) => {
+    const [isLoader, setIsLoader] = useState(true);
+    useEffect(() => {
+        setTimeout(() => setIsLoader(false), 1000);
+    }, []);
     return (
         <Fragment>
             <div className="personal-account-info-header">
@@ -12,7 +17,18 @@ const MySuccess = (props: IMySuccessProps) => {
                 <div className="personal-account-info-header__description">Прогресс прохождения курсов</div>
             </div>
             <div className="my-success-component personal-account-info-body">
-
+                {
+                    isLoader ?
+                        <div className="info-form-spinner__wrapper">
+                            <CircularProgress
+                                className="info-form-spinner__item"
+                                size={100}
+                                thickness={3}
+                            />
+                        </div>
+                        :
+                        <div>прогресс-бары какие-нибудь</div>
+                }
             </div>
         </Fragment>
     );

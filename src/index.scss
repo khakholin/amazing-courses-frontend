@@ -105,3 +105,18 @@ code {
 .MuiTooltip-tooltip {
   font-size: 12px !important;
 }
+
+
+.info-form-spinner {
+  &__wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__item {
+    color: $mainColor !important;
+  }
+}

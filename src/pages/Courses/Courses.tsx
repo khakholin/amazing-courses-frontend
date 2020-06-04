@@ -18,24 +18,22 @@ export interface ICourses { };
 const Courses = (props: ICourses) => {
     // eslint-disable-next-line
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
+    // eslint-disable-next-line
+    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
     const [dataList, setDataList] = useState<IUserCoursesData>();
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
 
     useEffect(() => {
-        // TODO get userProgress
-        appRequest(endpoints.getProfile, 'GET')
-            .then((response) => {
-                appRequest('/api/user/available-courses', 'POST', { username: response.data.username })
+        appRequest('/api/user/available-courses', 'POST', { username: initialUserName })
+            .then(response => {
+                appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
                     .then(response => {
-                        appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
-                            .then(response => {
-                                setDataList(response.data);
-                            });
+                        setDataList(response.data);
                     });
-                appRequest('/api/user/course-progress', 'POST', { username: response.data.username })
-                    .then(response => {
-                        setUserCourseProgress(response.data);
-                    });
+            });
+        appRequest('/api/user/course-progress', 'POST', { username: initialUserName })
+            .then(response => {
+                setUserCourseProgress(response.data);
             });
     }, []);
 
