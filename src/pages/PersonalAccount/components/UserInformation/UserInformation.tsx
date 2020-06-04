@@ -4,11 +4,11 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import Tooltip from '@material-ui/core/Tooltip';
 
+import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse, IUserCourseProgress } from '../../../../types/responseTypes';
 import { ICourseData, ILectureData } from '../../../../types/inputPropsFormats';
 
 import './userInformationStyle.scss';
-import { appRequest } from '../../../../modules/app/appRequest';
 
 export interface IUserInformationProps {
     user: IUserProfileResponse | undefined;

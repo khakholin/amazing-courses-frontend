@@ -1,10 +1,11 @@
 import React, { useEffect, useState, Fragment } from 'react';
+import { CircularProgress } from '@material-ui/core';
+
+import { endpoints } from '../../../../constants/endpoints';
+import { appRequest } from '../../../../modules/app/appRequest';
+import { IUserProfileResponse } from '../../../../types/responseTypes';
 
 import './userListStyle.scss';
-import { appRequest } from '../../../../modules/app/appRequest';
-import { endpoints } from '../../../../constants/endpoints';
-import { IUserProfileResponse } from '../../../../types/responseTypes';
-import { CircularProgress } from '@material-ui/core';
 
 export interface IUserListProps {
     onUserProfileClick: (user: IUserProfileResponse) => void;

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, Fragment } from 'react';
+import { Button, CircularProgress } from '@material-ui/core';
 
 import InputField from '../../../../components/common/InputField/InputField';
+import { REPLACEABLE_FIELD_NAME, textRusRealNameRegExp, textRusRealSurnameRegExp, textEngRegExp } from '../../../../constants/common';
 import * as translation from '../../../../constants/translation';
-
-import './myProfileStyle.scss';
-import { Button, CircularProgress } from '@material-ui/core';
+import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
-import { useLocalStorage } from '../../../../hooks/useLocalStorage';
+
+import './myProfileStyle.scss';
 
 export interface IMyProfileProps { }
 
@@ -49,31 +50,72 @@ const MyProfile = (props: IMyProfileProps) => {
 
     const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setUserName(event.target.value.trim());
-        // if (registration) {
-        //     event.target.value.trim().length ? (
-        //         event.target.value.trim().length < 5 ?
-        //             setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength }) :
-        //             setUserNameError({ showCheck: true, status: false, text: '' })
-        //     ) : setUserNameError({
-        //         showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-        //             .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
-        //     })
-        // } else {
-        //     event.target.value.trim().length ? (
-        //         setUserNameError({ showCheck: true, status: false, text: '' })
-        //     ) : setUserNameError({
-        //         showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-        //             .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
-        //     })
-        // }
+        if (event.target.value.trim().length) {
+            for (let i = 0; i < event.target.value.trim().length; i++) {
+                if (event.target.value[i] === ' ') {
+                    setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
+                    return
+                }
+            }
+            if (!textEngRegExp.test(event.target.value)) {
+                setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
+            } else {
+                if (event.target.value.trim().length < 5) {
+                    setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength })
+                } else {
+                    setUserNameError({ showCheck: true, status: false, text: '' })
+                }
+            }
+        } else {
+            setUserNameError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
+            })
+        }
     };
 
     const realNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setRealName(event.target.value.trim());
+        if (event.target.value.trim().length) {
+            for (let i = 0; i < event.target.value.trim().length; i++) {
+                if (event.target.value[i] === ' ') {
+                    setRealNameError({ showCheck: false, status: true, text: 'Имя должно состоять из букв русского алфавита и не содержать пробелы' });
+                    return
+                }
+            }
+            if (textRusRealNameRegExp.test(event.target.value)) {
+                setRealNameError({ showCheck: true, status: false, text: '' });
+            } else {
+                setRealNameError({ showCheck: false, status: true, text: 'Имя должно состоять из букв русского алфавита и не содержать пробелы' });
+            }
+        } else {
+            setRealNameError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, 'Имя')
+            })
+        }
     };
 
     const realSurnameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setRealSurname(event.target.value.trim());
+        if (event.target.value.trim().length) {
+            for (let i = 0; i < event.target.value.trim().length; i++) {
+                if (event.target.value[i] === ' ') {
+                    setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия должна состоять из букв русского алфавита, тире и не содержать пробелы' });
+                    return
+                }
+            }
+            if (textRusRealSurnameRegExp.test(event.target.value)) {
+                setRealSurnameError({ showCheck: true, status: false, text: '' });
+            } else {
+                setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия должна состоять из букв русского алфавита, тире и не содержать пробелы' });
+            }
+        } else {
+            setRealSurnameError({
+                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                    .replace(REPLACEABLE_FIELD_NAME, 'Имя')
+            })
+        }
     };
     const schoolChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setSchool(event.target.value);

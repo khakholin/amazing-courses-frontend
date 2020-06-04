@@ -1,27 +1,27 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import ImportContactsIcon from '@material-ui/icons/ImportContacts';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import PeopleIcon from '@material-ui/icons/People';
 import PersonIcon from '@material-ui/icons/Person';
 import SettingsIcon from '@material-ui/icons/Settings';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import clsx from 'clsx';
 
-import { ReactComponent as Man } from '../../theme/icons/Man.svg';
 import { endpoints } from '../../constants/endpoints';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
+import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
+import { ReactComponent as Man } from '../../theme/icons/Man.svg';
 import { IUserProfileResponse } from '../../types/responseTypes';
+import { getCookieByName } from '../../utils/operationsWithCookie';
 
-import './personalAccountStyle.scss';
 import Account from './components/Account/Account';
+import CourseList from './components/CourseList/CourseList';
 import MyProfile from './components/MyProfile/MyProfile';
 import MySuccess from './components/MySuccess/MySuccess';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import UserList from './components/UserList/UserList';
 import UserInformation from './components/UserInformation/UserInformation';
-import { getCookieByName } from '../../utils/operationsWithCookie';
-import appHistory from '../../modules/app/appHistory';
-import CourseList from './components/CourseList/CourseList';
+import UserList from './components/UserList/UserList';
+import './personalAccountStyle.scss';
 
 export interface IPersonalAccount { };
 
