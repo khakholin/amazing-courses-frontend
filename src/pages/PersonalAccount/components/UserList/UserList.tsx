@@ -4,6 +4,7 @@ import './userListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { endpoints } from '../../../../constants/endpoints';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
+import { CircularProgress } from '@material-ui/core';
 
 export interface IUserListProps {
     onUserProfileClick: (user: IUserProfileResponse) => void;
@@ -11,7 +12,9 @@ export interface IUserListProps {
 
 const UserList = (props: IUserListProps) => {
     const [users, setUsers] = useState([]);
+    const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
+        setTimeout(() => setIsLoader(false), 1000);
         appRequest(endpoints.getAllUsers, 'GET')
             .then((response) => {
                 setUsers(response.data);
@@ -30,16 +33,27 @@ const UserList = (props: IUserListProps) => {
             </div>
             <div className="user-list-component personal-account-info-body">
                 {
-                    users.length && users.map((user: IUserProfileResponse, index: number) => {
-                        return (
-                            <div
-                                className="user-list-component__item"
-                                onClick={() => props.onUserProfileClick(user)}
-                            >
-                                {user.username}
-                            </div>
-                        )
-                    })
+                    isLoader ?
+                        <div className="info-form-spinner__wrapper">
+                            <CircularProgress
+                                className="info-form-spinner__item"
+                                size={100}
+                                thickness={3}
+                            /></div> :
+                        <Fragment>
+                            {
+                                users.length && users.map((user: IUserProfileResponse, index: number) => {
+                                    return (
+                                        <div
+                                            className="user-list-component__item"
+                                            onClick={() => props.onUserProfileClick(user)}
+                                        >
+                                            {user.username}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </Fragment>
                 }
             </div>
         </Fragment>

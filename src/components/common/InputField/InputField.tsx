@@ -54,11 +54,15 @@ const InputField = (props: any) => {
                     value={
                         (
                             props.field.name === 'password' ||
-                            props.field.name === 'confirm-password' ||
-                            props.field.name === 'school' ||
-                            props.field.name === 'university' ||
-                            props.field.name === 'workPlace'
-                        ) ? props.value.value : props.value.trim()
+                            props.field.name === 'confirm-password'
+                        ) ? props.value.value :
+                            (
+                                (props.field.name === 'school' ||
+                                    props.field.name === 'university' ||
+                                    props.field.name === 'workPlace'
+                                ) ? props.value :
+                                    props.value.trim()
+                            )
                     }
                 />
                 {props.error.status ?

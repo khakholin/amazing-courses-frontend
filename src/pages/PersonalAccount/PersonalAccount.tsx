@@ -26,6 +26,8 @@ import CourseList from './components/CourseList/CourseList';
 export interface IPersonalAccount { };
 
 const PersonalAccount = (props: IPersonalAccount) => {
+    // eslint-disable-next-line
+    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
@@ -62,14 +64,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
         switch (currentMenuItem) {
             case 'MyProfile':
                 return (
-                    <MyProfile
-                        realName={userData?.realName}
-                        realSurname={userData?.realSurname}
-                        school={userData?.school}
-                        university={userData?.university}
-                        userName={userData?.username}
-                        workPlace={userData?.workPlace}
-                    />
+                    <MyProfile />
                 )
             case 'MySuccess':
                 return (
@@ -77,9 +72,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
                 )
             case 'Account':
                 return (
-                    <Account
-                        userEmail={userData?.email}
-                    />
+                    <Account />
                 )
             case 'UserList':
                 return (
