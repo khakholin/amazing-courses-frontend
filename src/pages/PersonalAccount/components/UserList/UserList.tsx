@@ -59,7 +59,7 @@ const UserList = (props: IUserListProps) => {
                         </Fragment>
                 }
             </div>
-        </Fragment>
+        </Fragment >
     );
 };
 

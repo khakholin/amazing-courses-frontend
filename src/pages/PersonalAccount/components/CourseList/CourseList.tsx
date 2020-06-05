@@ -38,26 +38,30 @@ const CourseList = (props: ICourseListProps) => {
                             />
                         </div>
                         : <Fragment>
-                            {
+                            <div className="course-list-component__content">
+                                {
 
-                                courseList.length && courseList.map((course: ICourseData) => {
-                                    return (
-                                        <div
-                                            className="course-list-component__item"
-                                        // onClick={() => props.onUserProfileClick(user)}
-                                        >
-                                            {course.courseName}
-                                        </div>
-                                    )
-                                })
-                            }
-                            <Button
-                                className="button-primary course-list-component__button"
-                                variant="outlined"
-                            // onClick={() => onSaveClick()}
-                            >
-                                Создать курс
+                                    courseList.length && courseList.map((course: ICourseData) => {
+                                        return (
+                                            <div
+                                                className="course-list-component__item"
+                                            // onClick={() => props.onUserProfileClick(user)}
+                                            >
+                                                {course.courseName}
+                                            </div>
+                                        )
+                                    })
+                                }
+                            </div>
+                            <div className="course-list-component__button">
+                                <Button
+                                    className="button-primary"
+                                    variant="outlined"
+                                // onClick={() => onSaveClick()}
+                                >
+                                    Создать курс
                             </Button>
+                            </div>
                         </Fragment>
                 }
             </div>
