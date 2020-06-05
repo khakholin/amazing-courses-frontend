@@ -24,6 +24,8 @@ type TLogin = RouteComponentProps;
 const Login = (props: TLogin) => {
     // eslint-disable-next-line
     const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    // eslint-disable-next-line
+    const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
     const [confirmPasswordError, setConfirmPasswordError] = useState({ showCheck: false, status: false, text: '' });
     const [email, setEmail] = useState('');
@@ -119,7 +121,21 @@ const Login = (props: TLogin) => {
     }
 
     const handleRegistration = () => {
-        appRequest('/api/user/registration', 'POST', { email, username: userName, password: password.value })
+        appRequest('/api/user/registration', 'POST',
+            {
+                username: userName,
+                password: password.value,
+                email: email.toLowerCase(),
+                availableCourses: [],
+                courseProgress: [],
+                realName: '',
+                realSurname: '',
+                role: 'user',
+                school: '',
+                university: '',
+                workPlace: '',
+            }
+        )
             .then((response: IResponse) => {
                 if (response.data.status === 201) {
                     setRegistration(false);

@@ -48,7 +48,6 @@ const Account = (props: IAccountProps) => {
 
     const handleCloseModal = () => {
         setOpenModal(false);
-        setOpenEditModal(false);
         setSinglePassword({ value: '', show: false });
         setSinglePasswordError({ showCheck: false, status: false, text: '' });
     };
@@ -104,6 +103,7 @@ const Account = (props: IAccountProps) => {
                     setOpenModal(true);
                     setTimeout(() => {
                         handleCloseModal();
+                        setOpenEditModal(false);
                     }, 4000);
                 }
             });

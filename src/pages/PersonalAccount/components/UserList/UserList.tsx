@@ -18,6 +18,8 @@ const UserList = (props: IUserListProps) => {
         setTimeout(() => setIsLoader(false), 1000);
         appRequest(endpoints.getAllUsers, 'GET')
             .then((response) => {
+                console.log(response);
+
                 setUsers(response.data);
             });
     }, []);
