@@ -73,7 +73,9 @@ const InputField = (props: any) => {
                             (
                                 (props.field.name === 'school' ||
                                     props.field.name === 'university' ||
-                                    props.field.name === 'workPlace'
+                                    props.field.name === 'workPlace' ||
+                                    props.field.name === 'courseName' ||
+                                    props.field.name === 'courseFolder'
                                 ) ? props.value :
                                     props.value.trim()
                             )
