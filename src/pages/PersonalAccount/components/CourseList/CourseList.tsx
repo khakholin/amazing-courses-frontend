@@ -27,22 +27,49 @@ const CourseList = (props: ICourseListProps) => {
 
     const onSaveClick = () => {
         setIsCreateMode(true);
+    }
+
+    const createTestCourse = () => {
         // запрос на создание тестового курса:
-        // appRequest('/api/course/create', 'POST', {
-        //     courseName: "TEST", courseFolder: "Test", courseTime: 1337, numOfLectures: 2,
-        //     courseLectures: [
-        //         {
-        //             lectureTime: 337,
-        //             lectureTitle: "Intro"
-        //         },
-        //         {
-        //             lectureTime: 1000,
-        //             lectureTitle: "Main"
-        //         }
-        //     ]
-        // }).then((response) => {
-        //     console.log(response);
-        // });
+        appRequest('/api/course/create', 'POST', {
+            courseName: "REACT", courseFolder: "React", courseTime: 272, numOfLectures: 8,
+            courseLectures: [
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Intro"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "About"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Hooks"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Redux"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Saga"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Request"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "RXJS"
+                },
+                {
+                    lectureTime: 34,
+                    lectureTitle: "Resume"
+                }
+            ]
+        }).then((response) => {
+            console.log(response);
+        });
     }
 
     const clearData = () => {
@@ -147,6 +174,13 @@ const CourseList = (props: ICourseListProps) => {
                                             onClick={() => onSaveClick()}
                                         >
                                             Создать курс
+                                        </Button>
+                                        <Button
+                                            className="button-primary"
+                                            variant="outlined"
+                                            onClick={() => createTestCourse()}
+                                        >
+                                            Создать тестовый курс
                                         </Button>
                                     </div>
                                 </Fragment>
