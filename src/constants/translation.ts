@@ -1,4 +1,6 @@
 export const defaultTranslation = {
+    courseName: 'Название курса',
+    courseFolder: 'Название директории курса',
     email: 'E-mail',
     emailPlaceholder: 'email@domain.com',
     emailRequirements: 'Ошибка в адресе электронной почты. Пример правильного формата: email@domain.com',

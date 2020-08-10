@@ -113,6 +113,7 @@ const MyProfile = (props: IMyProfileProps) => {
             setRealSurnameError({ showCheck: false, status: false, text: '' });
         }
     };
+
     const schoolChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setSchool(event.target.value);
         if (event.target.value.length) {
@@ -121,6 +122,7 @@ const MyProfile = (props: IMyProfileProps) => {
             setSchoolError({ showCheck: false, status: false, text: '' });
         }
     };
+
     const universityChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setUniversity(event.target.value);
         if (event.target.value.length) {
@@ -129,6 +131,7 @@ const MyProfile = (props: IMyProfileProps) => {
             setUniversityError({ showCheck: false, status: false, text: '' });
         }
     };
+
     const workPlaceChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setWorkPlace(event.target.value);
         if (event.target.value.length) {
