@@ -22,6 +22,10 @@ const CourseList = (props: ICourseListProps) => {
     const [courseNameError, setCourseNameError] = useState({ showCheck: false, status: false, text: '' });
     const [courseFolder, setCourseFolder] = useState('');
     const [courseFolderError, setCourseFolderError] = useState({ showCheck: false, status: false, text: '' });
+    const [courseTime, setCourseTime] = useState('');
+    const [courseTimeError, setCourseTimeError] = useState({ showCheck: false, status: false, text: '' });
+    const [numOfLectures, setNumOfLectures] = useState('');
+    const [numOfLecturesError, setNumOfLecturesError] = useState({ showCheck: false, status: false, text: '' });
     const [isCreateMode, setIsCreateMode] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
 
@@ -97,6 +101,24 @@ const CourseList = (props: ICourseListProps) => {
         }
     };
 
+    const courseTimeChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setCourseTime(event.target.value);
+        if (event.target.value.length) {
+            setCourseTimeError({ showCheck: true, status: false, text: '' });
+        } else {
+            setCourseTimeError({ showCheck: false, status: false, text: '' });
+        }
+    };
+
+    const numOfLecturesChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setNumOfLectures(event.target.value);
+        if (event.target.value.length) {
+            setNumOfLecturesError({ showCheck: true, status: false, text: '' });
+        } else {
+            setNumOfLecturesError({ showCheck: false, status: false, text: '' });
+        }
+    };
+
     return (
         <Fragment>
             <div className="personal-account-info-header">
@@ -140,6 +162,34 @@ const CourseList = (props: ICourseListProps) => {
                                         handleChange={courseFolderChange}
                                         value={courseFolder}
                                     />
+                                    <InputField
+                                        error={courseTimeError}
+                                        field={{
+                                            name: 'courseTime',
+                                            title: 'Продолжительность курса в минутах',
+                                            placeholder: '1337',
+                                        }}
+                                        handleChange={courseTimeChange}
+                                        value={courseTime}
+                                    />
+                                    <InputField
+                                        error={numOfLecturesError}
+                                        field={{
+                                            name: 'numOfLectures',
+                                            title: 'Количество лекций',
+                                            placeholder: '10',
+                                        }}
+                                        handleChange={numOfLecturesChange}
+                                        value={numOfLectures}
+                                    />
+                                    <div className="course-list-component-lectures">
+                                        <div className="course-list-component-lectures__header">
+                                            <div className="course-list-component-lectures__header-add">+</div>
+                                            <div className="course-list-component-lectures__header-description">
+                                                <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <Button
                                         className="button-primary"
                                         variant="outlined"
@@ -159,6 +209,7 @@ const CourseList = (props: ICourseListProps) => {
                                                 return (
                                                     <div
                                                         className="course-list-component__item"
+                                                        key={course.courseName}
                                                     // onClick={() => props.onUserProfileClick(user)}
                                                     >
                                                         {course.courseName}
