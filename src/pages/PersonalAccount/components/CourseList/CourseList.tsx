@@ -184,10 +184,13 @@ const CourseList = (props: ICourseListProps) => {
                                     />
                                     <div className="course-list-component-lectures">
                                         <div className="course-list-component-lectures__header">
-                                            <div className="course-list-component-lectures__header-add">+</div>
-                                            <div className="course-list-component-lectures__header-description">
-                                                <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
+                                            <div className="course-list-component-lectures__block">
+                                                <div className="course-list-component-lectures__header-add">+</div>
+                                                <div className="course-list-component-lectures__header-description">
+                                                    <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
+                                                </div>
                                             </div>
+                                            <div></div>
                                         </div>
                                     </div>
                                     <Button

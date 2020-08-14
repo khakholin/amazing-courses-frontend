@@ -76,6 +76,11 @@
                 align-items: center;
             }
         }
+
+        &__block {
+            cursor: pointer;
+            display: flex;
+        }
     }
 }
 
