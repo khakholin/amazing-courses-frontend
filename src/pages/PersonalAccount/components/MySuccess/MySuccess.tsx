@@ -8,7 +8,7 @@ export interface IMySuccessProps { }
 const MySuccess = (props: IMySuccessProps) => {
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
     }, []);
     return (
         <Fragment>

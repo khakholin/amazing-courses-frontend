@@ -15,7 +15,7 @@ const UserList = (props: IUserListProps) => {
     const [users, setUsers] = useState([]);
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest(endpoints.getAllUsers, 'GET')
             .then((response) => {
                 console.log(response);

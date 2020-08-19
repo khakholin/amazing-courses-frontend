@@ -18,7 +18,7 @@ const MyProfile = (props: IMyProfileProps) => {
     const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/user/data', 'POST', { username: initialUserName })
             .then((response: { data: IUserProfileResponse }) => {
                 setRealName(response.data.realName);

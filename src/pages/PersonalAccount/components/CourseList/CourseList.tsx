@@ -3,15 +3,16 @@ import React, { Fragment, useEffect, useState } from 'react';
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
-import { Button, CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress, TextField } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
+import ClearIcon from '@material-ui/icons/Clear';
 
 export interface ICourseListProps { }
 
 const CourseList = (props: ICourseListProps) => {
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/course/data', 'GET')
             .then(response => {
                 setCourseList(response.data);
@@ -28,6 +29,8 @@ const CourseList = (props: ICourseListProps) => {
     const [numOfLecturesError, setNumOfLecturesError] = useState({ showCheck: false, status: false, text: '' });
     const [isCreateMode, setIsCreateMode] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
+    const [addedLectures, setAddedLectures] = useState<any>([]);
+    const [addedLecturesLength, setAddedLecturesLength] = useState('');
 
     const onSaveClick = () => {
         setIsCreateMode(true);
@@ -119,6 +122,20 @@ const CourseList = (props: ICourseListProps) => {
         }
     };
 
+    const onAddLectureClick = () => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray.push({ lectureTime: 0, lectureTitle: '' });
+        setAddedLectures(newLecturesArray);
+        setAddedLecturesLength(newLecturesArray.length)
+    }
+
+    const onLectureDeleteClick = (index: number) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray.splice(index, 1);
+        setAddedLectures(newLecturesArray);
+        setAddedLecturesLength(newLecturesArray.length)
+    }
+
     return (
         <Fragment>
             <div className="personal-account-info-header">
@@ -184,7 +201,7 @@ const CourseList = (props: ICourseListProps) => {
                                     />
                                     <div className="course-list-component-lectures">
                                         <div className="course-list-component-lectures__header">
-                                            <div className="course-list-component-lectures__block">
+                                            <div className="course-list-component-lectures__block" onClick={() => onAddLectureClick()}>
                                                 <div className="course-list-component-lectures__header-add">+</div>
                                                 <div className="course-list-component-lectures__header-description">
                                                     <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
@@ -192,17 +209,45 @@ const CourseList = (props: ICourseListProps) => {
                                             </div>
                                             <div></div>
                                         </div>
+                                        <div className="course-list-component-lectures-list">
+                                            {
+                                                addedLectures.map((lecture: any, index: number) => {
+                                                    return (
+                                                        <div key={index} className="course-list-component-lectures-list__item">
+                                                            <div className="course-list-component-lectures-list__title">
+                                                                <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
+                                                                <TextField className="course-list-component-lectures-list__input" label="Название" variant="outlined" size="small" />
+                                                                <TextField className="course-list-component-lectures-list__input" label="Продолжительность" variant="outlined" size="small" />
+                                                            </div>
+
+                                                            <div className="course-list-component-lectures-list-progress">
+                                                                <div
+                                                                    className="course-list-component-lectures-list-progress__item"
+                                                                    onClick={() => onLectureDeleteClick(index)}
+                                                                >
+                                                                    <div className="course-list-component-lectures-list-progress__title">
+                                                                        <ClearIcon />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
                                     </div>
-                                    <Button
-                                        className="button-primary"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            setIsCreateMode(false);
-                                            clearData();
-                                        }}
-                                    >
-                                        Список курсов
+                                    <div className="course-list-component__button">
+                                        <Button
+                                            className="button-primary"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                setIsCreateMode(false);
+                                                clearData();
+                                            }}
+                                        >
+                                            Список курсов
                                     </Button>
+                                    </div>
                                 </Fragment>
                                 : <Fragment>
                                     <div className="course-list-component__content">

@@ -31,7 +31,7 @@ const Account = (props: IAccountProps) => {
     const [singlePasswordError, setSinglePasswordError] = useState({ showCheck: false, status: false, text: '' });
 
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/user/data', 'POST', { username: initialUserName })
             .then((response: { data: IUserProfileResponse }) => {
                 setEmail(response.data.email);

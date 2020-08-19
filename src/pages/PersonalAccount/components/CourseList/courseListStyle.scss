@@ -30,12 +30,16 @@
         color: $secondaryColor;
         border-radius: 4px;
         border: 1px solid $bgcPageDefault;
-        transition: all 0.5s ease;
 
         &:hover {
             cursor: pointer;
             background-color: $secondaryColorHover;
         }
+    }
+
+    &__button-container {
+        display: flex;
+        justify-content: center;
     }
 
     &__button {
@@ -81,15 +85,82 @@
             cursor: pointer;
             display: flex;
         }
+
+
+        &-list {
+            height: 160px;
+            overflow: auto;
+
+            &__input {
+                max-width: 180px;
+                margin-right: 10px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+
+            &-progress {
+                display: flex;
+                align-items: center;
+
+                &__item {
+                    display: flex;
+                    align-items: center;
+                    min-height: 50px;
+                    padding: 0 10px;
+                    transition: all 0.5s ease;
+
+                    &:last-child {
+                        margin-right: 0;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: $secondaryColorHover;
+                    }
+                }
+
+                &__title {
+                    padding-top: 4px;
+                    color: $secondaryColor;
+                }
+            }
+
+            &__title {
+                display: flex;
+                align-items: center;
+
+                &-description {
+                    color: $secondaryTextColorDefault;
+                    margin-right: 10px;
+                }
+
+                &-data {
+                    color: $secondaryColor;
+
+                }
+            }
+
+            &__item {
+                padding-left: 10px;
+                min-height: 40px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid $bgcPageDefault;
+            }
+
+        }
     }
 }
 
-.field-wrapper {
-    padding-left: 20px;
-    padding-right: 20px;
-    justify-content: flex-start !important;
-}
+// .field-wrapper {
+//     padding-left: 20px;
+//     padding-right: 20px;
+//     justify-content: flex-start !important;
+// }
 
-.input-form {
-    width: 100%;
-}
+// .input-form {
+//     width: 100%;
+// }
