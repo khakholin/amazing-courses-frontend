@@ -17,6 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 export interface IInputField {
     disabled?: boolean;
+    enterClick?: () => void | null;
     error: IErrorFormat;
     field: IFieldFormat;
     handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -34,6 +35,7 @@ const InputField = (props: any) => {
                 <InputLabel htmlFor={inputId}>{props.field.title}</InputLabel>
                 <Input
                     disabled={props.disabled}
+                    onKeyUp={(e) => { if (e.keyCode === 13 && props?.enterClick) { props?.enterClick() } }}
                     endAdornment={
                         <InputAdornment position="end">
                             {(props.field.name === 'password' || props.field.name === 'confirm-password') ?

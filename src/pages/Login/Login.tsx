@@ -265,6 +265,7 @@ const Login = (props: TLogin) => {
                         title={translation.defaultTranslation.registrationTitle}
                     >
                         <InputField
+                            enterClick={handleRegistration}
                             error={emailError}
                             field={{
                                 name: 'email',
@@ -275,6 +276,7 @@ const Login = (props: TLogin) => {
                             value={email}
                         />
                         <InputField
+                            enterClick={handleRegistration}
                             error={userNameError}
                             field={{
                                 name: 'login',
@@ -285,6 +287,7 @@ const Login = (props: TLogin) => {
                             value={userName}
                         />
                         <InputField
+                            enterClick={handleRegistration}
                             error={passwordError}
                             field={{
                                 name: 'password',
@@ -296,6 +299,7 @@ const Login = (props: TLogin) => {
                             value={password}
                         />
                         <InputField
+                            enterClick={handleRegistration}
                             error={confirmPasswordError}
                             field={{
                                 name: 'confirm-password',
@@ -341,6 +345,7 @@ const Login = (props: TLogin) => {
                             title={translation.defaultTranslation.passwordRecovery}
                         >
                             <InputField
+                                enterClick={handleRecoveryPassword}
                                 error={emailError}
                                 field={{
                                     name: 'email',
@@ -386,6 +391,7 @@ const Login = (props: TLogin) => {
                                     title={translation.defaultTranslation.enterTitle}
                                 >
                                     <InputField
+                                        enterClick={userNameError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
                                         error={userNameError}
                                         field={{
                                             name: 'login',
@@ -396,6 +402,7 @@ const Login = (props: TLogin) => {
                                         value={userName}
                                     />
                                     <InputField
+                                        enterClick={userNameError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
                                         error={passwordError}
                                         field={{
                                             name: 'password',
