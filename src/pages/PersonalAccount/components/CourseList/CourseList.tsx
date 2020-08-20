@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
-import { Button, CircularProgress, TextField } from '@material-ui/core';
+import { Button, CircularProgress, Input } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -30,52 +30,28 @@ const CourseList = (props: ICourseListProps) => {
     const [isCreateMode, setIsCreateMode] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
     const [addedLectures, setAddedLectures] = useState<any>([]);
-    const [addedLecturesLength, setAddedLecturesLength] = useState('');
+    // eslint-disable-next-line
+    const [updateFlag, setUpdateFlag] = useState(0);
 
     const onSaveClick = () => {
         setIsCreateMode(true);
     }
 
-    const createTestCourse = () => {
-        // запрос на создание тестового курса:
+    const createCourse = () => {
         appRequest('/api/course/create', 'POST', {
-            courseName: "REACT", courseFolder: "React", courseTime: 272, numOfLectures: 8,
-            courseLectures: [
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Intro"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "About"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Hooks"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Redux"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Saga"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Request"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "RXJS"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Resume"
-                }
-            ]
+            courseName,
+            courseFolder,
+            courseTime,
+            numOfLectures,
+            courseLectures: addedLectures.filter((lecture: any) => lecture.lectureTitle && lecture.lectureTime),
         }).then((response) => {
-            console.log(response);
+            if (response) {
+                setTimeout(() => setIsLoader(false), 500);
+                appRequest('/api/course/data', 'GET')
+                    .then(response => {
+                        setCourseList(response.data);
+                    });
+            }
         });
     }
 
@@ -84,6 +60,12 @@ const CourseList = (props: ICourseListProps) => {
         setCourseFolderError({ showCheck: false, status: false, text: '' });
         setCourseName('');
         setCourseNameError({ showCheck: false, status: false, text: '' });
+        setCourseTime('');
+        setCourseTimeError({ showCheck: false, status: false, text: '' });
+        setNumOfLectures('')
+        setNumOfLecturesError({ showCheck: false, status: false, text: '' });
+        setAddedLectures([]);
+        setUpdateFlag(0);
     }
 
     const courseNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -124,16 +106,50 @@ const CourseList = (props: ICourseListProps) => {
 
     const onAddLectureClick = () => {
         const newLecturesArray = addedLectures;
-        newLecturesArray.push({ lectureTime: 0, lectureTitle: '' });
+        newLecturesArray.push({ lectureTime: '', lectureTitle: '' });
         setAddedLectures(newLecturesArray);
-        setAddedLecturesLength(newLecturesArray.length)
+        setUpdateFlag(newLecturesArray.length);
     }
 
     const onLectureDeleteClick = (index: number) => {
         const newLecturesArray = addedLectures;
         newLecturesArray.splice(index, 1);
         setAddedLectures(newLecturesArray);
-        setAddedLecturesLength(newLecturesArray.length)
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const onLectureTitleBlur = (e: any, index: number) => {
+        const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
+            if (i === index) {
+                return { ...lecture, lectureTitle: e.target.value };
+            } else {
+                return lecture;
+            }
+        });
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const onLectureTimeBlur = (e: any, index: number) => {
+        const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
+            if (i === index) {
+                return { ...lecture, lectureTime: +e.target.value };
+            } else {
+                return lecture;
+            }
+        });
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const isCreateButtonActive = () => {
+        const isLecturesNumberEqual = (+numOfLectures === addedLectures.length);
+        const isLecturesUnfilled = addedLectures.find((lecture: any) => !lecture.lectureTitle || !lecture.lectureTime);
+        let totalTime = 0;
+        addedLectures.map((lecture: any) => totalTime += lecture.lectureTime);
+
+        return courseName && courseFolder && courseTime && numOfLectures
+            && isLecturesNumberEqual && !isLecturesUnfilled && totalTime === +courseTime;
     }
 
     return (
@@ -216,8 +232,8 @@ const CourseList = (props: ICourseListProps) => {
                                                         <div key={index} className="course-list-component-lectures-list__item">
                                                             <div className="course-list-component-lectures-list__title">
                                                                 <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
-                                                                <TextField className="course-list-component-lectures-list__input" label="Название" variant="outlined" size="small" />
-                                                                <TextField className="course-list-component-lectures-list__input" label="Продолжительность" variant="outlined" size="small" />
+                                                                <Input className="course-list-component-lectures-list__input" placeholder="Название" value={lecture.lectureTitle} onChange={(e: any) => onLectureTitleBlur(e, index)} />
+                                                                <Input className="course-list-component-lectures-list__input" placeholder="Продолжительность" value={lecture.lectureTime} onChange={(e: any) => onLectureTimeBlur(e, index)} />
                                                             </div>
 
                                                             <div className="course-list-component-lectures-list-progress">
@@ -238,7 +254,7 @@ const CourseList = (props: ICourseListProps) => {
                                     </div>
                                     <div className="course-list-component__button">
                                         <Button
-                                            className="button-primary"
+                                            className="button-secondary"
                                             variant="outlined"
                                             onClick={() => {
                                                 setIsCreateMode(false);
@@ -246,7 +262,27 @@ const CourseList = (props: ICourseListProps) => {
                                             }}
                                         >
                                             Список курсов
-                                    </Button>
+                                        </Button>
+                                        {isCreateButtonActive() ?
+                                            <Button
+                                                className="button-primary"
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    createCourse();
+                                                    setIsCreateMode(false);
+                                                    clearData();
+                                                }}
+                                            >
+                                                Создать
+                                            </Button> :
+                                            <Button
+                                                className="button_column-margin"
+                                                disabled
+                                                variant="outlined"
+                                            >
+                                                Создать
+                                            </Button>
+                                        }
                                     </div>
                                 </Fragment>
                                 : <Fragment>
@@ -273,13 +309,6 @@ const CourseList = (props: ICourseListProps) => {
                                             onClick={() => onSaveClick()}
                                         >
                                             Создать курс
-                                        </Button>
-                                        <Button
-                                            className="button-primary"
-                                            variant="outlined"
-                                            onClick={() => createTestCourse()}
-                                        >
-                                            Создать тестовый курс
                                         </Button>
                                     </div>
                                 </Fragment>
