@@ -53,6 +53,10 @@
         align-items: center;
         position: sticky;
         bottom: 0;
+
+        &_centered {
+            justify-content: center;
+        }
     }
 
     &-lectures {
@@ -155,13 +159,3 @@
         }
     }
 }
-
-// .field-wrapper {
-//     padding-left: 20px;
-//     padding-right: 20px;
-//     justify-content: flex-start !important;
-// }
-
-// .input-form {
-//     width: 100%;
-// }

@@ -87,11 +87,13 @@ const CourseList = (props: ICourseListProps) => {
     };
 
     const courseTimeChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setCourseTime(event.target.value);
-        if (event.target.value.length) {
-            setCourseTimeError({ showCheck: true, status: false, text: '' });
-        } else {
-            setCourseTimeError({ showCheck: false, status: false, text: '' });
+        if (+event.target.value || event.target.value === '') {
+            setCourseTime(event.target.value);
+            if (event.target.value.length) {
+                setCourseTimeError({ showCheck: true, status: false, text: '' });
+            } else {
+                setCourseTimeError({ showCheck: false, status: false, text: '' });
+            }
         }
     };
 
@@ -131,15 +133,17 @@ const CourseList = (props: ICourseListProps) => {
     }
 
     const onLectureTimeBlur = (e: any, index: number) => {
-        const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
-            if (i === index) {
-                return { ...lecture, lectureTime: +e.target.value };
-            } else {
-                return lecture;
-            }
-        });
-        setAddedLectures(newLecturesArray);
-        setUpdateFlag(newLecturesArray.length);
+        if (+e.target.value || e.target.value === '') {
+            const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
+                if (i === index) {
+                    return { ...lecture, lectureTime: +e.target.value };
+                } else {
+                    return lecture;
+                }
+            });
+            setAddedLectures(newLecturesArray);
+            setUpdateFlag(newLecturesArray.length);
+        }
     }
 
     const isCreateButtonActive = () => {
@@ -302,7 +306,7 @@ const CourseList = (props: ICourseListProps) => {
                                             })
                                         }
                                     </div>
-                                    <div className="course-list-component__button">
+                                    <div className="course-list-component__button course-list-component__button_centered">
                                         <Button
                                             className="button-primary"
                                             variant="outlined"
