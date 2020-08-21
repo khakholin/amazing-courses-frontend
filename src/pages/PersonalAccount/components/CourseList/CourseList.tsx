@@ -3,15 +3,16 @@ import React, { Fragment, useEffect, useState } from 'react';
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
-import { Button, CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress, Input } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
+import ClearIcon from '@material-ui/icons/Clear';
 
 export interface ICourseListProps { }
 
 const CourseList = (props: ICourseListProps) => {
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/course/data', 'GET')
             .then(response => {
                 setCourseList(response.data);
@@ -22,53 +23,35 @@ const CourseList = (props: ICourseListProps) => {
     const [courseNameError, setCourseNameError] = useState({ showCheck: false, status: false, text: '' });
     const [courseFolder, setCourseFolder] = useState('');
     const [courseFolderError, setCourseFolderError] = useState({ showCheck: false, status: false, text: '' });
+    const [courseTime, setCourseTime] = useState('');
+    const [courseTimeError, setCourseTimeError] = useState({ showCheck: false, status: false, text: '' });
+    const [numOfLectures, setNumOfLectures] = useState('');
+    const [numOfLecturesError, setNumOfLecturesError] = useState({ showCheck: false, status: false, text: '' });
     const [isCreateMode, setIsCreateMode] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
+    const [addedLectures, setAddedLectures] = useState<any>([]);
+    // eslint-disable-next-line
+    const [updateFlag, setUpdateFlag] = useState(0);
 
     const onSaveClick = () => {
         setIsCreateMode(true);
     }
 
-    const createTestCourse = () => {
-        // запрос на создание тестового курса:
+    const createCourse = () => {
         appRequest('/api/course/create', 'POST', {
-            courseName: "REACT", courseFolder: "React", courseTime: 272, numOfLectures: 8,
-            courseLectures: [
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Intro"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "About"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Hooks"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Redux"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Saga"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Request"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "RXJS"
-                },
-                {
-                    lectureTime: 34,
-                    lectureTitle: "Resume"
-                }
-            ]
+            courseName,
+            courseFolder,
+            courseTime,
+            numOfLectures,
+            courseLectures: addedLectures.filter((lecture: any) => lecture.lectureTitle && lecture.lectureTime),
         }).then((response) => {
-            console.log(response);
+            if (response) {
+                setTimeout(() => setIsLoader(false), 500);
+                appRequest('/api/course/data', 'GET')
+                    .then(response => {
+                        setCourseList(response.data);
+                    });
+            }
         });
     }
 
@@ -77,6 +60,12 @@ const CourseList = (props: ICourseListProps) => {
         setCourseFolderError({ showCheck: false, status: false, text: '' });
         setCourseName('');
         setCourseNameError({ showCheck: false, status: false, text: '' });
+        setCourseTime('');
+        setCourseTimeError({ showCheck: false, status: false, text: '' });
+        setNumOfLectures('')
+        setNumOfLecturesError({ showCheck: false, status: false, text: '' });
+        setAddedLectures([]);
+        setUpdateFlag(0);
     }
 
     const courseNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -96,6 +85,76 @@ const CourseList = (props: ICourseListProps) => {
             setCourseFolderError({ showCheck: false, status: false, text: '' });
         }
     };
+
+    const courseTimeChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (+event.target.value || event.target.value === '') {
+            setCourseTime(event.target.value);
+            if (event.target.value.length) {
+                setCourseTimeError({ showCheck: true, status: false, text: '' });
+            } else {
+                setCourseTimeError({ showCheck: false, status: false, text: '' });
+            }
+        }
+    };
+
+    const numOfLecturesChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setNumOfLectures(event.target.value);
+        if (event.target.value.length) {
+            setNumOfLecturesError({ showCheck: true, status: false, text: '' });
+        } else {
+            setNumOfLecturesError({ showCheck: false, status: false, text: '' });
+        }
+    };
+
+    const onAddLectureClick = () => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray.push({ lectureTime: '', lectureTitle: '' });
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const onLectureDeleteClick = (index: number) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray.splice(index, 1);
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const onLectureTitleBlur = (e: any, index: number) => {
+        const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
+            if (i === index) {
+                return { ...lecture, lectureTitle: e.target.value };
+            } else {
+                return lecture;
+            }
+        });
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(newLecturesArray.length);
+    }
+
+    const onLectureTimeBlur = (e: any, index: number) => {
+        if (+e.target.value || e.target.value === '') {
+            const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
+                if (i === index) {
+                    return { ...lecture, lectureTime: +e.target.value };
+                } else {
+                    return lecture;
+                }
+            });
+            setAddedLectures(newLecturesArray);
+            setUpdateFlag(newLecturesArray.length);
+        }
+    }
+
+    const isCreateButtonActive = () => {
+        const isLecturesNumberEqual = (+numOfLectures === addedLectures.length);
+        const isLecturesUnfilled = addedLectures.find((lecture: any) => !lecture.lectureTitle || !lecture.lectureTime);
+        let totalTime = 0;
+        addedLectures.map((lecture: any) => totalTime += lecture.lectureTime);
+
+        return courseName && courseFolder && courseTime && numOfLectures
+            && isLecturesNumberEqual && !isLecturesUnfilled && totalTime === +courseTime;
+    }
 
     return (
         <Fragment>
@@ -140,16 +199,95 @@ const CourseList = (props: ICourseListProps) => {
                                         handleChange={courseFolderChange}
                                         value={courseFolder}
                                     />
-                                    <Button
-                                        className="button-primary"
-                                        variant="outlined"
-                                        onClick={() => {
-                                            setIsCreateMode(false);
-                                            clearData();
+                                    <InputField
+                                        error={courseTimeError}
+                                        field={{
+                                            name: 'courseTime',
+                                            title: 'Продолжительность курса в минутах',
+                                            placeholder: '1337',
                                         }}
-                                    >
-                                        Список курсов
-                                    </Button>
+                                        handleChange={courseTimeChange}
+                                        value={courseTime}
+                                    />
+                                    <InputField
+                                        error={numOfLecturesError}
+                                        field={{
+                                            name: 'numOfLectures',
+                                            title: 'Количество лекций',
+                                            placeholder: '10',
+                                        }}
+                                        handleChange={numOfLecturesChange}
+                                        value={numOfLectures}
+                                    />
+                                    <div className="course-list-component-lectures">
+                                        <div className="course-list-component-lectures__header">
+                                            <div className="course-list-component-lectures__block" onClick={() => onAddLectureClick()}>
+                                                <div className="course-list-component-lectures__header-add">+</div>
+                                                <div className="course-list-component-lectures__header-description">
+                                                    <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
+                                                </div>
+                                            </div>
+                                            <div></div>
+                                        </div>
+                                        <div className="course-list-component-lectures-list">
+                                            {
+                                                addedLectures.map((lecture: any, index: number) => {
+                                                    return (
+                                                        <div key={index} className="course-list-component-lectures-list__item">
+                                                            <div className="course-list-component-lectures-list__title">
+                                                                <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
+                                                                <Input className="course-list-component-lectures-list__input" placeholder="Название" value={lecture.lectureTitle} onChange={(e: any) => onLectureTitleBlur(e, index)} />
+                                                                <Input className="course-list-component-lectures-list__input" placeholder="Продолжительность" value={lecture.lectureTime} onChange={(e: any) => onLectureTimeBlur(e, index)} />
+                                                            </div>
+
+                                                            <div className="course-list-component-lectures-list-progress">
+                                                                <div
+                                                                    className="course-list-component-lectures-list-progress__item"
+                                                                    onClick={() => onLectureDeleteClick(index)}
+                                                                >
+                                                                    <div className="course-list-component-lectures-list-progress__title">
+                                                                        <ClearIcon />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="course-list-component__button">
+                                        <Button
+                                            className="button-secondary"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                setIsCreateMode(false);
+                                                clearData();
+                                            }}
+                                        >
+                                            Список курсов
+                                        </Button>
+                                        {isCreateButtonActive() ?
+                                            <Button
+                                                className="button-primary"
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    createCourse();
+                                                    setIsCreateMode(false);
+                                                    clearData();
+                                                }}
+                                            >
+                                                Создать
+                                            </Button> :
+                                            <Button
+                                                className="button_column-margin"
+                                                disabled
+                                                variant="outlined"
+                                            >
+                                                Создать
+                                            </Button>
+                                        }
+                                    </div>
                                 </Fragment>
                                 : <Fragment>
                                     <div className="course-list-component__content">
@@ -159,6 +297,7 @@ const CourseList = (props: ICourseListProps) => {
                                                 return (
                                                     <div
                                                         className="course-list-component__item"
+                                                        key={course.courseName}
                                                     // onClick={() => props.onUserProfileClick(user)}
                                                     >
                                                         {course.courseName}
@@ -167,20 +306,13 @@ const CourseList = (props: ICourseListProps) => {
                                             })
                                         }
                                     </div>
-                                    <div className="course-list-component__button">
+                                    <div className="course-list-component__button course-list-component__button_centered">
                                         <Button
                                             className="button-primary"
                                             variant="outlined"
                                             onClick={() => onSaveClick()}
                                         >
                                             Создать курс
-                                        </Button>
-                                        <Button
-                                            className="button-primary"
-                                            variant="outlined"
-                                            onClick={() => createTestCourse()}
-                                        >
-                                            Создать тестовый курс
                                         </Button>
                                     </div>
                                 </Fragment>

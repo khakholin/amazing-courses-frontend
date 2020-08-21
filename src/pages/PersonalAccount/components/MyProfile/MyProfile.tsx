@@ -18,7 +18,7 @@ const MyProfile = (props: IMyProfileProps) => {
     const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
-        setTimeout(() => setIsLoader(false), 1000);
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/user/data', 'POST', { username: initialUserName })
             .then((response: { data: IUserProfileResponse }) => {
                 setRealName(response.data.realName);
@@ -164,6 +164,28 @@ const MyProfile = (props: IMyProfileProps) => {
                 <div className="personal-account-info-header__description">Добавьте информацию о себе</div>
             </div>
             <div className="my-profile-component personal-account-info-body">
+                <div onClick={() => {
+                    appRequest('/api/testing/update', 'POST', {
+                        courseName: 'forTesting', lectureTitle: 'lec1', lectureQuestions: [
+                            { question: 'Сколько лет?', answerOptions: ['10', '20', '30', '40'], answer: '20' },
+                        ]
+                    })
+                        .then(response => {
+                            console.log(response);
+                        });
+                }}>ТЕСТ АПДЕЙТА</div>
+                <div onClick={() => {
+                    appRequest('/api/testing/data', 'POST', { courseName: 'forTesting', lectureTitle: 'lec1' })
+                        .then(response => {
+                            console.log(response);
+                        });
+                }}>ТЕСТ ГЕТА</div>
+                <div onClick={() => {
+                    appRequest('/api/testing/courses-test', 'GET')
+                        .then(response => {
+                            console.log(response);
+                        });
+                }}>ВСЕ ТЕСТЫ</div>
                 {
                     isLoader ?
                         <div className="info-form-spinner__wrapper">

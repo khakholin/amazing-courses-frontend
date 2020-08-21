@@ -4,13 +4,11 @@
 @import "../../../../theme/styles/buttons.scss";
 
 .course-list-component {
-    position: relative;
     width: 100%;
-    height: 400px;
+    height: 100%;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    overflow: auto;
 
     &__content {
         flex-basis: 85%;
@@ -32,12 +30,16 @@
         color: $secondaryColor;
         border-radius: 4px;
         border: 1px solid $bgcPageDefault;
-        transition: all 0.5s ease;
 
         &:hover {
             cursor: pointer;
             background-color: $secondaryColorHover;
         }
+    }
+
+    &__button-container {
+        display: flex;
+        justify-content: center;
     }
 
     &__button {
@@ -46,9 +48,114 @@
         background-color: #fff;
         width: 100%;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
+        padding: 20px;
         align-items: center;
         position: sticky;
         bottom: 0;
+
+        &_centered {
+            justify-content: center;
+        }
+    }
+
+    &-lectures {
+        margin: 0 20px 40px;
+        background-color: white;
+        height: 200px;
+        border: 1px solid $bgcPageDefault;
+
+        &__header {
+            display: flex;
+            padding: 0 10px;
+            justify-content: flex-start;
+            align-items: center;
+            height: 40px;
+            background-color: white;
+            border-bottom: 1px solid $bgcPageDefault;
+
+            &-add {
+                color: $secondaryColor;
+                margin-right: 10px;
+                font-size: 28px;
+            }
+
+            &-description {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        &__block {
+            cursor: pointer;
+            display: flex;
+        }
+
+
+        &-list {
+            height: 160px;
+            overflow: auto;
+
+            &__input {
+                max-width: 180px;
+                margin-right: 10px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+
+            &-progress {
+                display: flex;
+                align-items: center;
+
+                &__item {
+                    display: flex;
+                    align-items: center;
+                    min-height: 50px;
+                    padding: 0 10px;
+                    transition: all 0.5s ease;
+
+                    &:last-child {
+                        margin-right: 0;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                        background-color: $secondaryColorHover;
+                    }
+                }
+
+                &__title {
+                    padding-top: 4px;
+                    color: $secondaryColor;
+                }
+            }
+
+            &__title {
+                display: flex;
+                align-items: center;
+
+                &-description {
+                    color: $secondaryTextColorDefault;
+                    margin-right: 10px;
+                }
+
+                &-data {
+                    color: $secondaryColor;
+
+                }
+            }
+
+            &__item {
+                padding-left: 10px;
+                min-height: 40px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid $bgcPageDefault;
+            }
+
+        }
     }
 }
