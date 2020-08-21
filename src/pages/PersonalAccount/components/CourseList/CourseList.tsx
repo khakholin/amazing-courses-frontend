@@ -29,7 +29,9 @@ const CourseList = (props: ICourseListProps) => {
     const [numOfLecturesError, setNumOfLecturesError] = useState({ showCheck: false, status: false, text: '' });
     const [isCreateMode, setIsCreateMode] = useState(false);
     const [isLoader, setIsLoader] = useState(true);
+    const [isCourseInfoMode, setIsCourseInfoMode] = useState(false);
     const [addedLectures, setAddedLectures] = useState<any>([]);
+    const [selectedCourseData, setSelectedCourseData] = useState<any>();
     // eslint-disable-next-line
     const [updateFlag, setUpdateFlag] = useState(0);
 
@@ -50,6 +52,8 @@ const CourseList = (props: ICourseListProps) => {
                 appRequest('/api/course/data', 'GET')
                     .then(response => {
                         setCourseList(response.data);
+                        setIsCreateMode(false);
+                        clearData();
                     });
             }
         });
@@ -154,6 +158,21 @@ const CourseList = (props: ICourseListProps) => {
 
         return courseName && courseFolder && courseTime && numOfLectures
             && isLecturesNumberEqual && !isLecturesUnfilled && totalTime === +courseTime;
+    }
+
+    const onCourseDeleteClick = () => {
+        appRequest('/api/course/remove', 'POST', { courseName: selectedCourseData.courseName })
+            .then((response) => {
+                if (response) {
+                    setTimeout(() => setIsLoader(false), 500);
+                    appRequest('/api/course/data', 'GET')
+                        .then(response => {
+                            setIsCourseInfoMode(false);
+                            setSelectedCourseData(null);
+                            setCourseList(response.data);
+                        });
+                }
+            });
     }
 
     return (
@@ -273,14 +292,11 @@ const CourseList = (props: ICourseListProps) => {
                                                 variant="outlined"
                                                 onClick={() => {
                                                     createCourse();
-                                                    setIsCreateMode(false);
-                                                    clearData();
                                                 }}
                                             >
                                                 Создать
                                             </Button> :
                                             <Button
-                                                className="button_column-margin"
                                                 disabled
                                                 variant="outlined"
                                             >
@@ -289,33 +305,111 @@ const CourseList = (props: ICourseListProps) => {
                                         }
                                     </div>
                                 </Fragment>
-                                : <Fragment>
-                                    <div className="course-list-component__content">
-                                        {
+                                : (!isCourseInfoMode ?
+                                    <Fragment>
+                                        <div className="course-list-component__content">
+                                            {
 
-                                            courseList.length && courseList.map((course: ICourseData) => {
-                                                return (
-                                                    <div
-                                                        className="course-list-component__item"
-                                                        key={course.courseName}
-                                                    // onClick={() => props.onUserProfileClick(user)}
-                                                    >
-                                                        {course.courseName}
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                    <div className="course-list-component__button course-list-component__button_centered">
-                                        <Button
-                                            className="button-primary"
-                                            variant="outlined"
-                                            onClick={() => onSaveClick()}
-                                        >
-                                            Создать курс
+                                                courseList.length && courseList.map((course: ICourseData) => {
+                                                    return (
+                                                        <div
+                                                            className="course-list-component__item"
+                                                            key={course.courseName}
+                                                            onClick={() => {
+                                                                setIsCourseInfoMode(true);
+                                                                setSelectedCourseData(course);
+                                                            }}
+                                                        >
+                                                            {course.courseName}
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                        <div className="course-list-component__button course-list-component__button_centered">
+                                            <Button
+                                                className="button-primary"
+                                                variant="outlined"
+                                                onClick={() => onSaveClick()}
+                                            >
+                                                Создать курс
                                         </Button>
-                                    </div>
-                                </Fragment>
+                                        </div>
+                                    </Fragment> :
+                                    <Fragment>
+                                        <div className="course-list-component__course-info">
+                                            <div className="course-list-component-lectures">
+                                                <div className="course-list-component-lectures__header">
+                                                    <div className="course-list-component-lectures__block" onClick={() => onAddLectureClick()}>
+                                                        <div className="course-list-component-lectures__header-add">+</div>
+                                                        <div className="course-list-component-lectures__header-description">
+                                                            <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
+                                                        </div>
+                                                    </div>
+                                                    <div></div>
+                                                </div>
+                                                <div className="course-list-component-lectures-list">
+                                                    {
+                                                        selectedCourseData.courseLectures.map((item: any, index: number) => {
+                                                            return (
+                                                                <div className="course-list-component-lectures-list__item">
+                                                                    <div className="course-list-component-lectures-list__title">
+                                                                        <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
+                                                                        <div className="course-list-component-lectures-list__title-data">{item.lectureTitle}</div>
+                                                                    </div>
+                                                                    <div className="course-list-component-lectures-list-progress">
+                                                                        <div
+                                                                            className="course-list-component-lectures-list-progress__item"
+                                                                        // onClick={() => onLectureAvailableClick(course.courseName, index)}
+                                                                        >
+                                                                            {/* {
+                                                            (availableLectures.find(item => item === index) !== undefined) ?
+                                                                <CheckBoxIcon className="course-list-component-lectures-list-progress__checkbox" /> :
+                                                                <CheckBoxOutlineBlankIcon className="course-list-component-lectures-list-progress__checkbox" />
+                                                        }
+                                                        <div className="course-list-component-lectures-list-progress__title">Доступна</div> */}
+                                                                        </div>
+                                                                        <div
+                                                                            className="course-list-component-lectures-list-progress__item"
+                                                                        // onClick={() => onLectureCheckedClick(course.courseName, index)}
+                                                                        >
+                                                                            {/* {
+                                                            (checkedLectures.find(item => item === index) !== undefined) ?
+                                                                <CheckBoxIcon className="course-list-component-lectures-list-progress__checkbox" /> :
+                                                                <CheckBoxOutlineBlankIcon className="course-list-component-lectures-list-progress__checkbox" />
+                                                        }
+                                                        <div className="course-list-component-lectures-list-progress__title">Проверена</div> */}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="course-list-component__button">
+                                            <Button
+                                                className="button-secondary"
+                                                variant="outlined"
+                                                onClick={() => {
+                                                    setSelectedCourseData(null);
+                                                    setIsCourseInfoMode(false);
+                                                }}
+                                            >
+                                                Список курсов
+                                        </Button>
+                                            <Button
+                                                className="button-danger"
+                                                variant="outlined"
+                                                onClick={() => onCourseDeleteClick()}
+                                            >
+                                                Удалить курс
+                                        </Button>
+                                        </div>
+                                    </Fragment>
+                                )
                         )
                 }
             </div>

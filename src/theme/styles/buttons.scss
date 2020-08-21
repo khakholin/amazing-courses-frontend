@@ -36,6 +36,16 @@
         }
     }
 
+    &-danger {
+        color: white !important;
+        font-family: MullerRegular !important;
+        background-color: red !important;
+
+        &_full-width {
+            width: 100%;
+        }
+    }
+
     &-text {
         color: $mainColor;
         font-family: MullerRegular;
