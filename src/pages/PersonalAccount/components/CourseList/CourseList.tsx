@@ -7,6 +7,7 @@ import { Button, CircularProgress, Input } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
+import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
 
 export interface ICourseListProps { }
 
@@ -34,6 +35,8 @@ const CourseList = (props: ICourseListProps) => {
     const [selectedCourseData, setSelectedCourseData] = useState<any>();
     // eslint-disable-next-line
     const [updateFlag, setUpdateFlag] = useState(0);
+    const [openAddTestingModal, setOpenAddTestingModal] = useState(false);
+    const [addedTesting, setAddedTesting] = useState<any>([]);
 
     const onSaveClick = () => {
         setIsCreateMode(true);
@@ -136,6 +139,18 @@ const CourseList = (props: ICourseListProps) => {
         setUpdateFlag(newLecturesArray.length);
     }
 
+    const onLectureQuestionChange = (e: any, index: number) => {
+        const newTestingArray = addedTesting.map((testing: any, i: number) => {
+            if (i === index) {
+                return { ...testing, question: e.target.value };
+            } else {
+                return testing;
+            }
+        });
+        setAddedTesting(newTestingArray);
+        setUpdateFlag(newTestingArray.length);
+    }
+
     const onLectureTimeBlur = (e: any, index: number) => {
         if (+e.target.value || e.target.value === '') {
             const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
@@ -174,6 +189,10 @@ const CourseList = (props: ICourseListProps) => {
                 }
             });
     }
+
+    const handleCloseAddTestingModal = () => {
+        setOpenAddTestingModal(false);
+    };
 
     return (
         <Fragment>
@@ -258,7 +277,6 @@ const CourseList = (props: ICourseListProps) => {
                                                                 <Input className="course-list-component-lectures-list__input" placeholder="Название" value={lecture.lectureTitle} onChange={(e: any) => onLectureTitleBlur(e, index)} />
                                                                 <Input className="course-list-component-lectures-list__input" placeholder="Продолжительность" value={lecture.lectureTime} onChange={(e: any) => onLectureTimeBlur(e, index)} />
                                                             </div>
-
                                                             <div className="course-list-component-lectures-list-progress">
                                                                 <div
                                                                     className="course-list-component-lectures-list-progress__item"
@@ -338,6 +356,7 @@ const CourseList = (props: ICourseListProps) => {
                                     </Fragment> :
                                     <Fragment>
                                         <div className="course-list-component__course-info">
+                                            <div className="course-list-component__course-name">{selectedCourseData.courseName}</div>
                                             <div className="course-list-component-lectures">
                                                 <div className="course-list-component-lectures__header">
                                                     <div className="course-list-component-lectures__block" onClick={() => onAddLectureClick()}>
@@ -371,14 +390,19 @@ const CourseList = (props: ICourseListProps) => {
                                                                         </div>
                                                                         <div
                                                                             className="course-list-component-lectures-list-progress__item"
-                                                                        // onClick={() => onLectureCheckedClick(course.courseName, index)}
+                                                                            onClick={() => setOpenAddTestingModal(true)}
                                                                         >
-                                                                            {/* {
-                                                            (checkedLectures.find(item => item === index) !== undefined) ?
-                                                                <CheckBoxIcon className="course-list-component-lectures-list-progress__checkbox" /> :
-                                                                <CheckBoxOutlineBlankIcon className="course-list-component-lectures-list-progress__checkbox" />
-                                                        }
-                                                        <div className="course-list-component-lectures-list-progress__title">Проверена</div> */}
+                                                                            <div className="course-list-component-lectures-list-progress__title">Добавить тестирование</div>
+                                                                        </div>
+                                                                        <div className="course-list-component-lectures-list-progress">
+                                                                            <div
+                                                                                className="course-list-component-lectures-list-progress__item"
+                                                                                onClick={() => onLectureDeleteClick(index)}
+                                                                            >
+                                                                                <div className="course-list-component-lectures-list-progress__title">
+                                                                                    <ClearIcon />
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -408,6 +432,28 @@ const CourseList = (props: ICourseListProps) => {
                                                 Удалить курс
                                         </Button>
                                         </div>
+                                        <ModalComponent
+                                            closeHandler={handleCloseAddTestingModal}
+                                            error
+                                            isOpen={openAddTestingModal}
+                                            text={''}
+                                            title={'Добавление тестирования'}
+                                        >
+                                            <div className="account-component-edit-email">
+                                                {/* {selectedCourseData.courseLectures.map((item: any, index: number) => {
+                                            return (
+                                                <Input placeholder="Вопрос" value={lecture.lectureTitle} onChange={(e: any) => onLectureQuestionChange(e, index)} />
+                                                )})
+                                            } */}
+                                                <Button
+                                                    className="button-primary button-primary_full-width"
+                                                    variant="outlined"
+                                                    onClick={() => setOpenAddTestingModal(false)}
+                                                >
+                                                    Сохранить
+                                                </Button>
+                                            </div>
+                                        </ModalComponent>
                                     </Fragment>
                                 )
                         )
