@@ -10,6 +10,36 @@
     display: flex;
     flex-direction: column;
 
+    &__line {
+        margin-top: 20px;
+        width: 100%;
+        height: 2px;
+        background-color: $mainColor;
+    }
+
+    &__testing {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+
+        &-item {
+            margin-top: 20px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    &__testing-input {
+        width: 100%;
+    }
+
+    &__add-testing {
+        width: 500px;
+    }
+
     &__course-name {
         margin: 10px 0;
         font-size: 20px;
@@ -87,6 +117,7 @@
             border-bottom: 1px solid $bgcPageDefault;
 
             &-add {
+                cursor: pointer;
                 color: $secondaryColor;
                 margin-right: 10px;
                 font-size: 28px;

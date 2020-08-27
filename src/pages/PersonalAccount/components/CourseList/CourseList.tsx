@@ -139,10 +139,56 @@ const CourseList = (props: ICourseListProps) => {
         setUpdateFlag(newLecturesArray.length);
     }
 
-    const onLectureQuestionChange = (e: any, index: number) => {
+
+    const onAddTestingClick = () => {
+        const newTestingArray = addedTesting;
+        newTestingArray.push({ question: '', answerOptions: [], answer: '' });
+        setAddedLectures(newTestingArray);
+        setUpdateFlag(newTestingArray.length);
+    }
+
+    const onAddTestingAnswerOptionsClick = (index: number) => {
+        const newTestingArray = addedTesting.map((testing: any, i: number) => {
+            if (i === index) {
+                return { ...testing, answerOptions: testing.answerOptions.push('') };
+            } else {
+                return testing;
+            }
+        });
+        setAddedLectures(newTestingArray);
+        setUpdateFlag(newTestingArray?.length);
+    }
+
+    const onTestingQuestionChange = (e: any, index: number) => {
         const newTestingArray = addedTesting.map((testing: any, i: number) => {
             if (i === index) {
                 return { ...testing, question: e.target.value };
+            } else {
+                return testing;
+            }
+        });
+        setAddedTesting(newTestingArray);
+        setUpdateFlag(newTestingArray.length);
+    }
+
+    const onTestingAnswerOptionChange = (e: any, index: number, answerIndex: number) => {
+        const newTestingArray = addedTesting.map((testing: any, i: number) => {
+            if (i === index) {
+                const newAnswerOptions = testing.answerOptions;
+                newAnswerOptions[answerIndex] = e.target.value;
+                return { ...testing, answerOptions: newAnswerOptions };
+            } else {
+                return testing;
+            }
+        });
+        setAddedTesting(newTestingArray);
+        setUpdateFlag(newTestingArray.length);
+    }
+
+    const onTestingAnswerChange = (e: any, index: number) => {
+        const newTestingArray = addedTesting.map((testing: any, i: number) => {
+            if (i === index) {
+                return { ...testing, answer: e.target.value };
             } else {
                 return testing;
             }
@@ -192,6 +238,7 @@ const CourseList = (props: ICourseListProps) => {
 
     const handleCloseAddTestingModal = () => {
         setOpenAddTestingModal(false);
+        setAddedTesting([]);
     };
 
     return (
@@ -439,16 +486,36 @@ const CourseList = (props: ICourseListProps) => {
                                             text={''}
                                             title={'Добавление тестирования'}
                                         >
-                                            <div className="account-component-edit-email">
-                                                {/* {selectedCourseData.courseLectures.map((item: any, index: number) => {
-                                            return (
-                                                <Input placeholder="Вопрос" value={lecture.lectureTitle} onChange={(e: any) => onLectureQuestionChange(e, index)} />
-                                                )})
-                                            } */}
+                                            <div className="course-list-component__add-testing">
+                                                <div className="course-list-component__testing">
+                                                    <div onClick={() => onAddTestingClick()}>ДОБАВИТЬ ТЕСТИК</div>
+                                                    {addedTesting?.map((testing: any, index: number) => {
+                                                        return (
+                                                            <div className="course-list-component__testing-item">
+                                                                <div>Вопрос №{index + 1}:</div>
+                                                                <Input className="course-list-component__testing-input" placeholder="Вопрос" multiline value={testing.question} onChange={(e: any) => onTestingQuestionChange(e, index)} />
+                                                                <div>Варианты ответа:</div>
+                                                                <div className="course-list-component-lectures__header-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>+</div>
+                                                                {testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
+                                                                    return (
+                                                                        <Input className="course-list-component__testing-input" placeholder={'Вариант ответа ' + (answerIndex + 1)} multiline value={answerOption} onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)} />
+                                                                    )
+                                                                })}
+                                                                <div>Правильный ответ:</div>
+                                                                <Input className="course-list-component__testing-input" placeholder="Правильный ответ" multiline value={testing.answer} onChange={(e: any) => onTestingAnswerChange(e, index)} />
+                                                                <div className="course-list-component__line"></div>
+                                                            </div>
+                                                        )
+                                                    })
+                                                    }
+                                                </div>
                                                 <Button
                                                     className="button-primary button-primary_full-width"
                                                     variant="outlined"
-                                                    onClick={() => setOpenAddTestingModal(false)}
+                                                    onClick={() => {
+                                                        console.log(addedTesting);
+                                                        setOpenAddTestingModal(false)
+                                                    }}
                                                 >
                                                     Сохранить
                                                 </Button>
