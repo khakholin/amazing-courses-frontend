@@ -12,6 +12,9 @@ import endingForNumber from '../../../utils/endingForNumber';
 import './dropdownListStyle.scss';
 import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
+import { appRequest } from '../../../modules/app/appRequest';
+import ModalComponent from '../ModalComponent/ModalComponent';
+import { FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Button } from '@material-ui/core';
 
 export interface IDropdownList {
     courseProgress: IUserCourseProgress | undefined;
@@ -26,8 +29,12 @@ export interface IDropdownList {
 const DropdownList = (props: IDropdownList) => {
     const [expanded, setExpanded] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [openTestingModal, setOpenTestingModal] = useState(false);
+    const [currentTestingData, setCurrentTestingData] = useState([]);
+    const [answersArray, setAnswersArray] = useState<any>([]);
     const [modalTitle, setModalTitle] = useState('');
     const [openedLecture, setOpenedLecture] = useState(-1);
+    const [isAcceptButtonActive, setIsAcceptButtonActive] = useState(false);
 
     const handleOpenModal = (title: string, lecture: number) => {
         setModalTitle(title);
@@ -42,6 +49,35 @@ const DropdownList = (props: IDropdownList) => {
     const handleExpandClick = () => {
         setExpanded(!expanded);
     };
+
+    const onTestingClick = (courseName: string, lectureTitle: string) => {
+        appRequest('/api/testing/data-watch', 'POST', { courseName, lectureTitle })
+            .then(response => {
+                if (response) {
+                    setCurrentTestingData(response.data);
+                    setModalTitle(lectureTitle);
+                    setOpenTestingModal(true);
+                }
+            });
+    }
+
+    const handleCloseAddTestingModal = () => {
+        setCurrentTestingData([]);
+        setAnswersArray([]);
+        setOpenTestingModal(false);
+        setIsAcceptButtonActive(false);
+    }
+    const handleAnswerChange = (event: any, index: number) => {
+        const newAnswers = answersArray;
+        newAnswers[index] = event.target.value;
+        setAnswersArray(newAnswers);
+        setIsAcceptButtonActive(currentTestingData.length === answersArray.length);
+    };
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        console.log(answersArray);
+    }
 
     return (
         <div className="dropdown-list">
@@ -82,11 +118,6 @@ const DropdownList = (props: IDropdownList) => {
                             <div
                                 className={dropDownListItemClass}
                                 key={item.lectureTitle}
-                                onClick={() => {
-                                    if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
-                                        handleOpenModal(item.lectureTitle, index);
-                                    }
-                                }}
                             >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
@@ -99,12 +130,21 @@ const DropdownList = (props: IDropdownList) => {
                                         <Fragment />
                                     }
                                 </div>
-                                <div className="dropdown-list-item__right">
+                                <div className="dropdown-list-item__right"
+                                    onClick={() => {
+                                        if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
+                                            handleOpenModal(item.lectureTitle, index);
+                                        }
+                                    }}
+                                >
                                     <div className="dropdown-list-item__name">
                                         <PlayArrowIcon className="dropdown-list-item__icon" />
                                         <span className="dropdown-list-item__title">{item.lectureTitle}</span>
                                     </div>
                                     <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
+                                </div>
+                                <div className="dropdown-list-item__testing" style={!expanded ? { display: 'none' } : { display: 'flex' }} onClick={() => onTestingClick(props.title, item.lectureTitle)}>
+                                    TEST
                                 </div>
                             </div>
                         )
@@ -119,6 +159,65 @@ const DropdownList = (props: IDropdownList) => {
                     lectureNumber={openedLecture + 1}
                     lectureFolder={props.folder}
                 /> : <Fragment />
+            }
+            {
+                openTestingModal ?
+                    <ModalComponent
+                        closeHandler={handleCloseAddTestingModal}
+                        error
+                        isOpen={openTestingModal}
+                        text={''}
+                        title={'Тестирование - ' + modalTitle}
+                    >
+                        <form onSubmit={handleSubmit}>
+                            <FormControl component="fieldset" className="dropdown-list-form">
+                                {
+                                    currentTestingData?.map((item: any, index: number) => {
+                                        return (
+                                            <div key={index}>
+                                                <FormLabel component="legend">{item.question}</FormLabel>
+                                                <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
+                                                    {
+                                                        item?.answerOptions?.map((option: any, index: number) => {
+                                                            return (
+                                                                <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
+                                                            )
+                                                        })
+                                                    }
+                                                </RadioGroup>
+                                            </div>
+                                        )
+                                    })
+                                }
+                                {
+                                    isAcceptButtonActive ?
+                                        <Button
+                                            className="button-primary"
+                                            type="submit"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                // appRequest('/api/testing/update', 'POST', {
+                                                //     courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
+                                                // })
+                                                //     .then(response => {
+                                                //         if (response) {
+                                                //             handleCloseAddTestingModal();
+                                                //         }
+                                                //     });
+                                            }}
+                                        >
+                                            Отправить на проверку
+                                    </Button> :
+                                        <Button
+                                            disabled
+                                            variant="outlined"
+                                        >
+                                            Отправить на проверку
+                                    </Button>
+                                }
+                            </FormControl>
+                        </form>
+                    </ModalComponent> : <Fragment />
             }
         </div>
     )

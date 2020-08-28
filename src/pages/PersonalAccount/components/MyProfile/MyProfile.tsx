@@ -165,21 +165,13 @@ const MyProfile = (props: IMyProfileProps) => {
             </div>
             <div className="my-profile-component personal-account-info-body">
                 <div onClick={() => {
-                    appRequest('/api/testing/update', 'POST', {
-                        courseName: 'forTesting', lectureTitle: 'lec1', lectureQuestions: [
-                            { question: 'Сколько лет?', answerOptions: ['10', '20', '30', '40'], answer: '20' },
-                        ]
+                    appRequest('/api/testing/remove-course', 'POST', {
+                        courseName: 'q'
                     })
                         .then(response => {
                             console.log(response);
                         });
-                }}>ТЕСТ АПДЕЙТА</div>
-                <div onClick={() => {
-                    appRequest('/api/testing/data', 'POST', { courseName: 'forTesting', lectureTitle: 'lec1' })
-                        .then(response => {
-                            console.log(response);
-                        });
-                }}>ТЕСТ ГЕТА</div>
+                }}>ДЕЛ</div>
                 <div onClick={() => {
                     appRequest('/api/testing/courses-test', 'GET')
                         .then(response => {

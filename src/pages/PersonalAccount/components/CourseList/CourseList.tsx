@@ -37,6 +37,7 @@ const CourseList = (props: ICourseListProps) => {
     const [updateFlag, setUpdateFlag] = useState(0);
     const [openAddTestingModal, setOpenAddTestingModal] = useState(false);
     const [addedTesting, setAddedTesting] = useState<any>([]);
+    const [selectedLecture, setSelectedLecture] = useState('');
 
     const onSaveClick = () => {
         setIsCreateMode(true);
@@ -238,6 +239,7 @@ const CourseList = (props: ICourseListProps) => {
 
     const handleCloseAddTestingModal = () => {
         setOpenAddTestingModal(false);
+        setSelectedLecture('');
         setAddedTesting([]);
     };
 
@@ -418,7 +420,7 @@ const CourseList = (props: ICourseListProps) => {
                                                     {
                                                         selectedCourseData.courseLectures.map((item: any, index: number) => {
                                                             return (
-                                                                <div className="course-list-component-lectures-list__item">
+                                                                <div key={item.lectureTitle} className="course-list-component-lectures-list__item">
                                                                     <div className="course-list-component-lectures-list__title">
                                                                         <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
                                                                         <div className="course-list-component-lectures-list__title-data">{item.lectureTitle}</div>
@@ -437,9 +439,16 @@ const CourseList = (props: ICourseListProps) => {
                                                                         </div>
                                                                         <div
                                                                             className="course-list-component-lectures-list-progress__item"
-                                                                            onClick={() => setOpenAddTestingModal(true)}
+                                                                            onClick={() => {
+                                                                                appRequest('/api/testing/data-edit', 'POST', { courseName: selectedCourseData.courseName, lectureTitle: item.lectureTitle })
+                                                                                    .then(response => {
+                                                                                        setAddedTesting(response.data);
+                                                                                        setSelectedLecture(item.lectureTitle);
+                                                                                        setOpenAddTestingModal(true);
+                                                                                    });
+                                                                            }}
                                                                         >
-                                                                            <div className="course-list-component-lectures-list-progress__title">Добавить тестирование</div>
+                                                                            <div className="course-list-component-lectures-list-progress__title">Редактировать тестирование</div>
                                                                         </div>
                                                                         <div className="course-list-component-lectures-list-progress">
                                                                             <div
@@ -487,34 +496,60 @@ const CourseList = (props: ICourseListProps) => {
                                             title={'Добавление тестирования'}
                                         >
                                             <div className="course-list-component__add-testing">
-                                                <div className="course-list-component__testing">
-                                                    <div onClick={() => onAddTestingClick()}>ДОБАВИТЬ ТЕСТИК</div>
-                                                    {addedTesting?.map((testing: any, index: number) => {
-                                                        return (
-                                                            <div className="course-list-component__testing-item">
-                                                                <div>Вопрос №{index + 1}:</div>
-                                                                <Input className="course-list-component__testing-input" placeholder="Вопрос" multiline value={testing.question} onChange={(e: any) => onTestingQuestionChange(e, index)} />
-                                                                <div>Варианты ответа:</div>
-                                                                <div className="course-list-component-lectures__header-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>+</div>
-                                                                {testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
-                                                                    return (
-                                                                        <Input className="course-list-component__testing-input" placeholder={'Вариант ответа ' + (answerIndex + 1)} multiline value={answerOption} onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)} />
-                                                                    )
-                                                                })}
-                                                                <div>Правильный ответ:</div>
-                                                                <Input className="course-list-component__testing-input" placeholder="Правильный ответ" multiline value={testing.answer} onChange={(e: any) => onTestingAnswerChange(e, index)} />
-                                                                <div className="course-list-component__line"></div>
+                                                <div className="course-list-component-testing">
+                                                    <div className="course-list-component-testing__header">
+                                                        <div className="course-list-component-testing__block" onClick={() => onAddTestingClick()}>
+                                                            <div className="course-list-component-testing__header-add">+</div>
+                                                            <div className="course-list-component-testing__header-description">
+                                                                <div className="course-list-component-testing__header-text">Добавить тестовый вопрос</div>
                                                             </div>
-                                                        )
-                                                    })
-                                                    }
+                                                        </div>
+                                                        <div></div>
+                                                    </div>
+                                                    <div className="course-list-component-testing-list">
+                                                        {addedTesting?.map((testing: any, index: number) => {
+                                                            return (
+                                                                <div key={index} className="course-list-component-testing-item">
+                                                                    {index !== 0 ? <div className="course-list-component__line"></div> : <Fragment />}
+                                                                    <div className="course-list-component-testing__question">
+                                                                        <div>Вопрос №{index + 1}:</div>
+                                                                        <Input className="course-list-component-testing__input" placeholder="Вопрос" multiline value={testing.question} onChange={(e: any) => onTestingQuestionChange(e, index)} />
+                                                                    </div>
+                                                                    <div className="course-list-component-testing__answer-options">
+                                                                        <div className="course-list-component-testing__answer-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>
+                                                                            <div className="course-list-component-testing__header-add">+</div>
+                                                                            <div>Добавить вариант ответа:</div>
+                                                                        </div>
+                                                                        {testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
+                                                                            return (
+                                                                                <div key={answerIndex} className="course-list-component-testing__answer-items">
+                                                                                    <Input className="course-list-component__testing-input" placeholder={'Вариант ответа ' + (answerIndex + 1)} multiline value={answerOption} onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)} />
+                                                                                </div>
+                                                                            )
+                                                                        })}
+                                                                    </div>
+                                                                    <div className="course-list-component-testing__answer">
+                                                                        <div>Правильный ответ:</div>
+                                                                        <Input className="course-list-component__testing-input" placeholder="Правильный ответ" multiline value={testing.answer} onChange={(e: any) => onTestingAnswerChange(e, index)} />
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                        }
+                                                    </div>
                                                 </div>
                                                 <Button
-                                                    className="button-primary button-primary_full-width"
+                                                    className="button-primary"
                                                     variant="outlined"
                                                     onClick={() => {
-                                                        console.log(addedTesting);
-                                                        setOpenAddTestingModal(false)
+                                                        appRequest('/api/testing/update', 'POST', {
+                                                            courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
+                                                        })
+                                                            .then(response => {
+                                                                if (response) {
+                                                                    handleCloseAddTestingModal();
+                                                                }
+                                                            });
                                                     }}
                                                 >
                                                     Сохранить
