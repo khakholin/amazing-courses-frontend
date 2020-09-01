@@ -5,8 +5,8 @@
 
 .dropdown-list {
     position: relative;
-    width: 800px;
-    padding-left: 50px;
+    width: 850px;
+    padding: 0 50px;
     font-family: MullerRegular;
     margin-bottom: 20px;
 
@@ -58,6 +58,9 @@
     }
 
     &-item {
+        display: flex;
+
+
         &__right {
             width: 750px;
             display: flex;
@@ -80,7 +83,6 @@
 
             &_active {
                 color: $secondaryColor;
-
             }
 
             &_inactive {
@@ -90,6 +92,16 @@
             &:hover {
                 cursor: default;
             }
+        }
+
+        &__testing {
+            position: absolute;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
         }
 
         &__line {
@@ -129,4 +141,12 @@
             padding-top: 4px;
         }
     }
+
+    &-form {
+        width: 100%;
+    }
+}
+
+.MuiRadio-colorSecondary.Mui-checked {
+    color: $mainColor
 }

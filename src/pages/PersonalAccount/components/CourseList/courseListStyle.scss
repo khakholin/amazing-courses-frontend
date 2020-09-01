@@ -10,6 +10,112 @@
     display: flex;
     flex-direction: column;
 
+    &__line {
+        margin: 20px 0;
+        width: 100%;
+        height: 2px;
+        background-color: $mainColor;
+    }
+
+
+    &-testing {
+        margin: 0 20px 40px;
+        background-color: white;
+        height: 400px;
+        border: 2px solid $mainColor;
+        box-sizing: content-box;
+
+        &__header {
+            display: flex;
+            padding: 0 10px;
+            justify-content: flex-start;
+            align-items: center;
+            height: 40px;
+            background-color: white;
+            border-bottom: 2px solid $mainColor;
+
+            &-add {
+                cursor: pointer;
+                color: $mainColor;
+                margin-right: 10px;
+                font-size: 28px;
+            }
+
+            &-description {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        &-item {}
+
+        &__block {
+            cursor: pointer;
+            display: flex;
+        }
+
+        &-list {
+            height: 360px;
+            overflow: auto;
+        }
+
+        &__input {
+            margin-top: 10px;
+        }
+
+        &__question {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        &__answer {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        &__answer-options {
+            border: 1px solid $bgcPageDefault;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+        }
+
+        &__answer-items {
+            padding: 5px 10px;
+        }
+
+        &__answer-add {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid $bgcPageDefault;
+        }
+    }
+
+    &__testing-input {
+        width: 100%;
+    }
+
+    &__add-testing {
+        width: 500px;
+    }
+
+    &__course-name {
+        margin: 10px 0;
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        color: $secondaryColor;
+    }
+
+    &__course-info {
+        height: 100%;
+    }
+
     &__content {
         flex-basis: 85%;
         display: flex;
@@ -75,6 +181,7 @@
             border-bottom: 1px solid $bgcPageDefault;
 
             &-add {
+                cursor: pointer;
                 color: $secondaryColor;
                 margin-right: 10px;
                 font-size: 28px;
