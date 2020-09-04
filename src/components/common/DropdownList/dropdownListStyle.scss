@@ -140,13 +140,31 @@
         &__title {
             padding-top: 4px;
         }
+
+        &__input {
+            width: 100%;
+        }
+
+    }
+
+    &-question {
+        margin-bottom: 20px;
     }
 
     &-form {
-        width: 100%;
+        overflow: auto;
+        max-height: 400px;
+        max-width: 500px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
     }
 }
 
 .MuiRadio-colorSecondary.Mui-checked {
     color: $mainColor
+}
+
+.MuiFormControlLabel-label {
+    max-width: 440px;
+
 }

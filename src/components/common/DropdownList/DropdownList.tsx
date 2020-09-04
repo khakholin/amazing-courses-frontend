@@ -4,6 +4,7 @@ import Collapse from '@material-ui/core/Collapse';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 import timeConversion from '../../../utils/timeConversion';
 import { ILectureData } from '../../../types/inputPropsFormats';
@@ -14,7 +15,7 @@ import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
 import { appRequest } from '../../../modules/app/appRequest';
 import ModalComponent from '../ModalComponent/ModalComponent';
-import { FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Button } from '@material-ui/core';
+import { FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Button, Input } from '@material-ui/core';
 
 export interface IDropdownList {
     courseProgress: IUserCourseProgress | undefined;
@@ -67,16 +68,23 @@ const DropdownList = (props: IDropdownList) => {
         setOpenTestingModal(false);
         setIsAcceptButtonActive(false);
     }
+
     const handleAnswerChange = (event: any, index: number) => {
         const newAnswers = answersArray;
         newAnswers[index] = event.target.value;
         setAnswersArray(newAnswers);
-        setIsAcceptButtonActive(currentTestingData.length === answersArray.length);
+        // setIsAcceptButtonActive(currentTestingData.length === answersArray.length);
     };
 
     const handleSubmit = (event: any) => {
-        event.preventDefault();
-        console.log(answersArray);
+        event.preventDefault()
+        appRequest('/api/testing/check', 'POST', {
+            courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray
+        })
+            .then(response => {
+                console.log(response);
+                setOpenTestingModal(false);
+            });
     }
 
     return (
@@ -143,8 +151,12 @@ const DropdownList = (props: IDropdownList) => {
                                     </div>
                                     <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
                                 </div>
-                                <div className="dropdown-list-item__testing" style={!expanded ? { display: 'none' } : { display: 'flex' }} onClick={() => onTestingClick(props.title, item.lectureTitle)}>
-                                    TEST
+                                <div className="dropdown-list-item__testing" style={!expanded ? { display: 'none' } : { display: 'flex' }} onClick={() => {
+                                    if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
+                                        onTestingClick(props.title, item.lectureTitle)
+                                    }
+                                }}>
+                                    <DescriptionIcon />
                                 </div>
                             </div>
                         )
@@ -174,37 +186,32 @@ const DropdownList = (props: IDropdownList) => {
                                 {
                                     currentTestingData?.map((item: any, index: number) => {
                                         return (
-                                            <div key={index}>
-                                                <FormLabel component="legend">{item.question}</FormLabel>
-                                                <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
-                                                    {
-                                                        item?.answerOptions?.map((option: any, index: number) => {
-                                                            return (
-                                                                <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
-                                                            )
-                                                        })
-                                                    }
-                                                </RadioGroup>
+                                            <div className="dropdown-list-question" key={index}>
+                                                <FormLabel className="test" component="legend">{item.question}</FormLabel>
+                                                {item.isAnswerOptions ?
+                                                    <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
+                                                        {
+                                                            item?.answerOptions?.map((option: any, index: number) => {
+                                                                return (
+                                                                    <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
+                                                                )
+                                                            })
+                                                        }
+                                                    </RadioGroup> :
+                                                    <Input className="dropdown-list-item__input" placeholder="Правильный ответ" multiline value={answersArray[index]} onChange={(e: any) => handleAnswerChange(e, index)} />
+                                                }
                                             </div>
                                         )
                                     })
                                 }
                                 {
-                                    isAcceptButtonActive ?
+                                    //ЗАМЕНИТЬ
+                                    true ?
                                         <Button
                                             className="button-primary"
                                             type="submit"
                                             variant="outlined"
-                                            onClick={() => {
-                                                // appRequest('/api/testing/update', 'POST', {
-                                                //     courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
-                                                // })
-                                                //     .then(response => {
-                                                //         if (response) {
-                                                //             handleCloseAddTestingModal();
-                                                //         }
-                                                //     });
-                                            }}
+                                            onClick={() => { }}
                                         >
                                             Отправить на проверку
                                     </Button> :

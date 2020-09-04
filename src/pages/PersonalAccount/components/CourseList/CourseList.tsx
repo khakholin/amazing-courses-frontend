@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
-import { Button, CircularProgress, Input } from '@material-ui/core';
+import { Button, CircularProgress, Input, Checkbox } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -143,7 +143,7 @@ const CourseList = (props: ICourseListProps) => {
 
     const onAddTestingClick = () => {
         const newTestingArray = addedTesting;
-        newTestingArray.push({ question: '', answerOptions: [], answer: '' });
+        newTestingArray.push({ question: '', answerOptions: [], isAnswerOptions: false, answer: '' });
         setAddedLectures(newTestingArray);
         setUpdateFlag(newTestingArray.length);
     }
@@ -151,7 +151,7 @@ const CourseList = (props: ICourseListProps) => {
     const onAddTestingAnswerOptionsClick = (index: number) => {
         const newTestingArray = addedTesting.map((testing: any, i: number) => {
             if (i === index) {
-                return { ...testing, answerOptions: testing.answerOptions.push('') };
+                return { ...testing, answerOptions: testing.answerOptions.push(''), isAnswerOptions: true, };
             } else {
                 return testing;
             }
@@ -516,11 +516,21 @@ const CourseList = (props: ICourseListProps) => {
                                                                         <Input className="course-list-component-testing__input" placeholder="Вопрос" multiline value={testing.question} onChange={(e: any) => onTestingQuestionChange(e, index)} />
                                                                     </div>
                                                                     <div className="course-list-component-testing__answer-options">
-                                                                        <div className="course-list-component-testing__answer-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>
-                                                                            <div className="course-list-component-testing__header-add">+</div>
-                                                                            <div>Добавить вариант ответа:</div>
+                                                                        <div className="course-list-component-testing__answer-wrapper">
+                                                                            <div className="course-list-component-testing__answer-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>
+                                                                                <div className="course-list-component-testing__header-add">+</div>
+                                                                                <div>С вариантами ответа</div>
+                                                                            </div>
+                                                                            <Checkbox
+                                                                                checked={testing.isAnswerOptions}
+                                                                                onChange={() => {
+                                                                                    testing.isAnswerOptions = !testing.isAnswerOptions
+                                                                                    setUpdateFlag(testing.isAnswerOptions);
+                                                                                }}
+                                                                                inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                                            />
                                                                         </div>
-                                                                        {testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
+                                                                        {testing.isAnswerOptions && testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
                                                                             return (
                                                                                 <div key={answerIndex} className="course-list-component-testing__answer-items">
                                                                                     <Input className="course-list-component__testing-input" placeholder={'Вариант ответа ' + (answerIndex + 1)} multiline value={answerOption} onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)} />
