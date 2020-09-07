@@ -149,14 +149,29 @@
 
     &-question {
         margin-bottom: 20px;
+
+        &__label {
+            margin: 10px 0;
+        }
+
+        &__number {
+            color: $mainColor;
+        }
     }
 
     &-form {
+        padding-left: 20px;
         overflow: auto;
-        max-height: 400px;
-        max-width: 500px;
+        height: 400px;
+        width: 520px;
         white-space: pre-wrap;
         word-wrap: break-word;
+    }
+
+    &-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
 }
 

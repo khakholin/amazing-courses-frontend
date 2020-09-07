@@ -27,7 +27,7 @@ const MySuccess = (props: IMySuccessProps) => {
                             />
                         </div>
                         :
-                        <div>прогресс-бары какие-нибудь</div>
+                        <div>ИНФОРМАЦИЯ НЕДОСТУПНА</div>
                 }
             </div>
         </Fragment>

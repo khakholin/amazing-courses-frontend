@@ -130,7 +130,7 @@ const Login = (props: TLogin) => {
                 courseProgress: [],
                 realName: '',
                 realSurname: '',
-                role: 'user',
+                roles: ['user'],
                 school: '',
                 university: '',
                 workPlace: '',

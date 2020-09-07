@@ -22,7 +22,7 @@ export interface IUserProfileResponse {
     email: string;
     realName: string;
     realSurname: string;
-    role: string;
+    roles: string[];
     school: string;
     university: string;
     username: string;

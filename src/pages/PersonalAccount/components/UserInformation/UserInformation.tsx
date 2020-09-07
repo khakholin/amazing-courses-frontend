@@ -26,10 +26,20 @@ const UserInformation = (props: IUserInformationProps) => {
             .then((response) => {
                 setCoursesDataList(response.data.courses);
             });
+        appRequest('/api/user/usernames', 'GET')
+            .then(response => {
+                setUsernameList(response.data)
+            });
+        appRequest('/api/user/mentors', 'POST', { username: props.user?.username })
+            .then(response => {
+                setUserMentors(response.data);
+            });
         // eslint-disable-next-line
     }, [])
 
     const [courseList, setCourseList] = useState([]);
+    const [userMentors, setUserMentors] = useState([]);
+    const [usernameList, setUsernameList] = useState([]);
     const [userAvailableCourses, setUserAvailableCourses] = useState<string[] | undefined>([]);
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
     const [coursesDataList, setCoursesDataList] = useState<ICourseData[]>([]);
@@ -44,6 +54,16 @@ const UserInformation = (props: IUserInformationProps) => {
                             .then(response => {
                                 setCoursesDataList(response.data.courses);
                             });
+                    });
+            });
+    }
+
+    const onUsernameClick = (mentor: string) => {
+        appRequest('/api/user/change-mentors', 'POST', { username: props.user?.username, mentor })
+            .then(response => {
+                appRequest('/api/user/mentors', 'POST', { username: props.user?.username })
+                    .then(response => {
+                        setUserMentors(response.data);
                     });
             });
     }
@@ -98,6 +118,33 @@ const UserInformation = (props: IUserInformationProps) => {
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Место работы:</div>
                     <div className="user-information-component-profile__item-data">{props.user?.workPlace}</div>
+                </div>
+            </div>
+            <div className="user-information-component-courses">
+                <div className="user-information-component-courses__header">
+                    <div className="user-information-component-courses__header-text">Добавить ментора для пользователя</div>
+                    <Tooltip title="Добавление ментора изменяется нажатием на него">
+                        <HelpIcon className="user-information-component-courses__header-icon" />
+                    </Tooltip>
+                </div>
+                <div className="user-information-component-courses-list">
+                    {usernameList.map((item) => {
+                        const checked = userMentors.find(mentor => item === mentor);
+                        return (
+                            <div
+                                className="user-information-component-courses-list__item"
+                                onClick={() => onUsernameClick(item)}
+                            >
+                                {
+                                    checked ?
+                                        <CheckBoxIcon className="user-information-component-courses-list__checkbox" /> :
+                                        <CheckBoxOutlineBlankIcon className="user-information-component-courses-list__checkbox" />
+
+                                }
+                                <div className="user-information-component-courses-list__title" >{item}</div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
             <div className="user-information-component-courses">

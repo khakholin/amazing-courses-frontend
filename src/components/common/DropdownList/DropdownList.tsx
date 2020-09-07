@@ -24,6 +24,7 @@ export interface IDropdownList {
     time: number;
     title: string;
     folder: string;
+    username: string;
 }
 
 
@@ -36,6 +37,10 @@ const DropdownList = (props: IDropdownList) => {
     const [modalTitle, setModalTitle] = useState('');
     const [openedLecture, setOpenedLecture] = useState(-1);
     const [isAcceptButtonActive, setIsAcceptButtonActive] = useState(false);
+    const [isAlreadyTested, setIsAlreadyTested] = useState(false);
+    const [answersPercent, setAnswersPercent] = useState(0);
+    // eslint-disable-next-line
+    const [updateFlag, setUpdateFlag] = useState(0);
 
     const handleOpenModal = (title: string, lecture: number) => {
         setModalTitle(title);
@@ -60,30 +65,47 @@ const DropdownList = (props: IDropdownList) => {
                     setOpenTestingModal(true);
                 }
             });
+        appRequest('/api/user/testing-progress', 'POST', { username: props.username, courseName, lectureTitle })
+            .then(response => {
+                if (response) {
+                    if (response.data.message === 'COURSE_PROGRESS_NOT_FOUND') {
+                        setIsAlreadyTested(false);
+                        setAnswersPercent(0);
+                    } else {
+                        setAnswersArray(response.data.answers);
+                        setIsAlreadyTested(true);
+                        setAnswersPercent(response.data.percent);
+                    }
+                }
+            });
     }
 
     const handleCloseAddTestingModal = () => {
         setCurrentTestingData([]);
         setAnswersArray([]);
+        setIsAlreadyTested(false);
         setOpenTestingModal(false);
         setIsAcceptButtonActive(false);
+        setUpdateFlag(0);
     }
 
     const handleAnswerChange = (event: any, index: number) => {
         const newAnswers = answersArray;
         newAnswers[index] = event.target.value;
         setAnswersArray(newAnswers);
-        // setIsAcceptButtonActive(currentTestingData.length === answersArray.length);
+        let realAnswersArrayLength = 0;
+        answersArray.map((item: any) => item ? realAnswersArrayLength++ : realAnswersArrayLength);
+        setIsAcceptButtonActive(currentTestingData.length === realAnswersArrayLength);
+        setUpdateFlag(updateFlag + 1);
     };
 
     const handleSubmit = (event: any) => {
         event.preventDefault()
         appRequest('/api/testing/check', 'POST', {
-            courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray
+            courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray, username: props.username,
         })
             .then(response => {
-                console.log(response);
-                setOpenTestingModal(false);
+                handleCloseAddTestingModal();
             });
     }
 
@@ -181,47 +203,55 @@ const DropdownList = (props: IDropdownList) => {
                         text={''}
                         title={'Тестирование - ' + modalTitle}
                     >
+                        {
+                            isAlreadyTested ?
+                                <div>Результат прохождения: {+(answersPercent * 100).toFixed()}% правильных ответов</div> :
+                                <Fragment />
+                        }
                         <form onSubmit={handleSubmit}>
                             <FormControl component="fieldset" className="dropdown-list-form">
                                 {
                                     currentTestingData?.map((item: any, index: number) => {
                                         return (
                                             <div className="dropdown-list-question" key={index}>
-                                                <FormLabel className="test" component="legend">{item.question}</FormLabel>
+                                                <div className="dropdown-list-question__number">Вопрос № {index + 1}</div>
+                                                <FormLabel className="dropdown-list-question__label" component="legend">{item.question}</FormLabel>
                                                 {item.isAnswerOptions ?
                                                     <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
                                                         {
-                                                            item?.answerOptions?.map((option: any, index: number) => {
-                                                                return (
+                                                            item?.answerOptions?.map((option: any, i: number) => {
+                                                                return isAlreadyTested ?
+                                                                    <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} disabled label={option} checked={answersArray[index] === option} /> :
                                                                     <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
-                                                                )
                                                             })
                                                         }
                                                     </RadioGroup> :
-                                                    <Input className="dropdown-list-item__input" placeholder="Правильный ответ" multiline value={answersArray[index]} onChange={(e: any) => handleAnswerChange(e, index)} />
+                                                    <Input disabled={isAlreadyTested ? true : false} className="dropdown-list-item__input" placeholder="Правильный ответ" multiline value={answersArray[index]} onChange={(e: any) => handleAnswerChange(e, index)} />
                                                 }
                                             </div>
                                         )
                                     })
                                 }
-                                {
-                                    //ЗАМЕНИТЬ
-                                    true ?
-                                        <Button
-                                            className="button-primary"
-                                            type="submit"
-                                            variant="outlined"
-                                            onClick={() => { }}
-                                        >
-                                            Отправить на проверку
+                                <div className="dropdown-list-buttons">
+                                    {
+                                        //ЗАМЕНИТЬ
+                                        isAcceptButtonActive ?
+                                            <Button
+                                                className="button-primary"
+                                                type="submit"
+                                                variant="outlined"
+                                                onClick={() => { }}
+                                            >
+                                                Отправить на проверку
                                     </Button> :
-                                        <Button
-                                            disabled
-                                            variant="outlined"
-                                        >
-                                            Отправить на проверку
+                                            <Button
+                                                disabled
+                                                variant="outlined"
+                                            >
+                                                Отправить на проверку
                                     </Button>
-                                }
+                                    }
+                                </div>
                             </FormControl>
                         </form>
                     </ModalComponent> : <Fragment />

@@ -55,9 +55,9 @@ const CourseList = (props: ICourseListProps) => {
                 setTimeout(() => setIsLoader(false), 500);
                 appRequest('/api/course/data', 'GET')
                     .then(response => {
+                        clearData();
                         setCourseList(response.data);
                         setIsCreateMode(false);
-                        clearData();
                     });
             }
         });

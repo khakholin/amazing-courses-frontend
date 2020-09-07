@@ -22,6 +22,7 @@ import MySuccess from './components/MySuccess/MySuccess';
 import UserInformation from './components/UserInformation/UserInformation';
 import UserList from './components/UserList/UserList';
 import './personalAccountStyle.scss';
+import StudentSuccess from './components/StudentSuccess/StudentSuccess';
 
 export interface IPersonalAccount { };
 
@@ -31,6 +32,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
+    const [currentUsername, setCurrentUsername] = useState<string>();
 
     useEffect(() => {
         appRequest(endpoints.getProfile, 'GET')
@@ -61,6 +63,11 @@ const PersonalAccount = (props: IPersonalAccount) => {
         setCurrentMenuItem('UserInformation');
     }
 
+    const onStudentClick = (username: any) => {
+        setCurrentUserProfile(username);
+        setCurrentMenuItem('StudentInformation');
+    }
+
     const infoForm = () => {
         switch (currentMenuItem) {
             case 'MyProfile':
@@ -81,6 +88,13 @@ const PersonalAccount = (props: IPersonalAccount) => {
                         onUserProfileClick={onUserProfileClick}
                     />
                 )
+            case 'StudentSuccess':
+                return (
+                    <StudentSuccess
+                        username={userData?.username}
+                        roles={userData?.roles}
+                    />
+                )
             case 'UserInformation':
                 return (
                     <UserInformation
@@ -96,9 +110,10 @@ const PersonalAccount = (props: IPersonalAccount) => {
         }
     }
 
-    const menuItemClasses = (menuItemName: string, privateItem?: boolean) => {
+    const menuItemClasses = (menuItemName: string, mentorItem?: boolean, privateItem?: boolean) => {
         const menuItemClass = clsx('personal-account-profile__menu-item', {
             'personal-account-profile__menu-item_active': menuItemName === currentMenuItem,
+            'personal-account-profile__menu-item_mentor': mentorItem,
             'personal-account-profile__menu-item_private': privateItem,
         });
         return menuItemClass;
@@ -128,17 +143,30 @@ const PersonalAccount = (props: IPersonalAccount) => {
                             <span className="personal-account-profile__menu-title">Учетная запись</span>
                         </li>
                         {
-                            userData?.role === 'admin' ?
+                            userData?.roles?.find(role => role === 'mentor') ?
                                 <Fragment>
                                     <li
-                                        className={menuItemClasses('UserList', true)}
+                                        className={menuItemClasses('StudentSuccess', true)}
+                                        onClick={() => onMenuItemClick('StudentSuccess')}
+                                    >
+                                        <TrendingUpIcon className="personal-account-profile__menu-icon" />
+                                        <span className="personal-account-profile__menu-title">Успехи учеников</span>
+                                    </li>
+                                </Fragment>
+                                : <Fragment />
+                        }
+                        {
+                            userData?.roles?.find(role => role === 'admin') ?
+                                <Fragment>
+                                    <li
+                                        className={menuItemClasses('UserList', false, true)}
                                         onClick={() => onMenuItemClick('UserList')}
                                     >
                                         <PeopleIcon className="personal-account-profile__menu-icon" />
                                         <span className="personal-account-profile__menu-title">Список пользователей</span>
                                     </li>
                                     <li
-                                        className={menuItemClasses('CourseList', true)}
+                                        className={menuItemClasses('CourseList', false, true)}
                                         onClick={() => onMenuItemClick('CourseList')}
                                     >
                                         <MenuBookIcon className="personal-account-profile__menu-icon" />

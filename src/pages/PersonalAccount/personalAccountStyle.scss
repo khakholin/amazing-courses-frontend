@@ -33,9 +33,15 @@
             &__description {
                 text-align: center;
 
+
                 &>span {
                     font-size: 10px;
                     color: $mainColor;
+                }
+
+                &_mentor {
+                    font-size: 10px;
+                    color: #d47911;
                 }
             }
         }
@@ -108,6 +114,10 @@
                     &:hover {
                         background-color: $secondaryColorActive;
                     }
+                }
+
+                &_mentor {
+                    color: #d47911;
                 }
 
                 &_private {

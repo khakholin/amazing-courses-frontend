@@ -1,35 +1,34 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
 
-import { endpoints } from '../../../../constants/endpoints';
+import './studentSuccessStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
-import { IUserProfileResponse } from '../../../../types/responseTypes';
 
-import './userListStyle.scss';
-
-export interface IUserListProps {
-    onUserProfileClick: (user: IUserProfileResponse) => void;
+export interface IStudentSuccessProps {
+    username?: string;
+    roles?: string[];
 }
 
-const UserList = (props: IUserListProps) => {
-    const [users, setUsers] = useState([]);
+const StudentSuccess = (props: IStudentSuccessProps) => {
     const [isLoader, setIsLoader] = useState(true);
+    const [users, setUsers] = useState([]);
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
-        appRequest(endpoints.getAllUsers, 'GET')
-            .then((response) => {
+        appRequest('/api/user/get-students', 'POST', { username: props.username, roles: props.roles })
+            .then(response => {
                 setUsers(response.data);
             });
-    }, []);
+    }, [props.username, props.roles]);
+
 
     return (
         <Fragment>
             <div className="personal-account-info-header">
-                <div className="personal-account-info-header__title">Список пользователей</div>
+                <div className="personal-account-info-header__title">Успехи учеников</div>
                 <div className="personal-account-info-header__description">
-                    Редактирование пользовательских данных
+                    Прогресс прохождения курсов учениками
                     <br></br>
-                    <span>доступно только администраторам</span>
+                    <div className="personal-account-info-header__description_mentor">доступно только учителям</div>
                 </div>
             </div>
             <div className="user-list-component personal-account-info-body">
@@ -43,13 +42,17 @@ const UserList = (props: IUserListProps) => {
                             /></div> :
                         <Fragment>
                             {
-                                users.length && users.map((user: IUserProfileResponse, index: number) => {
+                                users.length && users.map((user: any, index: number) => {
                                     return (
                                         <div
                                             className="user-list-component__item"
-                                            onClick={() => props.onUserProfileClick(user)}
+                                            onClick={() => console.log('click')}
                                         >
-                                            {user.username}
+                                            {
+                                                user.realName || user.realSurname ?
+                                                    user.realSurname + ' ' + user.realName :
+                                                    user.email
+                                            }
                                         </div>
                                     )
                                 })
@@ -57,8 +60,8 @@ const UserList = (props: IUserListProps) => {
                         </Fragment>
                 }
             </div>
-        </Fragment >
+        </Fragment>
     );
 };
 
-export default UserList;
+export default StudentSuccess;

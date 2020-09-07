@@ -164,20 +164,6 @@ const MyProfile = (props: IMyProfileProps) => {
                 <div className="personal-account-info-header__description">Добавьте информацию о себе</div>
             </div>
             <div className="my-profile-component personal-account-info-body">
-                <div onClick={() => {
-                    appRequest('/api/testing/remove-course', 'POST', {
-                        courseName: 'q'
-                    })
-                        .then(response => {
-                            console.log(response);
-                        });
-                }}>ДЕЛ</div>
-                <div onClick={() => {
-                    appRequest('/api/testing/courses-test', 'GET')
-                        .then(response => {
-                            console.log(response);
-                        });
-                }}>ВСЕ ТЕСТЫ</div>
                 {
                     isLoader ?
                         <div className="info-form-spinner__wrapper">

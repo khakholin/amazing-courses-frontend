@@ -64,6 +64,7 @@ const Courses = (props: ICourses) => {
                         // TODO get userProgress
                         return (
                             <DropdownList
+                                username={initialUserName}
                                 courseProgress={curCourse}
                                 items={item.courseLectures}
                                 key={item.courseName}
