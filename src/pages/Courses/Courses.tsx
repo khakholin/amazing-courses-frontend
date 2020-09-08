@@ -18,19 +18,19 @@ const Courses = (props: ICourses) => {
     // eslint-disable-next-line
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [dataList, setDataList] = useState<IUserCoursesData>();
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
 
     useEffect(() => {
-        appRequest('/api/user/available-courses', 'POST', { username: initialUserName })
+        appRequest('/api/user/available-courses', 'POST', { email: initialEmail })
             .then(response => {
                 appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
                     .then(response => {
                         setDataList(response.data);
                     });
             });
-        appRequest('/api/user/course-progress', 'POST', { username: initialUserName })
+        appRequest('/api/user/course-progress', 'POST', { email: initialEmail })
             .then(response => {
                 setUserCourseProgress(response.data);
             });
@@ -40,7 +40,7 @@ const Courses = (props: ICourses) => {
     useEffect(() => {
         if (!getCookieByName('auth')) {
             setCurrentMenuItem('MyProfile');
-            setInitialUserName('');
+            setInitialEmail('');
             appHistory.push('/login');
         }
         // eslint-disable-next-line
@@ -64,7 +64,7 @@ const Courses = (props: ICourses) => {
                         // TODO get userProgress
                         return (
                             <DropdownList
-                                username={initialUserName}
+                                email={initialEmail}
                                 courseProgress={curCourse}
                                 items={item.courseLectures}
                                 key={item.courseName}

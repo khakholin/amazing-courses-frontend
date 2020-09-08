@@ -28,14 +28,14 @@ export interface IPersonalAccount { };
 
 const PersonalAccount = (props: IPersonalAccount) => {
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
     const [currentUsername, setCurrentUsername] = useState<string>();
 
     useEffect(() => {
-        appRequest(endpoints.getProfile, 'GET')
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then((response: { data: IUserProfileResponse }) => {
                 setUserData(response.data)
             });
@@ -48,7 +48,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
     useEffect(() => {
         if (!getCookieByName('auth')) {
             setCurrentMenuItem('MyProfile');
-            setInitialUserName('');
+            setInitialEmail('');
             appHistory.push('/login');
         }
         // eslint-disable-next-line

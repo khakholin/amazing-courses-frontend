@@ -24,7 +24,7 @@ export interface IDropdownList {
     time: number;
     title: string;
     folder: string;
-    username: string;
+    email: string;
 }
 
 
@@ -65,7 +65,7 @@ const DropdownList = (props: IDropdownList) => {
                     setOpenTestingModal(true);
                 }
             });
-        appRequest('/api/user/testing-progress', 'POST', { username: props.username, courseName, lectureTitle })
+        appRequest('/api/user/testing-progress', 'POST', { email: props.email, courseName, lectureTitle })
             .then(response => {
                 if (response) {
                     if (response.data.message === 'COURSE_PROGRESS_NOT_FOUND') {
@@ -102,7 +102,7 @@ const DropdownList = (props: IDropdownList) => {
     const handleSubmit = (event: any) => {
         event.preventDefault()
         appRequest('/api/testing/check', 'POST', {
-            courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray, username: props.username,
+            courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray, email: props.email,
         })
             .then(response => {
                 handleCloseAddTestingModal();

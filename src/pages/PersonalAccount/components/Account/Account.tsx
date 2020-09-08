@@ -20,7 +20,7 @@ const Account = (props: IAccountProps) => {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' });
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [isLoader, setIsLoader] = useState(true);
     const [modalText, setModalText] = useState('');
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -32,7 +32,7 @@ const Account = (props: IAccountProps) => {
 
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
-        appRequest('/api/user/data', 'POST', { username: initialUserName })
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then((response: { data: IUserProfileResponse }) => {
                 setEmail(response.data.email);
                 setEmailError({ showCheck: (response.data.email ? true : false), status: false, text: '' });
@@ -69,7 +69,7 @@ const Account = (props: IAccountProps) => {
     };
 
     const onEditClick = () => {
-        appRequest('/api/user/data', 'POST', { username: initialUserName })
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then(response => {
                 setEmail(response.data.email);
                 setEmailError({ showCheck: (response.data.email ? true : false), status: false, text: '' });
@@ -85,7 +85,7 @@ const Account = (props: IAccountProps) => {
     }
 
     const onAcceptEmailClick = () => {
-        appRequest('/api/user/email-update', 'POST', { username: initialUserName, password: singlePassword.value, newEmail: email })
+        appRequest('/api/user/email-update', 'POST', { email: initialEmail, password: singlePassword.value, newEmail: email })
             .then((response) => {
                 if (response.data.status === 403) {
                     setModalText('Неверный пароль');
@@ -94,11 +94,12 @@ const Account = (props: IAccountProps) => {
                         handleCloseModal();
                     }, 4000);
                 } else {
-                    appRequest('/api/user/data', 'POST', { username: initialUserName })
-                        .then((response: { data: IUserProfileResponse }) => {
-                            setEmail(response.data.email);
-                            setEmailError({ showCheck: (response.data.email ? true : false), status: false, text: '' });
-                        });
+                    setInitialEmail(email)
+                    // appRequest('/api/user/data', 'POST', { email: initialEmail })
+                    //     .then((response: { data: IUserProfileResponse }) => {
+                    //         setEmail(response.data.email);
+                    //         setEmailError({ showCheck: (response.data.email ? true : false), status: false, text: '' });
+                    //     });
                     setModalText('Адрес электронной почты успешно изменен');
                     setOpenModal(true);
                     setTimeout(() => {
@@ -110,7 +111,7 @@ const Account = (props: IAccountProps) => {
     }
 
     const onAcceptPasswordClick = () => {
-        appRequest('/api/user/password-update', 'POST', { username: initialUserName, oldPassword: singlePassword.value, newPassword: password.value })
+        appRequest('/api/user/password-update', 'POST', { email: initialEmail, oldPassword: singlePassword.value, newPassword: password.value })
             .then((response) => {
                 if (response.data.status === 403) {
                     setModalText('Неверный пароль');

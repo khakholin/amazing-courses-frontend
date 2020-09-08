@@ -15,11 +15,11 @@ export interface IMyProfileProps { }
 
 const MyProfile = (props: IMyProfileProps) => {
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
-        appRequest('/api/user/data', 'POST', { username: initialUserName })
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then((response: { data: IUserProfileResponse }) => {
                 setRealName(response.data.realName);
                 setRealNameError({ ...realNameError, showCheck: (response.data.realName ? true : false), status: false });
@@ -146,10 +146,10 @@ const MyProfile = (props: IMyProfileProps) => {
         setTimeout(() => {
             handleCloseModal();
         }, 4000);
-        appRequest('/api/user/data-update', 'POST', { oldUserName: initialUserName, newUserName: userName, realName, realSurname, school, university, workPlace })
-            .then(response => {
-                setInitialUserName(userName);
-            });
+        // appRequest('/api/user/data-update', 'POST', { oldUserName: initialUserName, newUserName: userName, realName, realSurname, school, university, workPlace })
+        //     .then(response => {
+        //         setInitialUserName(userName);
+        //     });
     }
 
     const handleCloseModal = () => {
