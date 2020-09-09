@@ -7,7 +7,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import clsx from 'clsx';
 
-import { endpoints } from '../../constants/endpoints';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
@@ -28,14 +27,14 @@ export interface IPersonalAccount { };
 
 const PersonalAccount = (props: IPersonalAccount) => {
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
-    const [currentUsername, setCurrentUsername] = useState<string>();
+    // const [currentUsername, setCurrentUsername] = useState<string>();
 
     useEffect(() => {
-        appRequest(endpoints.getProfile, 'GET')
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then((response: { data: IUserProfileResponse }) => {
                 setUserData(response.data)
             });
@@ -48,7 +47,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
     useEffect(() => {
         if (!getCookieByName('auth')) {
             setCurrentMenuItem('MyProfile');
-            setInitialUserName('');
+            setInitialEmail('');
             appHistory.push('/login');
         }
         // eslint-disable-next-line
@@ -61,11 +60,6 @@ const PersonalAccount = (props: IPersonalAccount) => {
     const onUserProfileClick = (user: IUserProfileResponse) => {
         setCurrentUserProfile(user);
         setCurrentMenuItem('UserInformation');
-    }
-
-    const onStudentClick = (username: any) => {
-        setCurrentUserProfile(username);
-        setCurrentMenuItem('StudentInformation');
     }
 
     const infoForm = () => {
@@ -91,7 +85,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
             case 'StudentSuccess':
                 return (
                     <StudentSuccess
-                        username={userData?.username}
+                        email={userData?.email}
                         roles={userData?.roles}
                     />
                 )

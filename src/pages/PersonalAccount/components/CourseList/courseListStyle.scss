@@ -109,6 +109,7 @@
     }
 
     &__course-name {
+        text-align: center;
         margin: 10px 0;
         font-size: 20px;
         display: flex;
@@ -124,6 +125,7 @@
         height: 100%;
         flex-basis: 85%;
         display: flex;
+        justify-content: space-between;
         width: 100%;
         flex-wrap: wrap;
     }
@@ -133,10 +135,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        min-width: 160px;
-        max-width: 160px;
-        min-height: 60px;
-        max-height: 60px;
+        width: 260px;
+        min-height: 100px;
+        max-height: 100px;
         margin: 10px;
         color: $secondaryColor;
         border-radius: 4px;
@@ -239,7 +240,6 @@
                 }
 
                 &__title {
-                    padding-top: 4px;
                     color: $secondaryColor;
                 }
             }
@@ -249,13 +249,14 @@
                 align-items: center;
 
                 &-description {
+                    min-width: 85px;
                     color: $secondaryTextColorDefault;
                     margin-right: 10px;
                 }
 
                 &-data {
+                    padding: 10px 10px 10px 0;
                     color: $secondaryColor;
-
                 }
             }
 

@@ -60,6 +60,9 @@
     &-item {
         display: flex;
 
+        &__right-answer {
+            margin-top: 10px;
+        }
 
         &__right {
             width: 750px;
@@ -173,10 +176,6 @@
         display: flex;
         justify-content: center;
     }
-}
-
-.MuiRadio-colorSecondary.Mui-checked {
-    color: $mainColor
 }
 
 .MuiFormControlLabel-label {

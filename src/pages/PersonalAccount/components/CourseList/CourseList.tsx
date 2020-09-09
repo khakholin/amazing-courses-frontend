@@ -428,17 +428,6 @@ const CourseList = (props: ICourseListProps) => {
                                                                     <div className="course-list-component-lectures-list-progress">
                                                                         <div
                                                                             className="course-list-component-lectures-list-progress__item"
-                                                                        // onClick={() => onLectureAvailableClick(course.courseName, index)}
-                                                                        >
-                                                                            {/* {
-                                                            (availableLectures.find(item => item === index) !== undefined) ?
-                                                                <CheckBoxIcon className="course-list-component-lectures-list-progress__checkbox" /> :
-                                                                <CheckBoxOutlineBlankIcon className="course-list-component-lectures-list-progress__checkbox" />
-                                                        }
-                                                        <div className="course-list-component-lectures-list-progress__title">Доступна</div> */}
-                                                                        </div>
-                                                                        <div
-                                                                            className="course-list-component-lectures-list-progress__item"
                                                                             onClick={() => {
                                                                                 appRequest('/api/testing/data-edit', 'POST', { courseName: selectedCourseData.courseName, lectureTitle: item.lectureTitle })
                                                                                     .then(response => {

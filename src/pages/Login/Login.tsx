@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import BGContent from '../../components/common/BGContent/BGContent';
 import InputField from '../../components/common/InputField/InputField';
 import ModalComponent from '../../components/common/ModalComponent/ModalComponent';
-import { REPLACEABLE_FIELD_NAME, emailRegExp, textEngRegExp } from '../../constants/common';
+import { REPLACEABLE_FIELD_NAME, emailRegExp, textRusRealNameRegExp } from '../../constants/common';
 import { endpoints } from '../../constants/endpoints';
 import * as translation from '../../constants/translation';
 import appHistory from '../../modules/app/appHistory';
@@ -23,7 +23,7 @@ type TLogin = RouteComponentProps;
 
 const Login = (props: TLogin) => {
     // eslint-disable-next-line
-    const [initialUserName, setInitialUserName] = useLocalStorage('initialUserName', '');
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     // eslint-disable-next-line
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [confirmPassword, setConfirmPassword] = useState({ value: '', show: false });
@@ -31,8 +31,10 @@ const Login = (props: TLogin) => {
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState({ showCheck: false, status: false, text: '' });
     const [forgotPassword, setForgotPassword] = useState(false);
-    const [userName, setUserName] = useState('');
-    const [userNameError, setUserNameError] = useState({ showCheck: false, status: false, text: '' });
+    const [realName, setRealName] = useState('');
+    const [realNameError, setRealNameError] = useState({ showCheck: false, status: false, text: '' });
+    const [realSurname, setRealSurname] = useState('');
+    const [realSurnameError, setRealSurnameError] = useState({ showCheck: false, status: false, text: '' });
     const [modalText, setModalText] = useState('');
     const [modalTitle, setModalTitle] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -45,10 +47,43 @@ const Login = (props: TLogin) => {
         setConfirmPasswordError({ showCheck: false, status: false, text: '' });
         setEmail('');
         setEmailError({ showCheck: false, status: false, text: '' });
-        setUserName('');
-        setUserNameError({ showCheck: false, status: false, text: '' });
+        setRealName('');
+        setRealNameError({ showCheck: false, status: false, text: '' });
+        setRealSurname('');
+        setRealSurnameError({ showCheck: false, status: false, text: '' });
         setPassword({ value: '', show: false });
         setPasswordError({ showCheck: false, status: false, text: '' });
+    }
+
+    const emptyFieldHandler = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+        if (!event.target.value) {
+            switch (field) {
+                case 'email':
+                    setEmailError({
+                        showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                            .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.email)
+                    });
+                    break;
+                case 'realName':
+                    setRealNameError({
+                        showCheck: false, status: true, text: 'Имя обязательно для заполнения'
+                    });
+                    break;
+                case 'realSurname':
+                    setRealSurnameError({
+                        showCheck: false, status: true, text: 'Фамилия обязательна для заполнения'
+                    });
+                    break;
+                case 'password':
+                    setPasswordError({
+                        showCheck: false, status: true, text: translation.defaultTranslation.requiredField
+                            .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.password)
+                    });
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     const confirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -123,13 +158,12 @@ const Login = (props: TLogin) => {
     const handleRegistration = () => {
         appRequest('/api/user/registration', 'POST',
             {
-                username: userName,
                 password: password.value,
                 email: email.toLowerCase(),
                 availableCourses: [],
                 courseProgress: [],
-                realName: '',
-                realSurname: '',
+                realName: realName,
+                realSurname: realSurname,
                 roles: ['user'],
                 school: '',
                 university: '',
@@ -152,68 +186,83 @@ const Login = (props: TLogin) => {
         clearData();
     }
 
-    const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setUserName(event.target.value.trim());
-        if (registration) {
-            if (event.target.value.trim().length) {
-                for (let i = 0; i < event.target.value.trim().length; i++) {
-                    if (event.target.value[i] === ' ') {
-                        setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
-                        return
-                    }
+    const realNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setRealName(event.target.value.trim());
+
+        if (event.target.value.trim().length) {
+            for (let i = 0; i < event.target.value.trim().length; i++) {
+                if (event.target.value[i] === ' ') {
+                    setRealNameError({ showCheck: false, status: true, text: 'Имя может состоять из букв криллицы и не должно содержать пробелы' });
+                    return
                 }
-                if (!textEngRegExp.test(event.target.value)) {
-                    setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
-                } else {
-                    if (event.target.value.trim().length < 5) {
-                        setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength })
-                    } else {
-                        setUserNameError({ showCheck: true, status: false, text: '' })
-                    }
-                }
+            }
+            if (!textRusRealNameRegExp.test(event.target.value)) {
+                setRealNameError({ showCheck: false, status: true, text: 'Имя может состоять из букв криллицы и не должно содержать пробелы' });
             } else {
-                setUserNameError({
-                    showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                        .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
-                })
+                if (event.target.value.trim().length < 1) {
+                    setRealNameError({ showCheck: false, status: true, text: 'Минимальная длина имени - 1 символ' })
+                } else {
+                    setRealNameError({ showCheck: true, status: false, text: '' })
+                }
             }
         } else {
-            event.target.value.trim().length ? (
-                setUserNameError({ showCheck: true, status: false, text: '' })
-            ) : setUserNameError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
+            setRealNameError({
+                showCheck: false, status: true, text: 'Имя обязательно для заполнения'
             })
         }
-    };
+    }
+
+    const realSurnameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setRealSurname(event.target.value.trim());
+
+        if (event.target.value.trim().length) {
+            for (let i = 0; i < event.target.value.trim().length; i++) {
+                if (event.target.value[i] === ' ') {
+                    setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия может состоять из букв криллицы, знака тире и не должна содержать пробелы' });
+                    return
+                }
+            }
+            if (!textRusRealNameRegExp.test(event.target.value)) {
+                setRealSurnameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не должна содержать пробелы' });
+            } else {
+                if (event.target.value.trim().length < 1) {
+                    setRealSurnameError({ showCheck: false, status: true, text: 'Минимальная длина фамилии - 1 символ' })
+                } else {
+                    setRealSurnameError({ showCheck: true, status: false, text: '' })
+                }
+            }
+        } else {
+            setRealSurnameError({
+                showCheck: false, status: true, text: 'Фамилия обязательна для заполнения'
+            })
+        }
+    }
 
     const onEnterClickHandler = () => {
-        appRequest(endpoints.authLogin, 'POST', { username: userName, password: password.value })
+        appRequest(endpoints.authLogin, 'POST', { username: email, password: password.value })
             .then((response: IResponse) => {
                 const authCookie = response.data?.access_token;
-                setCookie('auth', authCookie ? authCookie : '', {}, 3600);
+                setCookie('auth', authCookie ? authCookie : '', {}, 604800);
                 if (response.data.message === EResponseMessages.Unauthorized) {
                     handleOpenModal('Неверный пользователь или пароль', 'Ошибка');
                 } else {
-                    setInitialUserName(userName);
+                    setInitialEmail(email);
                     appHistory.push('/personal-area');
                 }
             });
     };
 
     const passwordComparison = (realPassword: string) => {
-        realPassword ? (
-            confirmPassword.value === realPassword ?
-                setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
-                setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
-        ) : setConfirmPasswordError({ showCheck: false, status: false, text: '' })
+        confirmPassword.value === realPassword ?
+            setConfirmPasswordError({ showCheck: true, status: false, text: '' }) :
+            setConfirmPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordMismatch })
     };
 
     const passwordChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setPassword({ ...password, value: event.target.value });
         if (registration) {
+            passwordComparison(event.target.value);
             if (event.target.value.length) {
-                passwordComparison(event.target.value);
                 for (let i = 0; i < event.target.value.length; i++) {
                     if (event.target.value[i] === ' ') {
                         setPasswordError({ showCheck: false, status: true, text: translation.defaultTranslation.passwordRequirements });
@@ -272,19 +321,33 @@ const Login = (props: TLogin) => {
                                 title: translation.defaultTranslation.email,
                                 placeholder: translation.defaultTranslation.emailPlaceholder,
                             }}
+                            handleBlur={(event: any) => emptyFieldHandler(event, 'email')}
                             handleChange={emailChange}
                             value={email}
                         />
                         <InputField
                             enterClick={handleRegistration}
-                            error={userNameError}
+                            error={realNameError}
                             field={{
-                                name: 'login',
-                                title: translation.defaultTranslation.userName,
-                                placeholder: translation.defaultTranslation.userNamePlaceholder,
+                                name: 'realName',
+                                title: 'Имя',
+                                placeholder: 'Евкакий',
                             }}
-                            handleChange={userNameChange}
-                            value={userName}
+                            handleBlur={(event: any) => emptyFieldHandler(event, 'realName')}
+                            handleChange={realNameChange}
+                            value={realName}
+                        />
+                        <InputField
+                            enterClick={handleRegistration}
+                            error={realSurnameError}
+                            field={{
+                                name: 'realSurname',
+                                title: 'Фамилия',
+                                placeholder: 'Премудрый',
+                            }}
+                            handleBlur={(event: any) => emptyFieldHandler(event, 'realSurname')}
+                            handleChange={realSurnameChange}
+                            value={realSurname}
                         />
                         <InputField
                             enterClick={handleRegistration}
@@ -294,6 +357,7 @@ const Login = (props: TLogin) => {
                                 title: translation.defaultTranslation.password,
                                 placeholder: translation.defaultTranslation.passwordPlaceholder,
                             }}
+                            handleBlur={(event: any) => emptyFieldHandler(event, 'password')}
                             handleChange={passwordChange}
                             passwordShowClick={passwordShowClick}
                             value={password}
@@ -312,7 +376,9 @@ const Login = (props: TLogin) => {
                         />
                         <div className="buttons-container_column">
                             {
-                                emailError.showCheck && userNameError.showCheck && passwordError.showCheck && confirmPasswordError.showCheck ?
+                                emailError.showCheck &&
+                                    // userNameError.showCheck && 
+                                    passwordError.showCheck && confirmPasswordError.showCheck ?
                                     <Button
                                         className="button-primary button-primary_full-width button_column-margin"
                                         variant="outlined"
@@ -391,8 +457,19 @@ const Login = (props: TLogin) => {
                                     title={translation.defaultTranslation.enterTitle}
                                 >
                                     <InputField
+                                        enterClick={emailError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
+                                        error={emailError}
+                                        field={{
+                                            name: 'email',
+                                            title: translation.defaultTranslation.email,
+                                            placeholder: translation.defaultTranslation.emailPlaceholder,
+                                        }}
+                                        handleChange={emailChange}
+                                        value={email}
+                                    />
+                                    {/* <InputField
                                         enterClick={userNameError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
-                                        error={userNameError}
+                                        error={emailError}
                                         field={{
                                             name: 'login',
                                             title: translation.defaultTranslation.userName,
@@ -400,9 +477,9 @@ const Login = (props: TLogin) => {
                                         }}
                                         handleChange={userNameChange}
                                         value={userName}
-                                    />
+                                    /> */}
                                     <InputField
-                                        enterClick={userNameError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
+                                        enterClick={emailError.showCheck && passwordError.showCheck ? onEnterClickHandler : null}
                                         error={passwordError}
                                         field={{
                                             name: 'password',
@@ -415,7 +492,7 @@ const Login = (props: TLogin) => {
                                     />
                                     <div className="buttons-container_row">
                                         {
-                                            userNameError.showCheck && passwordError.showCheck ?
+                                            emailError.showCheck && passwordError.showCheck ?
                                                 <Button
                                                     className="button-primary"
                                                     variant="outlined"

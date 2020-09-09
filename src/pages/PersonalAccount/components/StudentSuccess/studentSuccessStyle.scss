@@ -3,10 +3,120 @@
 @import "../../../../theme/styles/pallete.scss";
 @import "../../../../theme/styles/buttons.scss";
 
-.student-success-component {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.student-success {
+    &-component {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+
+    &-course {
+        margin: 10px 0;
+        border: 1px solid $bgcPageDefault;
+        width: 100%;
+        height: 200px;
+
+        &-header {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 40px;
+            border-bottom: 1px solid $bgcPageDefault;
+        }
+
+        &-body {
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+
+            &__left {
+                display: flex;
+                align-items: center;
+
+            }
+
+            &__lecture {
+                padding-left: 10px;
+                display: flex;
+                justify-content: space-between;
+                min-height: 40px;
+                border-bottom: 1px solid $bgcPageDefault;
+
+                &-title {
+                    padding: 10px 0;
+                    color: #285473;
+                    margin-right: 20px;
+                }
+            }
+
+            &__right-answers {
+                color: green;
+                margin-right: 5px;
+            }
+
+            &__total-answers {
+                color: $mainColor;
+                margin-left: 5px;
+            }
+
+            &__text {
+                min-width: 85px;
+                color: #828282;
+                margin-right: 10px;
+            }
+
+            &__show-more {
+                margin-left: 5px;
+                padding: 0 5px;
+                display: flex;
+                align-items: center;
+                height: 100%;
+                color: #285473;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: $secondaryColorHover;
+                }
+            }
+
+            &__show-icon {
+                transform: scale(-1, 1);
+            }
+
+            &__empty {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+                color: red;
+            }
+        }
+    }
+
+    &-header {
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &__title {
+            color: #828282;
+            margin: 0 5px;
+        }
+
+        &__user {
+            color: #285473;
+        }
+    }
+
+    &-wrapper {
+        padding: 0 20px;
+        height: 100%;
+        width: 100%;
+    }
 }

@@ -26,11 +26,11 @@ const UserInformation = (props: IUserInformationProps) => {
             .then((response) => {
                 setCoursesDataList(response.data.courses);
             });
-        appRequest('/api/user/usernames', 'GET')
+        appRequest('/api/user/get-users', 'GET')
             .then(response => {
-                setUsernameList(response.data)
+                setUsersList(response.data)
             });
-        appRequest('/api/user/mentors', 'POST', { username: props.user?.username })
+        appRequest('/api/user/mentors', 'POST', { email: props.user?.email })
             .then(response => {
                 setUserMentors(response.data);
             });
@@ -39,15 +39,15 @@ const UserInformation = (props: IUserInformationProps) => {
 
     const [courseList, setCourseList] = useState([]);
     const [userMentors, setUserMentors] = useState([]);
-    const [usernameList, setUsernameList] = useState([]);
+    const [usersList, setUsersList] = useState([]);
     const [userAvailableCourses, setUserAvailableCourses] = useState<string[] | undefined>([]);
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
     const [coursesDataList, setCoursesDataList] = useState<ICourseData[]>([]);
 
     const onCourseClick = (course: string) => {
-        appRequest('/api/user/change-courses', 'POST', { username: props.user?.username, courseName: course })
+        appRequest('/api/user/change-courses', 'POST', { email: props.user?.email, courseName: course })
             .then(response => {
-                appRequest('/api/user/available-courses', 'POST', { username: props.user?.username })
+                appRequest('/api/user/available-courses', 'POST', { email: props.user?.email })
                     .then(response => {
                         setUserAvailableCourses(response.data);
                         appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
@@ -59,9 +59,9 @@ const UserInformation = (props: IUserInformationProps) => {
     }
 
     const onUsernameClick = (mentor: string) => {
-        appRequest('/api/user/change-mentors', 'POST', { username: props.user?.username, mentor })
+        appRequest('/api/user/change-mentors', 'POST', { email: props.user?.email, mentor })
             .then(response => {
-                appRequest('/api/user/mentors', 'POST', { username: props.user?.username })
+                appRequest('/api/user/mentors', 'POST', { email: props.user?.email })
                     .then(response => {
                         setUserMentors(response.data);
                     });
@@ -69,9 +69,9 @@ const UserInformation = (props: IUserInformationProps) => {
     }
 
     const onLectureAvailableClick = (course: string, availableLecture: number) => {
-        appRequest('/api/user/change-available-lecture', 'POST', { username: props.user?.username, courseName: course, availableLecture })
+        appRequest('/api/user/change-available-lecture', 'POST', { email: props.user?.email, courseName: course, availableLecture })
             .then(response => {
-                appRequest('/api/user/course-progress', 'POST', { username: props.user?.username })
+                appRequest('/api/user/course-progress', 'POST', { email: props.user?.email })
                     .then(response => {
                         setUserCourseProgress(response.data);
                     });
@@ -79,9 +79,9 @@ const UserInformation = (props: IUserInformationProps) => {
     }
 
     const onLectureCheckedClick = (course: string, checkedLecture: number) => {
-        appRequest('/api/user/change-check-lecture', 'POST', { username: props.user?.username, courseName: course, checkedLecture })
+        appRequest('/api/user/change-check-lecture', 'POST', { email: props.user?.email, courseName: course, checkedLecture })
             .then(response => {
-                appRequest('/api/user/course-progress', 'POST', { username: props.user?.username })
+                appRequest('/api/user/course-progress', 'POST', { email: props.user?.email })
                     .then(response => {
                         setUserCourseProgress(response.data);
                     });
@@ -91,10 +91,6 @@ const UserInformation = (props: IUserInformationProps) => {
     return (
         <div className="user-information-component personal-account-info-body">
             <div className="user-information-component-profile">
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Логин:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.username}</div>
-                </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Email:</div>
                     <div className="user-information-component-profile__item-data">{props.user?.email}</div>
@@ -128,12 +124,14 @@ const UserInformation = (props: IUserInformationProps) => {
                     </Tooltip>
                 </div>
                 <div className="user-information-component-courses-list">
-                    {usernameList.map((item) => {
-                        const checked = userMentors.find(mentor => item === mentor);
+                    {usersList.map((item: any) => {
+                        const checked = userMentors.find(mentor => item.email === mentor);
+                        console.log(item);
+
                         return (
                             <div
                                 className="user-information-component-courses-list__item"
-                                onClick={() => onUsernameClick(item)}
+                                onClick={() => onUsernameClick(item.email)}
                             >
                                 {
                                     checked ?
@@ -141,7 +139,7 @@ const UserInformation = (props: IUserInformationProps) => {
                                         <CheckBoxOutlineBlankIcon className="user-information-component-courses-list__checkbox" />
 
                                 }
-                                <div className="user-information-component-courses-list__title" >{item}</div>
+                                <div className="user-information-component-courses-list__title" >{item.realName + ' ' + item.realSurname}</div>
                             </div>
                         )
                     })}
