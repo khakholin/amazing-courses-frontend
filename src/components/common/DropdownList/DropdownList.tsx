@@ -1,10 +1,12 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import clsx from 'clsx';
 import Collapse from '@material-ui/core/Collapse';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
 import DescriptionIcon from '@material-ui/icons/Description';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 import timeConversion from '../../../utils/timeConversion';
 import { ILectureData } from '../../../types/inputPropsFormats';
@@ -15,7 +17,7 @@ import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
 import { appRequest } from '../../../modules/app/appRequest';
 import ModalComponent from '../ModalComponent/ModalComponent';
-import { FormControl, FormLabel, FormControlLabel, Radio, RadioGroup, Button, Input } from '@material-ui/core';
+import { FormControlLabel, Radio, RadioGroup, Button, Input, withStyles, InputAdornment } from '@material-ui/core';
 
 export interface IDropdownList {
     courseProgress: IUserCourseProgress | undefined;
@@ -27,18 +29,44 @@ export interface IDropdownList {
     email: string;
 }
 
+const GreenRadio = withStyles({
+    root: {
+        '&$checked': {
+            color: 'green',
+        },
+    },
+    checked: {},
+})((props) => <Radio color="default" {...props} />);
+
+const RedRadio = withStyles({
+    root: {
+        '&$checked': {
+            color: 'red',
+        },
+    },
+    checked: {},
+})((props) => <Radio color="default" {...props} />);
 
 const DropdownList = (props: IDropdownList) => {
+    useEffect(() => {
+        appRequest('/api/testing/available-tests', 'POST', { courseName: props.title })
+            .then((response) => {
+                setIsAvailableLecturesTests(response.data.courseTests);
+            });
+        // eslint-disable-next-line
+    }, [])
     const [expanded, setExpanded] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [openTestingModal, setOpenTestingModal] = useState(false);
     const [currentTestingData, setCurrentTestingData] = useState([]);
     const [answersArray, setAnswersArray] = useState<any>([]);
+    const [userAnswersArray, setUserAnswersArray] = useState<any>([]);
     const [modalTitle, setModalTitle] = useState('');
     const [openedLecture, setOpenedLecture] = useState(-1);
     const [isAcceptButtonActive, setIsAcceptButtonActive] = useState(false);
     const [isAlreadyTested, setIsAlreadyTested] = useState(false);
-    const [answersPercent, setAnswersPercent] = useState(0);
+    const [answersResult, setAnswersResult] = useState<any>({});
+    const [isAvailableLecturesTests, setIsAvailableLecturesTests] = useState([]);
     // eslint-disable-next-line
     const [updateFlag, setUpdateFlag] = useState(0);
 
@@ -70,11 +98,12 @@ const DropdownList = (props: IDropdownList) => {
                 if (response) {
                     if (response.data.message === 'COURSE_PROGRESS_NOT_FOUND') {
                         setIsAlreadyTested(false);
-                        setAnswersPercent(0);
+                        setAnswersResult('');
                     } else {
-                        setAnswersArray(response.data.answers);
+                        setAnswersArray(response.data.answers.map((item: any) => item.rightAnswer));
+                        setUserAnswersArray(response.data.answers.map((item: any) => item.userAnswer));
                         setIsAlreadyTested(true);
-                        setAnswersPercent(response.data.percent);
+                        setAnswersResult(response.data.result);
                     }
                 }
             });
@@ -83,6 +112,7 @@ const DropdownList = (props: IDropdownList) => {
     const handleCloseAddTestingModal = () => {
         setCurrentTestingData([]);
         setAnswersArray([]);
+        setUserAnswersArray([]);
         setIsAlreadyTested(false);
         setOpenTestingModal(false);
         setIsAcceptButtonActive(false);
@@ -99,8 +129,7 @@ const DropdownList = (props: IDropdownList) => {
         setUpdateFlag(updateFlag + 1);
     };
 
-    const handleSubmit = (event: any) => {
-        event.preventDefault()
+    const handleSubmit = () => {
         appRequest('/api/testing/check', 'POST', {
             courseName: props.title, lectureTitle: modalTitle, lectureAnswers: answersArray, email: props.email,
         })
@@ -143,7 +172,6 @@ const DropdownList = (props: IDropdownList) => {
                             'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(item => item === index) !== undefined),
                             'dropdown-list-item__line_inactive': (props.courseProgress?.checkedLectures.find(item => item === index) === undefined),
                         });
-
                         return (
                             <div
                                 className={dropDownListItemClass}
@@ -173,7 +201,7 @@ const DropdownList = (props: IDropdownList) => {
                                     </div>
                                     <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
                                 </div>
-                                <div className="dropdown-list-item__testing" style={!expanded ? { display: 'none' } : { display: 'flex' }} onClick={() => {
+                                <div className="dropdown-list-item__testing" style={(!expanded || !isAvailableLecturesTests?.find((l: any) => l?.lectureTitle === item.lectureTitle && l?.lectureQuestions?.length)) ? { display: 'none' } : { display: 'flex' }} onClick={() => {
                                     if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
                                         onTestingClick(props.title, item.lectureTitle)
                                     }
@@ -205,55 +233,90 @@ const DropdownList = (props: IDropdownList) => {
                     >
                         {
                             isAlreadyTested ?
-                                <div>Результат прохождения: {+(answersPercent * 100).toFixed()}% правильных ответов</div> :
+                                <div>Правильных ответов: {answersResult.right} из {answersResult.total}</div> :
                                 <Fragment />
                         }
-                        <form onSubmit={handleSubmit}>
-                            <FormControl component="fieldset" className="dropdown-list-form">
-                                {
-                                    currentTestingData?.map((item: any, index: number) => {
-                                        return (
-                                            <div className="dropdown-list-question" key={index}>
-                                                <div className="dropdown-list-question__number">Вопрос № {index + 1}</div>
-                                                <FormLabel className="dropdown-list-question__label" component="legend">{item.question}</FormLabel>
-                                                {item.isAnswerOptions ?
-                                                    <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
-                                                        {
-                                                            item?.answerOptions?.map((option: any, i: number) => {
-                                                                return isAlreadyTested ?
-                                                                    <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} disabled label={option} checked={answersArray[index] === option} /> :
-                                                                    <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
-                                                            })
+                        <div className="dropdown-list-form">
+                            {
+                                currentTestingData?.map((item: any, index: number) => {
+                                    return (
+                                        <div className="dropdown-list-question" key={index}>
+                                            <div className="dropdown-list-question__number">Вопрос № {index + 1}</div>
+                                            <div className="dropdown-list-question__label">{item.question}</div>
+                                            {item.isAnswerOptions ?
+                                                <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
+                                                    {
+                                                        item?.answerOptions?.map((option: any, i: number) => {
+                                                            return isAlreadyTested ?
+                                                                <FormControlLabel control=
+                                                                    {
+                                                                        answersArray[index] === option ?
+                                                                            <GreenRadio /> :
+                                                                            <RedRadio />
+
+                                                                    }
+                                                                    disabled label={option} checked={answersArray[index] === option || userAnswersArray[index] === option}
+                                                                /> :
+                                                                <FormControlLabel value={option} control={<Radio className="dropdown-list-item__radio" />} label={option} />
+                                                        })
+                                                    }
+                                                </RadioGroup> :
+                                                <Fragment>
+                                                    <Input
+                                                        className="dropdown-list-item__input"
+                                                        disabled={isAlreadyTested ? true : false}
+                                                        multiline
+                                                        onChange={(e: any) => handleAnswerChange(e, index)}
+                                                        placeholder="Правильный ответ"
+                                                        value={userAnswersArray[index]}
+                                                        startAdornment={
+                                                            <InputAdornment position="start">
+                                                                {
+                                                                    isAlreadyTested ?
+                                                                        (
+                                                                            answersArray[index] === userAnswersArray[index] ?
+                                                                                <CheckIcon style={{ 'color': 'green' }} /> :
+                                                                                <CloseIcon style={{ 'color': 'red' }} />
+                                                                        )
+                                                                        : <Fragment />
+                                                                }
+                                                            </InputAdornment>
                                                         }
-                                                    </RadioGroup> :
-                                                    <Input disabled={isAlreadyTested ? true : false} className="dropdown-list-item__input" placeholder="Правильный ответ" multiline value={answersArray[index]} onChange={(e: any) => handleAnswerChange(e, index)} />
-                                                }
-                                            </div>
-                                        )
-                                    })
-                                }
-                                <div className="dropdown-list-buttons">
-                                    {
-                                        //ЗАМЕНИТЬ
-                                        isAcceptButtonActive ?
-                                            <Button
-                                                className="button-primary"
-                                                type="submit"
-                                                variant="outlined"
-                                                onClick={() => { }}
-                                            >
-                                                Отправить на проверку
+                                                    />
+                                                    {
+                                                        isAlreadyTested && (answersArray[index] !== userAnswersArray[index]) ?
+                                                            <Fragment>
+                                                                <br></br>
+                                                                <div className="dropdown-list-item__right-answer">Правильный ответ: {answersArray[index]}</div>
+                                                            </Fragment>
+                                                            : <Fragment />
+                                                    }
+                                                </Fragment>
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                            <div className="dropdown-list-buttons">
+                                {
+                                    isAcceptButtonActive ?
+                                        <Button
+                                            className="button-primary"
+                                            type="submit"
+                                            variant="outlined"
+                                            onClick={() => handleSubmit()}
+                                        >
+                                            Отправить на проверку
                                     </Button> :
-                                            <Button
-                                                disabled
-                                                variant="outlined"
-                                            >
-                                                Отправить на проверку
+                                        <Button
+                                            disabled
+                                            variant="outlined"
+                                        >
+                                            Отправить на проверку
                                     </Button>
-                                    }
-                                </div>
-                            </FormControl>
-                        </form>
+                                }
+                            </div>
+                        </div>
                     </ModalComponent> : <Fragment />
             }
         </div>

@@ -7,7 +7,6 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import clsx from 'clsx';
 
-import { endpoints } from '../../constants/endpoints';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
@@ -32,7 +31,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
-    const [currentUsername, setCurrentUsername] = useState<string>();
+    // const [currentUsername, setCurrentUsername] = useState<string>();
 
     useEffect(() => {
         appRequest('/api/user/data', 'POST', { email: initialEmail })
@@ -63,11 +62,6 @@ const PersonalAccount = (props: IPersonalAccount) => {
         setCurrentMenuItem('UserInformation');
     }
 
-    const onStudentClick = (username: any) => {
-        setCurrentUserProfile(username);
-        setCurrentMenuItem('StudentInformation');
-    }
-
     const infoForm = () => {
         switch (currentMenuItem) {
             case 'MyProfile':
@@ -91,7 +85,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
             case 'StudentSuccess':
                 return (
                     <StudentSuccess
-                        username={userData?.username}
+                        email={userData?.email}
                         roles={userData?.roles}
                     />
                 )

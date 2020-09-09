@@ -20,6 +20,7 @@ export interface IInputField {
     enterClick?: () => void | null;
     error: IErrorFormat;
     field: IFieldFormat;
+    handleBlur?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     onEditClick?: () => void;
     passwordShowClick?: () => void;
@@ -65,6 +66,7 @@ const InputField = (props: any) => {
                     error={props.error.status}
                     id={inputId}
                     onChange={event => props.handleChange(event)}
+                    onBlur={event => props.handleBlur && props.handleBlur(event)}
                     placeholder={props.field.placeholder}
                     type={(props.field.name === 'password' || props.field.name === 'confirm-password') ? (props.value.show ? 'text' : 'password') : 'text'}
                     value={

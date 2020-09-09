@@ -86,7 +86,7 @@
     &-lectures {
         margin: 0 20px 40px;
         background-color: white;
-        height: 200px;
+        height: 240px;
         border: 1px solid $bgcPageDefault;
 
         &__header {
@@ -94,15 +94,17 @@
             padding: 0 10px;
             justify-content: space-between;
             align-items: center;
-            height: 40px;
+            min-height: 80px;
             background-color: white;
             border-bottom: 1px solid $bgcPageDefault;
 
             &-course {
+                padding: 10px 0;
                 color: $secondaryColor;
             }
 
             &-description {
+                min-width: 200px;
                 display: flex;
                 align-items: center;
             }
@@ -144,22 +146,23 @@
                 }
 
                 &__title {
-                    padding-top: 4px;
                     color: $secondaryColor;
                 }
             }
 
             &__title {
                 display: flex;
+                align-items: center;
 
                 &-description {
+                    min-width: 85px;
                     color: $secondaryTextColorDefault;
                     margin-right: 10px;
                 }
 
                 &-data {
+                    padding: 10px 10px 10px 0;
                     color: $secondaryColor;
-
                 }
             }
 

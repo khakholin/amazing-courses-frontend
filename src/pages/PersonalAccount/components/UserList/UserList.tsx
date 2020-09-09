@@ -6,20 +6,24 @@ import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
 
 import './userListStyle.scss';
+import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 
 export interface IUserListProps {
     onUserProfileClick: (user: IUserProfileResponse) => void;
 }
 
 const UserList = (props: IUserListProps) => {
+    // eslint-disable-next-line
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [users, setUsers] = useState([]);
     const [isLoader, setIsLoader] = useState(true);
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
-        appRequest(endpoints.getAllUsers, 'GET')
+        appRequest(endpoints.getAllUsers, 'POST', { email: initialEmail })
             .then((response) => {
                 setUsers(response.data);
             });
+        // eslint-disable-next-line
     }, []);
 
     return (
@@ -49,7 +53,7 @@ const UserList = (props: IUserListProps) => {
                                             className="user-list-component__item"
                                             onClick={() => props.onUserProfileClick(user)}
                                         >
-                                            {user.username}
+                                            {user.realName + ' ' + user.realSurname}
                                         </div>
                                     )
                                 })

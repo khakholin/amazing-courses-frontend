@@ -2,8 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react';
 import { Button, CircularProgress } from '@material-ui/core';
 
 import InputField from '../../../../components/common/InputField/InputField';
-import { REPLACEABLE_FIELD_NAME, textRusRealNameRegExp, textRusRealSurnameRegExp, textEngRegExp } from '../../../../constants/common';
-import * as translation from '../../../../constants/translation';
+import { textRusRealNameRegExp, } from '../../../../constants/common';
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse } from '../../../../types/responseTypes';
@@ -29,7 +28,6 @@ const MyProfile = (props: IMyProfileProps) => {
                 setSchoolError({ ...schoolError, showCheck: (response.data.school ? true : false), status: false });
                 setUniversity(response.data.university);
                 setUniversityError({ ...universityError, showCheck: (response.data.university ? true : false), status: false });
-                setUserName(response.data.username);
                 setUserNameError({ ...userNameError, showCheck: (response.data.username ? true : false), status: false });
                 setWorkPlace(response.data.workPlace);
                 setWorkPlaceError({ ...workPlaceError, showCheck: (response.data.workPlace ? true : false), status: false });
@@ -44,73 +42,60 @@ const MyProfile = (props: IMyProfileProps) => {
     const [schoolError, setSchoolError] = useState({ showCheck: false, status: false, text: '' });
     const [university, setUniversity] = useState('');
     const [universityError, setUniversityError] = useState({ showCheck: false, status: false, text: '' });
-    const [userName, setUserName] = useState('');
     const [userNameError, setUserNameError] = useState({ showCheck: false, status: false, text: '' });
     const [workPlace, setWorkPlace] = useState('');
     const [workPlaceError, setWorkPlaceError] = useState({ showCheck: false, status: false, text: '' });
     const [openModal, setOpenModal] = useState(false);
 
-    const userNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setUserName(event.target.value.trim());
-        if (event.target.value.trim().length) {
-            for (let i = 0; i < event.target.value.trim().length; i++) {
-                if (event.target.value[i] === ' ') {
-                    setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
-                    return
-                }
-            }
-            if (!textEngRegExp.test(event.target.value)) {
-                setUserNameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не содержать пробелы' });
-            } else {
-                if (event.target.value.trim().length < 5) {
-                    setUserNameError({ showCheck: false, status: true, text: translation.defaultTranslation.minimumLoginLength })
-                } else {
-                    setUserNameError({ showCheck: true, status: false, text: '' })
-                }
-            }
-        } else {
-            setUserNameError({
-                showCheck: false, status: true, text: translation.defaultTranslation.requiredField
-                    .replace(REPLACEABLE_FIELD_NAME, translation.defaultTranslation.userName)
-            })
-        }
-    };
-
     const realNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setRealName(event.target.value.trim());
+
         if (event.target.value.trim().length) {
             for (let i = 0; i < event.target.value.trim().length; i++) {
                 if (event.target.value[i] === ' ') {
-                    setRealNameError({ showCheck: false, status: true, text: 'Имя должно состоять из букв русского алфавита и не содержать пробелы' });
+                    setRealNameError({ showCheck: false, status: true, text: 'Имя может состоять из букв криллицы и не должно содержать пробелы' });
                     return
                 }
             }
-            if (textRusRealNameRegExp.test(event.target.value)) {
-                setRealNameError({ showCheck: true, status: false, text: '' });
+            if (!textRusRealNameRegExp.test(event.target.value)) {
+                setRealNameError({ showCheck: false, status: true, text: 'Имя может состоять из букв криллицы и не должно содержать пробелы' });
             } else {
-                setRealNameError({ showCheck: false, status: true, text: 'Имя должно состоять из букв русского алфавита и не содержать пробелы' });
+                if (event.target.value.trim().length < 1) {
+                    setRealNameError({ showCheck: false, status: true, text: 'Минимальная длина имени - 1 символ' })
+                } else {
+                    setRealNameError({ showCheck: true, status: false, text: '' })
+                }
             }
         } else {
-            setRealNameError({ showCheck: false, status: false, text: '' });
+            setRealNameError({
+                showCheck: false, status: true, text: 'Имя обязательно для заполнения'
+            })
         }
     };
 
     const realSurnameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setRealSurname(event.target.value.trim());
+
         if (event.target.value.trim().length) {
             for (let i = 0; i < event.target.value.trim().length; i++) {
                 if (event.target.value[i] === ' ') {
-                    setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия должна состоять из букв русского алфавита, тире и не содержать пробелы' });
+                    setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия может состоять из букв криллицы, знака тире и не должна содержать пробелы' });
                     return
                 }
             }
-            if (textRusRealSurnameRegExp.test(event.target.value)) {
-                setRealSurnameError({ showCheck: true, status: false, text: '' });
+            if (!textRusRealNameRegExp.test(event.target.value)) {
+                setRealSurnameError({ showCheck: false, status: true, text: 'Логин должен состоять из букв латинского алфавита и не должна содержать пробелы' });
             } else {
-                setRealSurnameError({ showCheck: false, status: true, text: 'Фамилия должна состоять из букв русского алфавита, тире и не содержать пробелы' });
+                if (event.target.value.trim().length < 1) {
+                    setRealSurnameError({ showCheck: false, status: true, text: 'Минимальная длина фамилии - 1 символ' })
+                } else {
+                    setRealSurnameError({ showCheck: true, status: false, text: '' })
+                }
             }
         } else {
-            setRealSurnameError({ showCheck: false, status: false, text: '' });
+            setRealSurnameError({
+                showCheck: false, status: true, text: 'Фамилия обязательна для заполнения'
+            })
         }
     };
 
@@ -146,10 +131,8 @@ const MyProfile = (props: IMyProfileProps) => {
         setTimeout(() => {
             handleCloseModal();
         }, 4000);
-        // appRequest('/api/user/data-update', 'POST', { oldUserName: initialUserName, newUserName: userName, realName, realSurname, school, university, workPlace })
-        //     .then(response => {
-        //         setInitialUserName(userName);
-        //     });
+        appRequest('/api/user/data-update', 'POST', { email: initialEmail, realName, realSurname, school, university, workPlace })
+            .then(() => { });
     }
 
     const handleCloseModal = () => {
@@ -175,16 +158,6 @@ const MyProfile = (props: IMyProfileProps) => {
                         </div>
                         :
                         <div className="my-profile-component__form">
-                            <InputField
-                                error={userNameError}
-                                field={{
-                                    name: 'userName',
-                                    title: translation.defaultTranslation.userName,
-                                    placeholder: translation.defaultTranslation.userNamePlaceholder,
-                                }}
-                                handleChange={userNameChange}
-                                value={userName}
-                            />
                             <InputField
                                 error={realNameError}
                                 field={{
@@ -236,7 +209,7 @@ const MyProfile = (props: IMyProfileProps) => {
                                 value={workPlace}
                             />
                             {
-                                (userName && !userNameError.status) ?
+                                (realName && !realNameError.status && realSurname && !realSurnameError.status) ?
                                     <Button
                                         className="button-primary button-primary_full-width"
                                         variant="outlined"

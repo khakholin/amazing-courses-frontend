@@ -15,6 +15,8 @@
     margin-bottom: 40px;
 
     &__title {
+        max-width: 520px;
+        text-align: center;
         font-family: MullerRegular;
         font-size: 20px;
         color: $textColorDark;
