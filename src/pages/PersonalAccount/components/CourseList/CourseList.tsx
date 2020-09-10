@@ -290,7 +290,7 @@ const CourseList = (props: ICourseListProps) => {
                                         error={courseTimeError}
                                         field={{
                                             name: 'courseTime',
-                                            title: 'Продолжительность курса в минутах',
+                                            title: 'Продолжительность курса в секундах',
                                             placeholder: '1337',
                                         }}
                                         handleChange={courseTimeChange}
