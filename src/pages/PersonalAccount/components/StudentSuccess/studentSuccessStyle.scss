@@ -43,7 +43,6 @@
                 padding-left: 10px;
                 display: flex;
                 justify-content: space-between;
-                min-height: 40px;
                 border-bottom: 1px solid $bgcPageDefault;
 
                 &-title {
@@ -118,5 +117,41 @@
         padding: 0 20px;
         height: 100%;
         width: 100%;
+    }
+
+    &-form {
+        padding-left: 20px;
+        overflow: auto;
+        height: 400px;
+        width: 520px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+
+    &-question {
+        margin-bottom: 20px;
+
+        &__label {
+            margin: 10px 0;
+        }
+
+        &-title {
+            display: flex;
+            align-items: center;
+
+            &__number {
+                padding-top: 2px;
+                padding-left: 5px;
+                color: $mainColor;
+            }
+        }
+    }
+
+    &__input {
+        width: 100%;
+    }
+
+    &__right-answer {
+        margin-top: 10px;
     }
 }

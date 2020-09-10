@@ -1,15 +1,36 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress, RadioGroup, FormControlLabel, Radio, withStyles, Input, InputAdornment, Button } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
 import './studentSuccessStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { IUserCoursesData } from '../../../../types/inputPropsFormats';
+import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 
 export interface IStudentSuccessProps {
     email?: string;
     roles?: string[];
 }
+
+const GreenRadio = withStyles({
+    root: {
+        '&$checked': {
+            color: 'green',
+        },
+    },
+    checked: {},
+})((props) => <Radio color="default" {...props} />);
+
+const RedRadio = withStyles({
+    root: {
+        '&$checked': {
+            color: 'red',
+        },
+    },
+    checked: {},
+})((props) => <Radio color="default" {...props} />);
 
 const StudentSuccess = (props: IStudentSuccessProps) => {
     const [courseList, setCourseList] = useState<IUserCoursesData>();
@@ -18,6 +39,9 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
     const [isUserSelect, setIsUserSelect] = useState(false);
     const [userCourseProgress, setUserCourseProgress] = useState<any>([]);
     const [users, setUsers] = useState([]);
+    const [showMoreModal, setShowMoreModal] = useState(false);
+    const [selectedTesting, setSelectedTesting] = useState<any>({});
+    const [currentTestingData, setCurrentTestingData] = useState([]);
 
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
@@ -41,6 +65,12 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
             .then(response => {
                 setUserCourseProgress(response.data);
             });
+    }
+
+    const handleCloseShowMoreModal = () => {
+        setCurrentTestingData([]);
+        setSelectedTesting({});
+        setShowMoreModal(false);
     }
 
     return (
@@ -87,8 +117,6 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                     </div>
                                     {courseList?.courses?.map((course: any) => {
                                         const courseProgress = userCourseProgress?.find((progress: any) => course.courseName === progress.courseName);
-                                        console.log(courseProgress);
-
                                         let numOfLectures = 0;
                                         return (
                                             <div className="student-success-course">
@@ -113,17 +141,29 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                                                             </div>
                                                                             <div className="student-success-course-body__text">
                                                                                 Правильных ответов:
-                                                                        </div>
+                                                                            </div>
                                                                             <div className="student-success-course-body__right-answers">
                                                                                 {lectureProgress.result.right}
                                                                             </div>
                                                                             из
-                                                                        <div className="student-success-course-body__total-answers">
+                                                                            <div className="student-success-course-body__total-answers">
                                                                                 {lectureProgress.result.total}
                                                                             </div>
                                                                         </div>
                                                                         <div>
-                                                                            <div className="student-success-course-body__show-more">
+                                                                            <div
+                                                                                className="student-success-course-body__show-more"
+                                                                                onClick={() => {
+                                                                                    appRequest('/api/testing/data-watch', 'POST', { courseName: courseProgress.courseName, lectureTitle: lectureProgress.lectureTitle })
+                                                                                        .then(response => {
+                                                                                            if (response) {
+                                                                                                setCurrentTestingData(response.data);
+                                                                                                setSelectedTesting(lectureProgress);
+                                                                                                setShowMoreModal(true);
+                                                                                            }
+                                                                                        });
+                                                                                }}
+                                                                            >
                                                                                 Подробнее
                                                                                 <SearchIcon className="student-success-course-body__show-icon" />
                                                                             </div>
@@ -146,6 +186,77 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                         )
                 }
             </div>
+            {
+                showMoreModal ?
+                    <ModalComponent
+                        closeHandler={handleCloseShowMoreModal}
+                        error
+                        isOpen={showMoreModal}
+                        text={''}
+                        title={'Тестирование - ' + selectedTesting.lectureTitle}
+                    >
+                        <div>Правильных ответов: {selectedTesting.result.right} из {selectedTesting.result.total}</div>
+                        <div className="student-success-form">
+                            {
+                                currentTestingData?.map((item: any, index: number) => {
+                                    return (
+                                        <div className="student-success-question" key={index}>
+                                            <div className="student-success-question-title">
+                                                {
+                                                    selectedTesting?.answers?.[index]?.rightAnswer === selectedTesting?.answers?.[index]?.userAnswer ?
+                                                        <CheckIcon style={{ 'color': 'green' }} /> :
+                                                        <CloseIcon style={{ 'color': 'red' }} />
+                                                }
+                                                <span className="student-success-question-title__number">Вопрос № {index + 1}</span>
+                                            </div>
+                                            <div className="student-success-question__label">{item.question}</div>
+                                            {item.isAnswerOptions ?
+                                                <RadioGroup
+                                                    aria-label={item.question}
+                                                    name={item.question}
+                                                    value={selectedTesting?.answers?.[index]?.rightAnswer}
+                                                >
+                                                    {
+                                                        item?.answerOptions?.map((option: any, i: number) => {
+                                                            return (
+                                                                <FormControlLabel control=
+                                                                    {
+                                                                        selectedTesting?.answers?.[index]?.rightAnswer === option ?
+                                                                            <GreenRadio /> :
+                                                                            <RedRadio />
+
+                                                                    }
+                                                                    disabled label={option} checked={selectedTesting.answers[index].rightAnswer === option || selectedTesting?.answers?.[index]?.userAnswer === option}
+                                                                />
+                                                            )
+                                                        })
+                                                    }
+                                                </RadioGroup> :
+                                                <Fragment>
+                                                    <Input
+                                                        className="student-success__input"
+                                                        disabled
+                                                        multiline
+                                                        placeholder="Правильный ответ"
+                                                        value={selectedTesting?.answers?.[index]?.userAnswer}
+                                                    />
+                                                    {
+                                                        selectedTesting?.answers?.[index]?.rightAnswer !== selectedTesting?.answers?.[index]?.userAnswer ?
+                                                            <Fragment>
+                                                                <br></br>
+                                                                <div className="student-success__right-answer">Правильный ответ: {selectedTesting?.answers?.[index]?.rightAnswer}</div>
+                                                            </Fragment>
+                                                            : <Fragment />
+                                                    }
+                                                </Fragment>
+                                            }
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    </ModalComponent> : <Fragment />
+            }
         </Fragment >
     );
 };

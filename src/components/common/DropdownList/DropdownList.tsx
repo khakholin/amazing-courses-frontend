@@ -239,9 +239,28 @@ const DropdownList = (props: IDropdownList) => {
                         <div className="dropdown-list-form">
                             {
                                 currentTestingData?.map((item: any, index: number) => {
+                                    console.log(answersArray);
+                                    console.log(userAnswersArray);
+
+
                                     return (
                                         <div className="dropdown-list-question" key={index}>
-                                            <div className="dropdown-list-question__number">Вопрос № {index + 1}</div>
+                                            <div className="dropdown-list-question-title">
+                                                {
+                                                    isAlreadyTested ?
+                                                        (
+                                                            answersArray[index] === userAnswersArray[index] ?
+                                                                <CheckIcon style={{ 'color': 'green' }} /> :
+                                                                <CloseIcon style={{ 'color': 'red' }} />
+                                                        )
+                                                        : <Fragment />
+                                                }
+                                                <span
+                                                    className={isAlreadyTested ? "dropdown-list-question-title__number dropdown-list-question-title__number_tested" : "dropdown-list-question-title__number"}
+                                                >
+                                                    Вопрос № {index + 1}
+                                                </span>
+                                            </div>
                                             <div className="dropdown-list-question__label">{item.question}</div>
                                             {item.isAnswerOptions ?
                                                 <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
@@ -253,7 +272,6 @@ const DropdownList = (props: IDropdownList) => {
                                                                         answersArray[index] === option ?
                                                                             <GreenRadio /> :
                                                                             <RedRadio />
-
                                                                     }
                                                                     disabled label={option} checked={answersArray[index] === option || userAnswersArray[index] === option}
                                                                 /> :
@@ -269,19 +287,6 @@ const DropdownList = (props: IDropdownList) => {
                                                         onChange={(e: any) => handleAnswerChange(e, index)}
                                                         placeholder="Правильный ответ"
                                                         value={userAnswersArray[index]}
-                                                        startAdornment={
-                                                            <InputAdornment position="start">
-                                                                {
-                                                                    isAlreadyTested ?
-                                                                        (
-                                                                            answersArray[index] === userAnswersArray[index] ?
-                                                                                <CheckIcon style={{ 'color': 'green' }} /> :
-                                                                                <CloseIcon style={{ 'color': 'red' }} />
-                                                                        )
-                                                                        : <Fragment />
-                                                                }
-                                                            </InputAdornment>
-                                                        }
                                                     />
                                                     {
                                                         isAlreadyTested && (answersArray[index] !== userAnswersArray[index]) ?
@@ -297,25 +302,28 @@ const DropdownList = (props: IDropdownList) => {
                                     )
                                 })
                             }
-                            <div className="dropdown-list-buttons">
-                                {
-                                    isAcceptButtonActive ?
-                                        <Button
-                                            className="button-primary"
-                                            type="submit"
-                                            variant="outlined"
-                                            onClick={() => handleSubmit()}
-                                        >
-                                            Отправить на проверку
+                            {
+                                !isAlreadyTested ?
+                                    <div className="dropdown-list-buttons">
+                                        {
+                                            isAcceptButtonActive ?
+                                                <Button
+                                                    className="button-primary"
+                                                    type="submit"
+                                                    variant="outlined"
+                                                    onClick={() => handleSubmit()}
+                                                >
+                                                    Отправить на проверку
                                     </Button> :
-                                        <Button
-                                            disabled
-                                            variant="outlined"
-                                        >
-                                            Отправить на проверку
+                                                <Button
+                                                    disabled
+                                                    variant="outlined"
+                                                >
+                                                    Отправить на проверку
                                     </Button>
-                                }
-                            </div>
+                                        }
+                                    </div> : <Fragment />
+                            }
                         </div>
                     </ModalComponent> : <Fragment />
             }

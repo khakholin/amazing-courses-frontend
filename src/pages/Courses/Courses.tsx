@@ -51,7 +51,7 @@ const Courses = (props: ICourses) => {
             <div className="courses-block">
                 <div className="courses-header">
                     <div className="courses-header__left">
-                        <span className="courses-header__title">Материалы курса</span>
+                        <span className="courses-header__title">Материалы курсов</span>
                     </div>
                     <div className="courses-header__right">
                         <span className="courses-header__number">{dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures)}</span>
