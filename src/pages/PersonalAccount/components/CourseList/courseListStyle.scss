@@ -17,13 +17,22 @@
         background-color: $mainColor;
     }
 
-
     &-testing {
         margin: 0 20px 40px;
         background-color: white;
         height: 400px;
         border: 2px solid $mainColor;
         box-sizing: content-box;
+
+        &__delete-question {
+            margin-right: 10px;
+            margin-top: 5px;
+            cursor: pointer;
+            color: red;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
 
         &__header {
             display: flex;
@@ -39,6 +48,11 @@
                 color: $mainColor;
                 margin-right: 10px;
                 font-size: 28px;
+
+                &_disabled {
+                    color: $textColorSecondary;
+                    cursor: default;
+                }
             }
 
             &-description {
@@ -64,6 +78,7 @@
         }
 
         &__question {
+            position: relative;
             color: $mainColor;
             padding: 10px;
             display: flex;
@@ -73,6 +88,7 @@
 
         &__answer-wrapper {
             display: flex;
+            border-bottom: 1px solid $bgcPageDefault;
         }
 
         &__answer {
@@ -94,10 +110,17 @@
         }
 
         &__answer-add {
+            padding-left: 10px;
+            width: 100%;
             cursor: pointer;
             display: flex;
+            justify-content: flex-start;
             align-items: center;
-            border-bottom: 1px solid $bgcPageDefault;
+
+            &_disabled {
+                color: $textColorSecondary;
+                cursor: default;
+            }
         }
     }
 

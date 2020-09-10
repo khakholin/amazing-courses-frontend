@@ -148,6 +148,12 @@ const CourseList = (props: ICourseListProps) => {
         setUpdateFlag(newTestingArray.length);
     }
 
+    const onRemoveTestingClick = (i: number) => {
+        const newTestingArray = addedTesting;
+        setAddedLectures(newTestingArray.splice(i, 1));
+        setUpdateFlag(newTestingArray.length);
+    }
+
     const onAddTestingAnswerOptionsClick = (index: number) => {
         const newTestingArray = addedTesting.map((testing: any, i: number) => {
             if (i === index) {
@@ -242,6 +248,13 @@ const CourseList = (props: ICourseListProps) => {
         setSelectedLecture('');
         setAddedTesting([]);
     };
+
+    const isSaveButtonActive = () => {
+        console.log(addedTesting);
+        const isActive = !!addedTesting.length && !addedTesting.find((item: any) => item?.answer === '' || item?.question === '' || (item?.isAnswerOptions ? !item?.answerOptions?.find((option: string) => option.length) : false));
+
+        return isActive;
+    }
 
     return (
         <Fragment>
@@ -501,23 +514,51 @@ const CourseList = (props: ICourseListProps) => {
                                                                 <div key={index} className="course-list-component-testing-item">
                                                                     {index !== 0 ? <div className="course-list-component__line"></div> : <Fragment />}
                                                                     <div className="course-list-component-testing__question">
+                                                                        <ClearIcon
+                                                                            className="course-list-component-testing__delete-question"
+                                                                            onClick={() => onRemoveTestingClick(index)}
+                                                                        />
                                                                         <div>Вопрос №{index + 1}:</div>
-                                                                        <Input className="course-list-component-testing__input" placeholder="Вопрос" multiline value={testing.question} onChange={(e: any) => onTestingQuestionChange(e, index)} />
+                                                                        <Input
+                                                                            className="course-list-component-testing__input"
+                                                                            placeholder="Вопрос"
+                                                                            multiline
+                                                                            value={testing.question}
+                                                                            onChange={(e: any) => onTestingQuestionChange(e, index)}
+                                                                        />
                                                                     </div>
                                                                     <div className="course-list-component-testing__answer-options">
                                                                         <div className="course-list-component-testing__answer-wrapper">
-                                                                            <div className="course-list-component-testing__answer-add" onClick={() => onAddTestingAnswerOptionsClick(index)}>
-                                                                                <div className="course-list-component-testing__header-add">+</div>
-                                                                                <div>С вариантами ответа</div>
-                                                                            </div>
-                                                                            <Checkbox
-                                                                                checked={testing.isAnswerOptions}
-                                                                                onChange={() => {
-                                                                                    testing.isAnswerOptions = !testing.isAnswerOptions
-                                                                                    setUpdateFlag(testing.isAnswerOptions);
+                                                                            <div
+                                                                                className={
+                                                                                    testing.isAnswerOptions ? "course-list-component-testing__answer-add" :
+                                                                                        "course-list-component-testing__answer-add course-list-component-testing__answer-add_disabled"
+                                                                                }
+                                                                                onClick={() => {
+                                                                                    if (testing.isAnswerOptions) {
+                                                                                        onAddTestingAnswerOptionsClick(index);
+                                                                                    }
                                                                                 }}
-                                                                                inputProps={{ 'aria-label': 'primary checkbox' }}
-                                                                            />
+                                                                            >
+                                                                                <div
+                                                                                    className={
+                                                                                        testing.isAnswerOptions ? "course-list-component-testing__header-add" :
+                                                                                            "course-list-component-testing__header-add course-list-component-testing__header-add_disabled"
+                                                                                    }
+                                                                                >+</div>
+                                                                                <div>Добавить ответ</div>
+                                                                            </div>
+                                                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: '100%' }}>
+                                                                                <div >С вариантами ответа</div>
+                                                                                <Checkbox
+                                                                                    checked={testing.isAnswerOptions}
+                                                                                    onChange={() => {
+                                                                                        testing.isAnswerOptions = !testing.isAnswerOptions
+                                                                                        setUpdateFlag(testing.isAnswerOptions);
+                                                                                    }}
+                                                                                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                                                />
+                                                                            </div>
                                                                         </div>
                                                                         {testing.isAnswerOptions && testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
                                                                             return (
@@ -537,22 +578,33 @@ const CourseList = (props: ICourseListProps) => {
                                                         }
                                                     </div>
                                                 </div>
-                                                <Button
-                                                    className="button-primary"
-                                                    variant="outlined"
-                                                    onClick={() => {
-                                                        appRequest('/api/testing/update', 'POST', {
-                                                            courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
-                                                        })
-                                                            .then(response => {
-                                                                if (response) {
-                                                                    handleCloseAddTestingModal();
-                                                                }
-                                                            });
-                                                    }}
-                                                >
-                                                    Сохранить
-                                                </Button>
+                                                <div className="course-list-component__button-container">
+                                                    {
+                                                        isSaveButtonActive() ?
+                                                            <Button
+                                                                className="button-primary"
+                                                                variant="outlined"
+                                                                onClick={() => {
+                                                                    appRequest('/api/testing/update', 'POST', {
+                                                                        courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
+                                                                    })
+                                                                        .then(response => {
+                                                                            if (response) {
+                                                                                handleCloseAddTestingModal();
+                                                                            }
+                                                                        });
+                                                                }}
+                                                            >
+                                                                Сохранить
+                                                            </Button> :
+                                                            <Button
+                                                                disabled
+                                                                variant="outlined"
+                                                            >
+                                                                Сохранить
+                                                            </Button>
+                                                    }
+                                                </div>
                                             </div>
                                         </ModalComponent>
                                     </Fragment>
