@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Modal from '@material-ui/core/Modal';
 
 import './videoModalStyle.scss';
-import { appRequestFile } from '../../../modules/app/appRequest';
 
 export interface IVideoModal {
     closeHandler: () => void;
@@ -15,20 +14,6 @@ export interface IVideoModal {
 }
 
 const VideoModal = (props: IVideoModal) => {
-    const [videoData, setVideoData] = useState();
-    useEffect(() => {
-        appRequestFile('/api/course/video/' + props.lectureFolder + '/' + props.lectureNumber, 'GET')
-            .then(response => {
-                const reader = new FileReader()
-                reader.readAsDataURL(response.data);
-                reader.onload = (event: any) => {
-                    const result = event?.target.result;
-                    setVideoData(result);
-                }
-
-            });
-        // eslint-disable-next-line
-    }, [])
     return (
         <Modal
             aria-labelledby="video-modal-title"

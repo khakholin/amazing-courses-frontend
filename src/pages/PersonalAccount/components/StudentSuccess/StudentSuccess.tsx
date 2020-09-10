@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { CircularProgress, RadioGroup, FormControlLabel, Radio, withStyles, Input, } from '@material-ui/core';
+import { CircularProgress, RadioGroup, FormControlLabel, Radio, withStyles, Input, Button, } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 
 import './studentSuccessStyle.scss';
@@ -33,7 +33,7 @@ const RedRadio = withStyles({
 })((props) => <Radio color="default" {...props} />);
 
 const StudentSuccess = (props: IStudentSuccessProps) => {
-    const [courseList, setCourseList] = useState<IUserCoursesData>();
+    const [courseList, setCourseList] = useState<any>();
     const [currentUser, setCurrentUser] = useState<any>({});
     const [isLoader, setIsLoader] = useState(true);
     const [isUserSelect, setIsUserSelect] = useState(false);
@@ -99,7 +99,7 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                         users.length && users.map((user: any, index: number) => {
                                             return (
                                                 <div
-                                                    className="user-list-component__item"
+                                                    className="student-success__item"
                                                     onClick={() => onStudentClick(user)}
                                                 >
                                                     {
@@ -182,6 +182,26 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                             </div>
                                         )
                                     })}
+                                    {
+                                        !courseList?.courses?.length ?
+                                            <div
+                                                className="student-success-course-body__empty student-success-course-body__empty_course"
+                                            >У данного ученика нет доступа ни к одному из курсов
+                                        </div> : <Fragment />
+                                    }
+                                    <div className="student-success__button">
+                                        <Button
+                                            className="button-secondary"
+                                            variant="outlined"
+                                            onClick={() => {
+                                                setIsUserSelect(false);
+                                                setCurrentUser({});
+                                                setCourseList({});
+                                            }}
+                                        >
+                                            Вернуться к списку учеников
+                                                </Button>
+                                    </div>
                                 </div>
                         )
                 }

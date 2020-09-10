@@ -126,9 +126,10 @@
         height: 100%;
         flex-basis: 85%;
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         width: 100%;
         flex-wrap: wrap;
+        padding: 10px;
     }
 
     &__item {
@@ -136,13 +137,16 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 260px;
-        min-height: 100px;
-        max-height: 100px;
-        margin: 10px;
+        width: 100%;
+        min-height: 80px;
+        max-height: 80px;
         color: $secondaryColor;
-        border-radius: 4px;
         border: 1px solid $bgcPageDefault;
+        border-bottom: 0;
+
+        &:last-child {
+            border-bottom: 1px solid $bgcPageDefault;
+        }
 
         &:hover {
             cursor: pointer;

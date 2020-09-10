@@ -118,7 +118,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
             <div className="personal-account-profile">
                 <div className="personal-account-profile__bar">
                     <Man className="personal-account-profile__avatar" />
-                    <div className="personal-account-profile__name">{userData?.realName + ' ' + userData?.realSurname}</div>
+                    <div className="personal-account-profile__name">{userData && (userData?.realName + ' ' + userData?.realSurname)}</div>
                     <div className="personal-account-profile__menu">
                         <li className={menuItemClasses('MyProfile')} onClick={() => onMenuItemClick('MyProfile')}>
                             <PersonIcon className="personal-account-profile__menu-icon" />

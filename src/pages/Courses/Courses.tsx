@@ -54,7 +54,7 @@ const Courses = (props: ICourses) => {
                         <span className="courses-header__title">Материалы курсов</span>
                     </div>
                     <div className="courses-header__right">
-                        <span className="courses-header__number">{dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures)}</span>
+                        <span className="courses-header__number">{dataList && (dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures))}</span>
                         <span className="courses-header__time">{timeConversion(dataList?.totalTime)}</span>
                     </div>
                 </div>

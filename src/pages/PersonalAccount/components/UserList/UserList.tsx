@@ -53,7 +53,7 @@ const UserList = (props: IUserListProps) => {
                                             className="user-list-component__item"
                                             onClick={() => props.onUserProfileClick(user)}
                                         >
-                                            {user.realName + ' ' + user.realSurname}
+                                            {user.realName + ' ' + user.realSurname + ' (' + user.email + ')'}
                                         </div>
                                     )
                                 })
