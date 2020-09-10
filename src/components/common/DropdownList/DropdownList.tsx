@@ -17,7 +17,7 @@ import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
 import { appRequest } from '../../../modules/app/appRequest';
 import ModalComponent from '../ModalComponent/ModalComponent';
-import { FormControlLabel, Radio, RadioGroup, Button, Input, withStyles, InputAdornment } from '@material-ui/core';
+import { FormControlLabel, Radio, RadioGroup, Button, Input, withStyles } from '@material-ui/core';
 
 export interface IDropdownList {
     courseProgress: IUserCourseProgress | undefined;
