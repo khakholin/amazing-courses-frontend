@@ -7,7 +7,7 @@
 
     &-component {
         width: 100%;
-        height: 400px;
+        min-height: 400px;
         display: flex;
         flex-direction: column;
         flex-wrap: wrap;
@@ -187,6 +187,7 @@
 
 
     &__button {
+        border-top: 1px solid $bgcPageDefault;
         padding: 10px 0;
         background-color: #fff;
         width: 100%;

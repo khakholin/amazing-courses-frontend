@@ -4,7 +4,6 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import './studentSuccessStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
-import { IUserCoursesData } from '../../../../types/inputPropsFormats';
 import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
@@ -189,23 +188,27 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                             >У данного ученика нет доступа ни к одному из курсов
                                         </div> : <Fragment />
                                     }
-                                    <div className="student-success__button">
-                                        <Button
-                                            className="button-secondary"
-                                            variant="outlined"
-                                            onClick={() => {
-                                                setIsUserSelect(false);
-                                                setCurrentUser({});
-                                                setCourseList({});
-                                            }}
-                                        >
-                                            Вернуться к списку учеников
-                                                </Button>
-                                    </div>
                                 </div>
                         )
                 }
             </div>
+            {
+                isUserSelect ?
+                    <div className="student-success__button">
+                        <Button
+                            className="button-secondary"
+                            variant="outlined"
+                            onClick={() => {
+                                setIsUserSelect(false);
+                                setCurrentUser({});
+                                setCourseList({});
+                            }}
+                        >
+                            Вернуться к списку учеников
+                        </Button>
+                    </div>
+                    : <Fragment />
+            }
             {
                 showMoreModal ?
                     <ModalComponent
