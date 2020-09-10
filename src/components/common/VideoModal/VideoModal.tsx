@@ -46,7 +46,7 @@ const VideoModal = (props: IVideoModal) => {
                 <div className="video-modal-content">
                     <div className="video-modal-content__title">{props.lectureTitle}</div>
                     <div className="video-modal-content__border video-modal-content__border_top"></div>
-                    <video className="video-modal-content__video" src={videoData} controls />
+                    <video className="video-modal-content__video" src="http://khakholin.ru/api/course/video/Course1/1" controls />
                     <div className="video-modal-content__border video-modal-content__border_bottom"></div>
                 </div>
             </Fade>
