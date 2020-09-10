@@ -126,8 +126,6 @@ const UserInformation = (props: IUserInformationProps) => {
                 <div className="user-information-component-courses-list">
                     {usersList.map((item: any) => {
                         const checked = userMentors.find(mentor => item.email === mentor);
-                        console.log(item);
-
                         return (
                             <div
                                 className="user-information-component-courses-list__item"
