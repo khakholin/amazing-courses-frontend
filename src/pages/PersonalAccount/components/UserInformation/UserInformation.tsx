@@ -9,28 +9,38 @@ import { IUserProfileResponse, IUserCourseProgress } from '../../../../types/res
 import { ICourseData, ILectureData } from '../../../../types/inputPropsFormats';
 
 import './userInformationStyle.scss';
+import { Select, Input, MenuItem, Checkbox, ListItemText } from '@material-ui/core';
+import { roles } from '../../../../constants/roles';
+import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 
-export interface IUserInformationProps {
-    user: IUserProfileResponse | undefined;
-}
+export interface IUserInformationProps { }
 
 const UserInformation = (props: IUserInformationProps) => {
+    // eslint-disable-next-line
+    const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
+    const [userData, setUserData] = useState<IUserProfileResponse>();
+
     useEffect(() => {
         appRequest('/api/course/list', 'GET')
             .then(response => {
                 setCourseList(response.data)
             });
-        setUserAvailableCourses(props.user?.availableCourses);
-        setUserCourseProgress(props.user?.courseProgress);
-        appRequest('/api/user/courses', 'POST', { availableCourses: props.user?.availableCourses })
-            .then((response) => {
-                setCoursesDataList(response.data.courses);
+        appRequest('/api/user/data', 'POST', { email: initialEmail })
+            .then((response: { data: IUserProfileResponse }) => {
+                setUserData(response.data)
+                setUserAvailableCourses(response.data?.availableCourses);
+                setUserCourseProgress(response.data?.courseProgress);
+                setSelectData(response.data?.roles);
+                appRequest('/api/user/courses', 'POST', { availableCourses: response.data?.availableCourses })
+                    .then((response) => {
+                        setCoursesDataList(response.data.courses);
+                    });
             });
         appRequest('/api/user/get-users', 'GET')
             .then(response => {
-                setUsersList(response.data)
+                setUsersList(response.data);
             });
-        appRequest('/api/user/mentors', 'POST', { email: props.user?.email })
+        appRequest('/api/user/mentors', 'POST', { email: initialEmail })
             .then(response => {
                 setUserMentors(response.data);
             });
@@ -43,48 +53,63 @@ const UserInformation = (props: IUserInformationProps) => {
     const [userAvailableCourses, setUserAvailableCourses] = useState<string[] | undefined>([]);
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
     const [coursesDataList, setCoursesDataList] = useState<ICourseData[]>([]);
+    const [selectData, setSelectData] = useState<string[] | undefined>([]);
 
     const onCourseClick = (course: string) => {
-        appRequest('/api/user/change-courses', 'POST', { email: props.user?.email, courseName: course })
+        appRequest('/api/user/change-courses', 'POST', { email: userData?.email, courseName: course })
             .then(response => {
-                appRequest('/api/user/available-courses', 'POST', { email: props.user?.email })
+                appRequest('/api/user/available-courses', 'POST', { email: userData?.email })
                     .then(response => {
                         setUserAvailableCourses(response.data);
-                        appRequest('/api/user/courses', 'POST', { availableCourses: response.data })
-                            .then(response => {
-                                setCoursesDataList(response.data.courses);
+                        appRequest('/api/user/data', 'POST', { email: initialEmail })
+                            .then((response: { data: IUserProfileResponse }) => {
+                                setUserData(response.data)
+                                setUserAvailableCourses(response.data?.availableCourses);
+                                setUserCourseProgress(response.data?.courseProgress);
+                                setSelectData(response.data?.roles);
+                                appRequest('/api/user/courses', 'POST', { availableCourses: response.data?.availableCourses })
+                                    .then((response) => {
+                                        setCoursesDataList(response.data.courses);
+                                    });
                             });
                     });
             });
     }
 
     const onUsernameClick = (mentor: string) => {
-        appRequest('/api/user/change-mentors', 'POST', { email: props.user?.email, mentor })
+        appRequest('/api/user/change-mentors', 'POST', { email: userData?.email, mentor })
             .then(response => {
-                appRequest('/api/user/mentors', 'POST', { email: props.user?.email })
+                appRequest('/api/user/mentors', 'POST', { email: userData?.email })
                     .then(response => {
                         setUserMentors(response.data);
                     });
             });
     }
 
-    const onLectureAvailableClick = (course: string, availableLecture: number) => {
-        appRequest('/api/user/change-available-lecture', 'POST', { email: props.user?.email, courseName: course, availableLecture })
+    const onLectureAvailableClick = (courseName: string, lectureTitle: string) => {
+        appRequest('/api/user/change-available-lecture', 'POST', { email: userData?.email, courseName, lectureTitle })
             .then(response => {
-                appRequest('/api/user/course-progress', 'POST', { email: props.user?.email })
+                appRequest('/api/user/course-progress', 'POST', { email: userData?.email })
                     .then(response => {
                         setUserCourseProgress(response.data);
                     });
             });
     }
 
-    const onLectureCheckedClick = (course: string, checkedLecture: number) => {
-        appRequest('/api/user/change-check-lecture', 'POST', { email: props.user?.email, courseName: course, checkedLecture })
+    const onLectureCheckedClick = (courseName: string, lectureTitle: string) => {
+        appRequest('/api/user/change-check-lecture', 'POST', { email: userData?.email, courseName, lectureTitle })
             .then(response => {
-                appRequest('/api/user/course-progress', 'POST', { email: props.user?.email })
+                appRequest('/api/user/course-progress', 'POST', { email: userData?.email })
                     .then(response => {
                         setUserCourseProgress(response.data);
                     });
+            });
+    }
+
+    const selectHandleChange = (event: any) => {
+        appRequest('/api/user/change-roles', 'POST', { email: userData?.email, roles: event.target.value })
+            .then(response => {
+                setSelectData(response.data.roles);
             });
     }
 
@@ -93,29 +118,66 @@ const UserInformation = (props: IUserInformationProps) => {
             <div className="user-information-component-profile">
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Email:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.email}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.email}</div>
                 </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Имя:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.realName}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.realName}</div>
                 </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Фамилия:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.realSurname}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.realSurname}</div>
                 </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Школа:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.school}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.school}</div>
                 </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Университет:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.university}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.university}</div>
                 </div>
                 <div className="user-information-component-profile__item">
                     <div className="user-information-component-profile__item-title">Место работы:</div>
-                    <div className="user-information-component-profile__item-data">{props.user?.workPlace}</div>
+                    <div className="user-information-component-profile__item-data">{userData?.workPlace}</div>
                 </div>
             </div>
+
+            <div className="user-information-roles">
+                <div className="user-information-roles-header">
+                    <div className="user-information-roles-header__title">
+                        Изменить роли пользователя
+                    </div>
+                    <Tooltip title="Наличие роли изменяется нажатием на неё">
+                        <HelpIcon className="user-information-component-courses__header-icon" />
+                    </Tooltip>
+                </div>
+                <Select
+                    className="user-information-roles__select"
+                    multiple
+                    value={selectData}
+                    onChange={selectHandleChange}
+                    input={<Input />}
+                    renderValue={(selected: any) => {
+                        const mappedData = selected.map((item: any) => roles.find(role => role.value === item)?.name);
+                        if (mappedData.length > 2) {
+                            return mappedData[0] + ', ' + mappedData[1] + ' ...+' + (mappedData.length - 2);
+                        } else {
+                            return mappedData.join(', ')
+                        }
+                    }}
+                >
+                    {roles.map((role) => {
+                        return (
+                            <MenuItem disabled={(userData?.email === initialEmail && role.value === 'admin') || role.value === 'user'} key={role.value} value={role.value}>
+                                <Checkbox className="user-information-component__select-checkbox" checked={selectData && selectData.indexOf(role.value) > -1} />
+                                <ListItemText primary={role.name} />
+                            </MenuItem>
+                        )
+                    })
+                    }
+                </Select>
+            </div>
+
             <div className="user-information-component-courses">
                 <div className="user-information-component-courses__header">
                     <div className="user-information-component-courses__header-text">Добавить ментора для пользователя</div>
@@ -172,8 +234,8 @@ const UserInformation = (props: IUserInformationProps) => {
             </div>
             {
                 coursesDataList && coursesDataList.map((course: ICourseData) => {
-                    let availableLectures: number[] = [];
-                    let checkedLectures: number[] = [];
+                    let availableLectures: string[] = [];
+                    let checkedLectures: string[] = [];
                     userCourseProgress && userCourseProgress.find((item) => {
                         if (item.courseName === course.courseName) {
                             availableLectures = item.availableLectures;
@@ -205,10 +267,10 @@ const UserInformation = (props: IUserInformationProps) => {
                                                 <div className="user-information-component-lectures-list-progress">
                                                     <div
                                                         className="user-information-component-lectures-list-progress__item"
-                                                        onClick={() => onLectureAvailableClick(course.courseName, index)}
+                                                        onClick={() => onLectureAvailableClick(course.courseName, lecture.lectureTitle)}
                                                     >
                                                         {
-                                                            (availableLectures.find(item => item === index) !== undefined) ?
+                                                            (availableLectures.find(item => item === lecture.lectureTitle) !== undefined) ?
                                                                 <CheckBoxIcon className="user-information-component-lectures-list-progress__checkbox" /> :
                                                                 <CheckBoxOutlineBlankIcon className="user-information-component-lectures-list-progress__checkbox" />
                                                         }
@@ -216,10 +278,10 @@ const UserInformation = (props: IUserInformationProps) => {
                                                     </div>
                                                     <div
                                                         className="user-information-component-lectures-list-progress__item"
-                                                        onClick={() => onLectureCheckedClick(course.courseName, index)}
+                                                        onClick={() => onLectureCheckedClick(course.courseName, lecture.lectureTitle)}
                                                     >
                                                         {
-                                                            (checkedLectures.find(item => item === index) !== undefined) ?
+                                                            (checkedLectures.find(item => item === lecture.lectureTitle) !== undefined) ?
                                                                 <CheckBoxIcon className="user-information-component-lectures-list-progress__checkbox" /> :
                                                                 <CheckBoxOutlineBlankIcon className="user-information-component-lectures-list-progress__checkbox" />
                                                         }

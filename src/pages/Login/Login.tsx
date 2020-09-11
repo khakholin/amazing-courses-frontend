@@ -156,34 +156,40 @@ const Login = (props: TLogin) => {
     }
 
     const handleRegistration = () => {
-        appRequest('/api/user/registration', 'POST',
-            {
-                password: password.value,
-                email: email.toLowerCase(),
-                availableCourses: [],
-                courseProgress: [],
-                realName: realName,
-                realSurname: realSurname,
-                roles: ['user'],
-                school: '',
-                university: '',
-                workPlace: '',
-            }
-        )
-            .then((response: IResponse) => {
-                if (response.data.status === 201) {
-                    setRegistration(false);
-                    handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
-                } else {
-                    if (response.data.message === 'EMAIL_DUPLICATE') {
-                        handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка');
-                    }
-                    if (response.data.message === 'USER_DUPLICATE') {
-                        handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка');
-                    }
+        if (emailError.showCheck &&
+            realNameError.showCheck &&
+            realSurnameError.showCheck &&
+            passwordError.showCheck &&
+            confirmPasswordError.showCheck) {
+            appRequest('/api/user/registration', 'POST',
+                {
+                    password: password.value,
+                    email: email.toLowerCase(),
+                    availableCourses: [],
+                    courseProgress: [],
+                    realName: realName,
+                    realSurname: realSurname,
+                    roles: ['user'],
+                    school: '',
+                    university: '',
+                    workPlace: '',
                 }
-            })
-        clearData();
+            )
+                .then((response: IResponse) => {
+                    if (response.data.status === 201) {
+                        setRegistration(false);
+                        handleOpenModal('Вы успешно зарегистрированы', 'Внимание');
+                    } else {
+                        if (response.data.message === 'EMAIL_DUPLICATE') {
+                            handleOpenModal('Нельзя зарегистрировать несколько пользователей с одним почтовым ящиком', 'Ошибка');
+                        }
+                        if (response.data.message === 'USER_DUPLICATE') {
+                            handleOpenModal('Пользователь с таким именем уже существует', 'Ошибка');
+                        }
+                    }
+                })
+            clearData();
+        }
     }
 
     const realNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -377,7 +383,8 @@ const Login = (props: TLogin) => {
                         <div className="buttons-container_column">
                             {
                                 emailError.showCheck &&
-                                    // userNameError.showCheck && 
+                                    realNameError.showCheck &&
+                                    realSurnameError.showCheck &&
                                     passwordError.showCheck && confirmPasswordError.showCheck ?
                                     <Button
                                         className="button-primary button-primary_full-width button_column-margin"

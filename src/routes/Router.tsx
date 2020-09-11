@@ -2,8 +2,8 @@ import React, { FC } from 'react';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import appHistory from '../modules/app/appHistory';
-import PersonalAccount from '../pages/PersonalAccount/PersonalAccountLoadable';
-import Courses from '../pages/Courses/CoursesLoadable';
+import PersonalAccount from '../pages/PersonalAccount/PersonalAccount';
+import Courses from '../pages/Courses/Courses';
 
 import LoginRouter from './LoginRouter';
 import PrivateRoute from './PrivateRoute';

@@ -31,6 +31,7 @@ const ModalComponent = (props: IModalComponent) => {
         >
             <Fade style={{ outline: 'none' }} in={props.isOpen}>
                 <BGContent
+                    closeHandler={props.closeHandler}
                     error={props.error}
                     title={props.title}
                 >

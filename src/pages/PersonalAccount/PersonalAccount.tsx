@@ -22,6 +22,7 @@ import UserInformation from './components/UserInformation/UserInformation';
 import UserList from './components/UserList/UserList';
 import './personalAccountStyle.scss';
 import StudentSuccess from './components/StudentSuccess/StudentSuccess';
+import { CircularProgress } from '@material-ui/core';
 
 export interface IPersonalAccount { };
 
@@ -31,9 +32,10 @@ const PersonalAccount = (props: IPersonalAccount) => {
     const [currentMenuItem, setCurrentMenuItem] = useLocalStorage('profileMenuItem', 'MyProfile');
     const [userData, setUserData] = useState<IUserProfileResponse>();
     const [currentUserProfile, setCurrentUserProfile] = useState<IUserProfileResponse>();
-    // const [currentUsername, setCurrentUsername] = useState<string>();
+    const [isLoader, setIsLoader] = useState(true);
 
     useEffect(() => {
+        setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/user/data', 'POST', { email: initialEmail })
             .then((response: { data: IUserProfileResponse }) => {
                 setUserData(response.data)
@@ -91,9 +93,7 @@ const PersonalAccount = (props: IPersonalAccount) => {
                 )
             case 'UserInformation':
                 return (
-                    <UserInformation
-                        user={currentUserProfile}
-                    />
+                    <UserInformation />
                 )
             case 'CourseList':
                 return (
@@ -115,66 +115,76 @@ const PersonalAccount = (props: IPersonalAccount) => {
 
     return (
         <div className="personal-account page-container">
-            <div className="personal-account-profile">
-                <div className="personal-account-profile__bar">
-                    <Man className="personal-account-profile__avatar" />
-                    <div className="personal-account-profile__name">{userData && (userData?.realName + ' ' + userData?.realSurname)}</div>
-                    <div className="personal-account-profile__menu">
-                        <li className={menuItemClasses('MyProfile')} onClick={() => onMenuItemClick('MyProfile')}>
-                            <PersonIcon className="personal-account-profile__menu-icon" />
-                            <span className="personal-account-profile__menu-title">Мой профиль</span>
-                        </li>
-                        <li className={menuItemClasses('MyCourses')} onClick={() => appHistory.push('/courses')}>
-                            <ImportContactsIcon className="personal-account-profile__menu-icon" />
-                            <span className="personal-account-profile__menu-title">Мои курсы</span>
-                        </li>
-                        <li className={menuItemClasses('MySuccess')} onClick={() => onMenuItemClick('MySuccess')}>
-                            <TrendingUpIcon className="personal-account-profile__menu-icon" />
-                            <span className="personal-account-profile__menu-title">Мои успехи</span>
-                        </li>
-                        <li className={menuItemClasses('Account')} onClick={() => onMenuItemClick('Account')}>
-                            <SettingsIcon className="personal-account-profile__menu-icon" />
-                            <span className="personal-account-profile__menu-title">Учетная запись</span>
-                        </li>
-                        {
-                            userData?.roles?.find(role => role === 'mentor') ?
-                                <Fragment>
-                                    <li
-                                        className={menuItemClasses('StudentSuccess', true)}
-                                        onClick={() => onMenuItemClick('StudentSuccess')}
-                                    >
-                                        <TrendingUpIcon className="personal-account-profile__menu-icon" />
-                                        <span className="personal-account-profile__menu-title">Успехи учеников</span>
-                                    </li>
-                                </Fragment>
-                                : <Fragment />
-                        }
-                        {
-                            userData?.roles?.find(role => role === 'admin') ?
-                                <Fragment>
-                                    <li
-                                        className={menuItemClasses('UserList', false, true)}
-                                        onClick={() => onMenuItemClick('UserList')}
-                                    >
-                                        <PeopleIcon className="personal-account-profile__menu-icon" />
-                                        <span className="personal-account-profile__menu-title">Список пользователей</span>
-                                    </li>
-                                    <li
-                                        className={menuItemClasses('CourseList', false, true)}
-                                        onClick={() => onMenuItemClick('CourseList')}
-                                    >
-                                        <MenuBookIcon className="personal-account-profile__menu-icon" />
-                                        <span className="personal-account-profile__menu-title">Список курсов</span>
-                                    </li>
-                                </Fragment>
-                                : <Fragment />
-                        }
+            {
+                isLoader ?
+                    <div className="info-form-spinner__wrapper personal-account__loader">
+                        <CircularProgress
+                            className="info-form-spinner__item "
+                            size={100}
+                            thickness={3}
+                        />
+                    </div> :
+                    <div className="personal-account-profile">
+                        <div className="personal-account-profile__bar">
+                            <Man className="personal-account-profile__avatar" />
+                            <div className="personal-account-profile__name">{userData && (userData?.realName + ' ' + userData?.realSurname)}</div>
+                            <div className="personal-account-profile__menu">
+                                <li className={menuItemClasses('MyProfile')} onClick={() => onMenuItemClick('MyProfile')}>
+                                    <PersonIcon className="personal-account-profile__menu-icon" />
+                                    <span className="personal-account-profile__menu-title">Мой профиль</span>
+                                </li>
+                                <li className={menuItemClasses('MyCourses')} onClick={() => appHistory.push('/courses')}>
+                                    <ImportContactsIcon className="personal-account-profile__menu-icon" />
+                                    <span className="personal-account-profile__menu-title">Мои курсы</span>
+                                </li>
+                                <li className={menuItemClasses('MySuccess')} onClick={() => onMenuItemClick('MySuccess')}>
+                                    <TrendingUpIcon className="personal-account-profile__menu-icon" />
+                                    <span className="personal-account-profile__menu-title">Мои успехи</span>
+                                </li>
+                                <li className={menuItemClasses('Account')} onClick={() => onMenuItemClick('Account')}>
+                                    <SettingsIcon className="personal-account-profile__menu-icon" />
+                                    <span className="personal-account-profile__menu-title">Учетная запись</span>
+                                </li>
+                                {
+                                    userData?.roles?.find(role => role === 'mentor') ?
+                                        <Fragment>
+                                            <li
+                                                className={menuItemClasses('StudentSuccess', true)}
+                                                onClick={() => onMenuItemClick('StudentSuccess')}
+                                            >
+                                                <TrendingUpIcon className="personal-account-profile__menu-icon" />
+                                                <span className="personal-account-profile__menu-title">Успехи учеников</span>
+                                            </li>
+                                        </Fragment>
+                                        : <Fragment />
+                                }
+                                {
+                                    userData?.roles?.find(role => role === 'admin') ?
+                                        <Fragment>
+                                            <li
+                                                className={menuItemClasses('UserList', false, true)}
+                                                onClick={() => onMenuItemClick('UserList')}
+                                            >
+                                                <PeopleIcon className="personal-account-profile__menu-icon" />
+                                                <span className="personal-account-profile__menu-title">Список пользователей</span>
+                                            </li>
+                                            <li
+                                                className={menuItemClasses('CourseList', false, true)}
+                                                onClick={() => onMenuItemClick('CourseList')}
+                                            >
+                                                <MenuBookIcon className="personal-account-profile__menu-icon" />
+                                                <span className="personal-account-profile__menu-title">Список курсов</span>
+                                            </li>
+                                        </Fragment>
+                                        : <Fragment />
+                                }
+                            </div>
+                        </div>
+                        <div className="personal-account-profile__info">
+                            {infoForm()}
+                        </div>
                     </div>
-                </div>
-                <div className="personal-account-profile__info">
-                    {infoForm()}
-                </div>
-            </div>
+            }
         </div>
     );
 };

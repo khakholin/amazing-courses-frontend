@@ -31,7 +31,7 @@ export interface IUserProfileResponse {
 
 export interface IUserCourseProgress {
     _id?: string;
-    availableLectures: number[];
-    checkedLectures: number[];
+    availableLectures: string[];
+    checkedLectures: string[];
     courseName: string;
 }

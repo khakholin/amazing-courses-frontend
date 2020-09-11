@@ -11,6 +11,7 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
 import { ICourseData, IUserCoursesData } from '../../types/inputPropsFormats';
 import { IUserCourseProgress } from '../../types/responseTypes';
+import { CircularProgress } from '@material-ui/core';
 
 export interface ICourses { };
 
@@ -21,6 +22,11 @@ const Courses = (props: ICourses) => {
     const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [dataList, setDataList] = useState<IUserCoursesData>();
     const [userCourseProgress, setUserCourseProgress] = useState<IUserCourseProgress[] | undefined>([]);
+    const [isLoader, setIsLoader] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => setIsLoader(false), 500);
+    }, []);
 
     useEffect(() => {
         appRequest('/api/user/available-courses', 'POST', { email: initialEmail })
@@ -48,35 +54,45 @@ const Courses = (props: ICourses) => {
 
     return (
         <div className="courses page-container">
-            <div className="courses-block">
-                <div className="courses-header">
-                    <div className="courses-header__left">
-                        <span className="courses-header__title">Материалы курсов</span>
+            {
+                isLoader ?
+                    <div className="info-form-spinner__wrapper courses__loader">
+                        <CircularProgress
+                            className="info-form-spinner__item "
+                            size={100}
+                            thickness={3}
+                        />
+                    </div> :
+                    <div className="courses-block">
+                        <div className="courses-header">
+                            <div className="courses-header__left">
+                                <span className="courses-header__title">Материалы курсов</span>
+                            </div>
+                            <div className="courses-header__right">
+                                <span className="courses-header__number">{dataList && (dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures))}</span>
+                                <span className="courses-header__time">{timeConversion(dataList?.totalTime)}</span>
+                            </div>
+                        </div>
+                        {
+                            dataList && dataList.courses.map((item: ICourseData) => {
+                                const curCourse = userCourseProgress?.find((course: IUserCourseProgress) => course.courseName === item.courseName);
+                                // TODO get userProgress
+                                return (
+                                    <DropdownList
+                                        email={initialEmail}
+                                        courseProgress={curCourse}
+                                        items={item.courseLectures}
+                                        key={item.courseName}
+                                        numberItems={item.numOfLectures}
+                                        time={item.courseTime}
+                                        title={item.courseName}
+                                        folder={item.courseFolder}
+                                    />
+                                )
+                            })
+                        }
                     </div>
-                    <div className="courses-header__right">
-                        <span className="courses-header__number">{dataList && (dataList?.totalNumOfLectures + ' лекци' + endingForNumber(dataList?.totalNumOfLectures))}</span>
-                        <span className="courses-header__time">{timeConversion(dataList?.totalTime)}</span>
-                    </div>
-                </div>
-                {
-                    dataList && dataList.courses.map((item: ICourseData) => {
-                        const curCourse = userCourseProgress?.find((course: IUserCourseProgress) => course.courseName === item.courseName);
-                        // TODO get userProgress
-                        return (
-                            <DropdownList
-                                email={initialEmail}
-                                courseProgress={curCourse}
-                                items={item.courseLectures}
-                                key={item.courseName}
-                                numberItems={item.numOfLectures}
-                                time={item.courseTime}
-                                title={item.courseName}
-                                folder={item.courseFolder}
-                            />
-                        )
-                    })
-                }
-            </div>
+            }
         </div>
     );
 };

@@ -3,7 +3,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
-import { Button, CircularProgress, Input, Checkbox } from '@material-ui/core';
+import { Button, CircularProgress, Input, Checkbox, InputAdornment } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -128,6 +128,29 @@ const CourseList = (props: ICourseListProps) => {
         setUpdateFlag(newLecturesArray.length);
     }
 
+    const onEditAddLectureClick = () => {
+        const newCourseData = selectedCourseData;
+        newCourseData.courseLectures.push({ lectureTime: '', lectureTitle: '' });
+        setSelectedCourseData(newCourseData);
+        setUpdateFlag(updateFlag + 1);
+    }
+
+    const onLectureEditDeleteClick = (index: number) => {
+        const newCourseData = selectedCourseData;
+        newCourseData.courseLectures.splice(index, 1);
+        setSelectedCourseData(newCourseData);
+        setUpdateFlag(updateFlag + 1);
+
+        // appRequest('/api/course/lecture-remove', 'POST', { courseName: selectedCourseData.courseName, lectureTitle })
+        //     .then((response) => {
+        // setSelectedCourseData(response.data[0]);
+        //     appRequest('/api/course/data', 'GET')
+        //         .then(response => {
+        //             setCourseList(response.data);
+        //         });
+        // });
+    }
+
     const onLectureTitleBlur = (e: any, index: number) => {
         const newLecturesArray = addedLectures.map((lecture: any, i: number) => {
             if (i === index) {
@@ -162,6 +185,13 @@ const CourseList = (props: ICourseListProps) => {
                 return testing;
             }
         });
+        setAddedLectures(newTestingArray);
+        setUpdateFlag(newTestingArray?.length);
+    }
+
+    const onRemoveTestingAnswerOptionsClick = (questionIndex: number, answerIndex: number) => {
+        const newTestingArray = addedTesting;
+        newTestingArray[questionIndex].answerOptions.splice(answerIndex, 1);
         setAddedLectures(newTestingArray);
         setUpdateFlag(newTestingArray?.length);
     }
@@ -250,10 +280,9 @@ const CourseList = (props: ICourseListProps) => {
     };
 
     const isSaveButtonActive = () => {
-        console.log(addedTesting);
-        const isActive = !!addedTesting.length && !addedTesting.find((item: any) => item?.answer === '' || item?.question === '' || (item?.isAnswerOptions ? !item?.answerOptions?.find((option: string) => option.length) : false));
-
-        return isActive;
+        return !!addedTesting.length &&
+            !addedTesting.find((item: any) => item?.answer === '' || item?.question === ''
+                || (item?.isAnswerOptions ? !item?.answerOptions?.find((option: string) => option.length) : false));
     }
 
     return (
@@ -421,7 +450,7 @@ const CourseList = (props: ICourseListProps) => {
                                             <div className="course-list-component__course-name">{selectedCourseData.courseName}</div>
                                             <div className="course-list-component-lectures">
                                                 <div className="course-list-component-lectures__header">
-                                                    <div className="course-list-component-lectures__block" onClick={() => onAddLectureClick()}>
+                                                    <div className="course-list-component-lectures__block" onClick={() => onEditAddLectureClick()}>
                                                         <div className="course-list-component-lectures__header-add">+</div>
                                                         <div className="course-list-component-lectures__header-description">
                                                             <div className="course-list-component-lectures__header-text">Добавить лекцию</div>
@@ -455,7 +484,7 @@ const CourseList = (props: ICourseListProps) => {
                                                                         <div className="course-list-component-lectures-list-progress">
                                                                             <div
                                                                                 className="course-list-component-lectures-list-progress__item"
-                                                                                onClick={() => onLectureDeleteClick(index)}
+                                                                                onClick={() => onLectureEditDeleteClick(index)}
                                                                             >
                                                                                 <div className="course-list-component-lectures-list-progress__title">
                                                                                     <ClearIcon />
@@ -481,7 +510,14 @@ const CourseList = (props: ICourseListProps) => {
                                                 }}
                                             >
                                                 Список курсов
-                                        </Button>
+                                            </Button>
+                                            <Button
+                                                className="button-primary"
+                                                variant="outlined"
+                                                onClick={() => { console.log('rtrtr') }}
+                                            >
+                                                Сохранить
+                                            </Button>
                                             <Button
                                                 className="button-danger"
                                                 variant="outlined"
@@ -563,14 +599,34 @@ const CourseList = (props: ICourseListProps) => {
                                                                         {testing.isAnswerOptions && testing?.answerOptions?.map((answerOption: any, answerIndex: number) => {
                                                                             return (
                                                                                 <div key={answerIndex} className="course-list-component-testing__answer-items">
-                                                                                    <Input className="course-list-component__testing-input" placeholder={'Вариант ответа ' + (answerIndex + 1)} multiline value={answerOption} onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)} />
+                                                                                    <Input
+                                                                                        className="course-list-component__testing-input"
+                                                                                        placeholder={'Вариант ответа ' + (answerIndex + 1)}
+                                                                                        multiline
+                                                                                        value={answerOption}
+                                                                                        onChange={(e: any) => onTestingAnswerOptionChange(e, index, answerIndex)}
+                                                                                        endAdornment={
+                                                                                            <InputAdornment position="end">
+                                                                                                <ClearIcon
+                                                                                                    className="course-list-component-testing__delete-answer"
+                                                                                                    onClick={() => onRemoveTestingAnswerOptionsClick(index, answerIndex)}
+                                                                                                />
+                                                                                            </InputAdornment>
+                                                                                        }
+                                                                                    />
                                                                                 </div>
                                                                             )
                                                                         })}
                                                                     </div>
                                                                     <div className="course-list-component-testing__answer">
                                                                         <div>Правильный ответ:</div>
-                                                                        <Input className="course-list-component__testing-input" placeholder="Правильный ответ" multiline value={testing.answer} onChange={(e: any) => onTestingAnswerChange(e, index)} />
+                                                                        <Input
+                                                                            className="course-list-component__testing-input"
+                                                                            placeholder="Правильный ответ"
+                                                                            multiline
+                                                                            value={testing.answer}
+                                                                            onChange={(e: any) => onTestingAnswerChange(e, index)}
+                                                                        />
                                                                     </div>
                                                                 </div>
                                                             )

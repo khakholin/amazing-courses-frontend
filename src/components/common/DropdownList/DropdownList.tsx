@@ -159,18 +159,18 @@ const DropdownList = (props: IDropdownList) => {
                 {
                     props.items.map((item: ILectureData, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
-                            'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(item => item === index) !== undefined),
-                            'dropdown-list-item_not-available': (props.courseProgress?.availableLectures.find(item => item === index) === undefined),
+                            'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined),
+                            'dropdown-list-item_not-available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
                         });
 
                         const dropDownListItemProgressClass = clsx('dropdown-list-item__progress', {
-                            'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(item => item === index) !== undefined),
-                            'dropdown-list-item__progress_inactive': (props.courseProgress?.availableLectures.find(item => item === index) === undefined),
+                            'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined),
+                            'dropdown-list-item__progress_inactive': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
                         });
 
                         const dropDownListItemLineClass = clsx('dropdown-list-item__line', {
-                            'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(item => item === index) !== undefined),
-                            'dropdown-list-item__line_inactive': (props.courseProgress?.checkedLectures.find(item => item === index) === undefined),
+                            'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) !== undefined),
+                            'dropdown-list-item__line_inactive': (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) === undefined),
                         });
                         return (
                             <div
@@ -179,7 +179,7 @@ const DropdownList = (props: IDropdownList) => {
                             >
                                 <div className={dropDownListItemProgressClass} style={!expanded ? { display: 'none' } : { display: 'flex' }}>
                                     {
-                                        (props.courseProgress?.checkedLectures.find(item => item === index) !== undefined) ?
+                                        (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) !== undefined) ?
                                             <CheckCircleIcon className="dropdown-list-item__check" /> :
                                             <RadioButtonCheckedIcon className="dropdown-list-item__check" />
                                     }
@@ -190,7 +190,7 @@ const DropdownList = (props: IDropdownList) => {
                                 </div>
                                 <div className="dropdown-list-item__right"
                                     onClick={() => {
-                                        if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
+                                        if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined) {
                                             handleOpenModal(item.lectureTitle, index);
                                         }
                                     }}
@@ -202,7 +202,7 @@ const DropdownList = (props: IDropdownList) => {
                                     <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
                                 </div>
                                 <div className="dropdown-list-item__testing" style={(!expanded || !isAvailableLecturesTests?.find((l: any) => l?.lectureTitle === item.lectureTitle && l?.lectureQuestions?.length)) ? { display: 'none' } : { display: 'flex' }} onClick={() => {
-                                    if (props.courseProgress?.availableLectures.find(item => item === index) !== undefined) {
+                                    if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined) {
                                         onTestingClick(props.title, item.lectureTitle)
                                     }
                                 }}>
@@ -239,10 +239,6 @@ const DropdownList = (props: IDropdownList) => {
                         <div className="dropdown-list-form">
                             {
                                 currentTestingData?.map((item: any, index: number) => {
-                                    console.log(answersArray);
-                                    console.log(userAnswersArray);
-
-
                                     return (
                                         <div className="dropdown-list-question" key={index}>
                                             <div className="dropdown-list-question-title">
