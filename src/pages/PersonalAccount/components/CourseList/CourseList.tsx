@@ -502,7 +502,7 @@ const CourseList = (props: ICourseListProps) => {
                                                     </div>
                                                     <div></div>
                                                 </div>
-                                                <div className="course-list-component-lectures-list">
+                                                <div className="course-list-component-lectures-list_full-height">
                                                     {
                                                         selectedCourseData.courseLectures.map((item: any, index: number) => {
                                                             return (
