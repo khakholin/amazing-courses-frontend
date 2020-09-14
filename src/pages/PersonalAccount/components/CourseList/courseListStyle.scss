@@ -210,6 +210,12 @@
         height: 200px;
         border: 1px solid $bgcPageDefault;
 
+        &_full-hight {
+            margin: 0 20px 40px;
+            background-color: white;
+            border: 1px solid $bgcPageDefault;
+        }
+
         &__header {
             display: flex;
             padding: 0 10px;
@@ -239,8 +245,8 @@
 
 
         &-list {
-            height: 160px;
-            overflow: auto;
+            // height: 160px;
+            // overflow: auto;
 
             &__input {
                 max-width: 180px;
@@ -300,8 +306,23 @@
                 justify-content: space-between;
                 align-items: center;
                 border-bottom: 1px solid $bgcPageDefault;
+
+                &:last-child {
+                    border-bottom: 0;
+                }
             }
 
+        }
+    }
+}
+
+.course-list {
+    &-modal {
+        &__buttons {
+            width: 100%;
+            display: flex;
+            margin-top: 40px;
+            justify-content: space-between;
         }
     }
 }

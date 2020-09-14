@@ -13,7 +13,9 @@ import { Select, Input, MenuItem, Checkbox, ListItemText } from '@material-ui/co
 import { roles } from '../../../../constants/roles';
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 
-export interface IUserInformationProps { }
+export interface IUserInformationProps {
+    currentUser: string | undefined;
+}
 
 const UserInformation = (props: IUserInformationProps) => {
     // eslint-disable-next-line
@@ -25,7 +27,7 @@ const UserInformation = (props: IUserInformationProps) => {
             .then(response => {
                 setCourseList(response.data)
             });
-        appRequest('/api/user/data', 'POST', { email: initialEmail })
+        appRequest('/api/user/data', 'POST', { email: props.currentUser })
             .then((response: { data: IUserProfileResponse }) => {
                 setUserData(response.data)
                 setUserAvailableCourses(response.data?.availableCourses);
@@ -40,7 +42,7 @@ const UserInformation = (props: IUserInformationProps) => {
             .then(response => {
                 setUsersList(response.data);
             });
-        appRequest('/api/user/mentors', 'POST', { email: initialEmail })
+        appRequest('/api/user/mentors', 'POST', { email: props.currentUser })
             .then(response => {
                 setUserMentors(response.data);
             });
@@ -61,7 +63,7 @@ const UserInformation = (props: IUserInformationProps) => {
                 appRequest('/api/user/available-courses', 'POST', { email: userData?.email })
                     .then(response => {
                         setUserAvailableCourses(response.data);
-                        appRequest('/api/user/data', 'POST', { email: initialEmail })
+                        appRequest('/api/user/data', 'POST', { email: userData?.email })
                             .then((response: { data: IUserProfileResponse }) => {
                                 setUserData(response.data)
                                 setUserAvailableCourses(response.data?.availableCourses);

@@ -38,6 +38,9 @@ const CourseList = (props: ICourseListProps) => {
     const [openAddTestingModal, setOpenAddTestingModal] = useState(false);
     const [addedTesting, setAddedTesting] = useState<any>([]);
     const [selectedLecture, setSelectedLecture] = useState('');
+    const [openDeleteLectureModal, setOpenDeleteLectureModal] = useState({ status: false, lectureTitle: '' });
+    const [openDeleteCourseModal, setOpenDeleteCourseModal] = useState(false);
+    const [editAddedLectures, setEditAddedLectures] = useState<any>([]);
 
     const onSaveClick = () => {
         setIsCreateMode(true);
@@ -128,27 +131,56 @@ const CourseList = (props: ICourseListProps) => {
         setUpdateFlag(newLecturesArray.length);
     }
 
-    const onEditAddLectureClick = () => {
-        const newCourseData = selectedCourseData;
-        newCourseData.courseLectures.push({ lectureTime: '', lectureTitle: '' });
-        setSelectedCourseData(newCourseData);
+    const onEditLectureDeleteClick = (index: number) => {
+        const newLecturesArray = editAddedLectures;
+        newLecturesArray.splice(index, 1);
+        setEditAddedLectures(newLecturesArray);
         setUpdateFlag(updateFlag + 1);
     }
 
-    const onLectureEditDeleteClick = (index: number) => {
-        const newCourseData = selectedCourseData;
-        newCourseData.courseLectures.splice(index, 1);
-        setSelectedCourseData(newCourseData);
+    const onEditAddLectureClick = () => {
+        const newLecturesArray = editAddedLectures;
+        newLecturesArray.push({ lectureTime: '', lectureTitle: '' });
+        setEditAddedLectures(newLecturesArray);
         setUpdateFlag(updateFlag + 1);
+    }
 
-        // appRequest('/api/course/lecture-remove', 'POST', { courseName: selectedCourseData.courseName, lectureTitle })
-        //     .then((response) => {
-        // setSelectedCourseData(response.data[0]);
-        //     appRequest('/api/course/data', 'GET')
-        //         .then(response => {
-        //             setCourseList(response.data);
-        //         });
-        // });
+    const onEditLectureTitleBlur = (e: any, index: number) => {
+        const newLecturesArray = editAddedLectures.map((lecture: any, i: number) => {
+            if (i === index) {
+                return { ...lecture, lectureTitle: e.target.value };
+            } else {
+                return lecture;
+            }
+        });
+        setEditAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
+    }
+
+    const onEditLectureTimeBlur = (e: any, index: number) => {
+        if (+e.target.value || e.target.value === '') {
+            const newLecturesArray = editAddedLectures.map((lecture: any, i: number) => {
+                if (i === index) {
+                    return { ...lecture, lectureTime: +e.target.value };
+                } else {
+                    return lecture;
+                }
+            });
+            setEditAddedLectures(newLecturesArray);
+            setUpdateFlag(updateFlag + 1);
+        }
+    }
+
+    const onLectureEditDeleteClick = (lectureTitle: string) => {
+        appRequest('/api/course/lecture-remove', 'POST', { courseName: selectedCourseData.courseName, lectureTitle })
+            .then((response) => {
+                setSelectedCourseData(response.data?.find((course: any) => course.courseName === selectedCourseData.courseName));
+                appRequest('/api/course/data', 'GET')
+                    .then(response => {
+                        setCourseList(response.data);
+                        handleCloseDeleteLectureModal();
+                    });
+            });
     }
 
     const onLectureTitleBlur = (e: any, index: number) => {
@@ -162,7 +194,6 @@ const CourseList = (props: ICourseListProps) => {
         setAddedLectures(newLecturesArray);
         setUpdateFlag(newLecturesArray.length);
     }
-
 
     const onAddTestingClick = () => {
         const newTestingArray = addedTesting;
@@ -267,6 +298,7 @@ const CourseList = (props: ICourseListProps) => {
                         .then(response => {
                             setIsCourseInfoMode(false);
                             setSelectedCourseData(null);
+                            setOpenDeleteCourseModal(false);
                             setCourseList(response.data);
                         });
                 }
@@ -279,10 +311,22 @@ const CourseList = (props: ICourseListProps) => {
         setAddedTesting([]);
     };
 
+    const handleCloseDeleteLectureModal = () => {
+        setOpenDeleteLectureModal({ status: false, lectureTitle: '' });
+    }
+
+    const handleCloseDeleteCourseModal = () => {
+        setOpenDeleteCourseModal(false);
+    }
+
     const isSaveButtonActive = () => {
         return !!addedTesting.length &&
             !addedTesting.find((item: any) => item?.answer === '' || item?.question === ''
                 || (item?.isAnswerOptions ? !item?.answerOptions?.find((option: string) => option.length) : false));
+    }
+
+    const isEditSaveActive = () => {
+        return !!editAddedLectures.length && !editAddedLectures.find((item: any) => !item?.lectureTime || !item?.lectureTitle?.length);
     }
 
     return (
@@ -448,7 +492,7 @@ const CourseList = (props: ICourseListProps) => {
                                     <Fragment>
                                         <div className="course-list-component__course-info">
                                             <div className="course-list-component__course-name">{selectedCourseData.courseName}</div>
-                                            <div className="course-list-component-lectures">
+                                            <div className="course-list-component-lectures_full-hight">
                                                 <div className="course-list-component-lectures__header">
                                                     <div className="course-list-component-lectures__block" onClick={() => onEditAddLectureClick()}>
                                                         <div className="course-list-component-lectures__header-add">+</div>
@@ -484,7 +528,7 @@ const CourseList = (props: ICourseListProps) => {
                                                                         <div className="course-list-component-lectures-list-progress">
                                                                             <div
                                                                                 className="course-list-component-lectures-list-progress__item"
-                                                                                onClick={() => onLectureEditDeleteClick(index)}
+                                                                                onClick={() => setOpenDeleteLectureModal({ status: true, lectureTitle: item.lectureTitle })}
                                                                             >
                                                                                 <div className="course-list-component-lectures-list-progress__title">
                                                                                     <ClearIcon />
@@ -497,6 +541,29 @@ const CourseList = (props: ICourseListProps) => {
                                                         }
                                                         )
                                                     }
+                                                    {
+                                                        editAddedLectures?.map((lecture: any, index: number) => {
+                                                            return (
+                                                                <div key={index} className="course-list-component-lectures-list__item">
+                                                                    <div className="course-list-component-lectures-list__title">
+                                                                        <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (selectedCourseData?.courseLectures?.length + index + 1) + ':'}</div>
+                                                                        <Input className="course-list-component-lectures-list__input" placeholder="Название" value={lecture.lectureTitle} onChange={(e: any) => onEditLectureTitleBlur(e, index)} />
+                                                                        <Input className="course-list-component-lectures-list__input" placeholder="Продолжительность" value={lecture.lectureTime} onChange={(e: any) => onEditLectureTimeBlur(e, index)} />
+                                                                    </div>
+                                                                    <div className="course-list-component-lectures-list-progress">
+                                                                        <div
+                                                                            className="course-list-component-lectures-list-progress__item"
+                                                                            onClick={() => onEditLectureDeleteClick(index)}
+                                                                        >
+                                                                            <div className="course-list-component-lectures-list-progress__title">
+                                                                                <ClearIcon />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            )
+                                                        })
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -506,26 +573,110 @@ const CourseList = (props: ICourseListProps) => {
                                                 variant="outlined"
                                                 onClick={() => {
                                                     setSelectedCourseData(null);
+                                                    setEditAddedLectures([]);
                                                     setIsCourseInfoMode(false);
                                                 }}
                                             >
                                                 Список курсов
                                             </Button>
-                                            <Button
-                                                className="button-primary"
-                                                variant="outlined"
-                                                onClick={() => { console.log('rtrtr') }}
-                                            >
-                                                Сохранить
-                                            </Button>
+                                            {
+                                                isEditSaveActive() ?
+                                                    <Button
+                                                        className="button-primary"
+                                                        variant="outlined"
+                                                        onClick={() => {
+                                                            appRequest('/api/course/add-lectures', 'POST', {
+                                                                courseName: selectedCourseData.courseName, courseLectures: editAddedLectures
+                                                            })
+                                                                .then(response => {
+                                                                    if (response) {
+                                                                        setSelectedCourseData(response.data);
+                                                                        setUpdateFlag(updateFlag + 1);
+                                                                        appRequest('/api/course/data', 'GET')
+                                                                            .then(response => {
+                                                                                setEditAddedLectures([]);
+                                                                                setCourseList(response.data);
+                                                                            });
+                                                                    }
+                                                                });
+
+                                                        }}
+                                                    >
+                                                        Сохранить
+                                                    </Button> :
+                                                    <Button
+                                                        disabled
+                                                        variant="outlined"
+                                                    >
+                                                        Сохранить
+                                                    </Button>
+                                            }
                                             <Button
                                                 className="button-danger"
                                                 variant="outlined"
-                                                onClick={() => onCourseDeleteClick()}
+                                                onClick={() => {
+                                                    setOpenDeleteCourseModal(true);
+                                                    setEditAddedLectures([]);
+                                                }}
                                             >
                                                 Удалить курс
-                                        </Button>
+                                            </Button>
                                         </div>
+                                        {
+                                            openDeleteCourseModal ?
+                                                <ModalComponent
+                                                    closeHandler={handleCloseDeleteCourseModal}
+                                                    error
+                                                    isOpen={openDeleteCourseModal}
+                                                    text={"Вы действительно хотите удалить курс '" + selectedCourseData?.courseName + "'?"}
+                                                    title={'Внимание'}
+                                                >
+                                                    <div className="course-list-modal__buttons">
+                                                        <Button
+                                                            className="button-secondary"
+                                                            variant="outlined"
+                                                            onClick={() => handleCloseDeleteCourseModal()}
+                                                        >
+                                                            Отменить
+                                                    </Button>
+                                                        <Button
+                                                            className="button-primary"
+                                                            variant="outlined"
+                                                            onClick={() => onCourseDeleteClick()}
+                                                        >
+                                                            Подтвердить
+                                                    </Button>
+                                                    </div>
+                                                </ModalComponent> :
+                                                <Fragment />
+                                        }
+                                        {openDeleteLectureModal?.status ?
+                                            <ModalComponent
+                                                closeHandler={handleCloseDeleteLectureModal}
+                                                error
+                                                isOpen={openDeleteLectureModal?.status}
+                                                text={"Вы действительно хотите удалить лекцию '" + openDeleteLectureModal?.lectureTitle + "'?"}
+                                                title={'Внимание'}
+                                            >
+                                                <div className="course-list-modal__buttons">
+                                                    <Button
+                                                        className="button-secondary"
+                                                        variant="outlined"
+                                                        onClick={() => handleCloseDeleteLectureModal()}
+                                                    >
+                                                        Отменить
+                                                    </Button>
+                                                    <Button
+                                                        className="button-primary"
+                                                        variant="outlined"
+                                                        onClick={() => onLectureEditDeleteClick(openDeleteLectureModal?.lectureTitle)}
+                                                    >
+                                                        Подтвердить
+                                                    </Button>
+                                                </div>
+                                            </ModalComponent> :
+                                            <Fragment />
+                                        }
                                         <ModalComponent
                                             closeHandler={handleCloseAddTestingModal}
                                             error

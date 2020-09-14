@@ -93,7 +93,9 @@ const PersonalAccount = (props: IPersonalAccount) => {
                 )
             case 'UserInformation':
                 return (
-                    <UserInformation />
+                    <UserInformation
+                        currentUser={currentUserProfile?.email}
+                    />
                 )
             case 'CourseList':
                 return (
