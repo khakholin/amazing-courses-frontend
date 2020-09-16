@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import BGContent from '../../components/common/BGContent/BGContent';
 import InputField from '../../components/common/InputField/InputField';
@@ -19,6 +20,15 @@ import { EResponseMessages } from '../../constants/responseMessages';
 import Header from '../../components/common/Header/Header';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import TestComponent from '../../components/common/TestComponent';
+
+import arrayMove from 'array-move';
+
+const SortableItem = SortableElement((props: any) => <li>{props.value}</li>);
+const SortableList = SortableContainer((props: any) => {
+    return <ul>{props.children}</ul>;
+});
+
+
 
 type TLogin = RouteComponentProps;
 
@@ -335,10 +345,22 @@ const Login = (props: TLogin) => {
     }
     /*______________________________________________________________________*/
 
+    // const [itms, setItms] = useState(['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'])
+
+
     return (
         <Fragment>
             <Header login />
             {/* {information.map((item: any, index: any) => <TestComponent title={item.title} swap={swap} index={index + 1} details={item.details} />)} */}
+            {/* <SortableList
+                onSortEnd={(props: any) => setItms(arrayMove(itms, props.oldIndex, props.newIndex))}
+            >
+                {
+                    itms.map((value, index) => (
+                        <SortableItem key={`item-${value}`} index={index} value={value} />
+                    ))
+                }
+            </SortableList> */}
             <div className="login page-container">
                 {registration ?
                     <BGContent
