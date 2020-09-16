@@ -120,3 +120,16 @@ code {
     color: $mainColor !important;
   }
 }
+
+
+.one,
+.two,
+.three,
+.four,
+.five,
+.six {
+  transition: 0.3s;
+  width: 400px;
+  height: 60px;
+  border: 1px solid rgb(48, 46, 46);
+}

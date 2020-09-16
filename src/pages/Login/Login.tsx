@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
@@ -18,6 +18,7 @@ import './loginStyle.scss';
 import { EResponseMessages } from '../../constants/responseMessages';
 import Header from '../../components/common/Header/Header';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
+import TestComponent from '../../components/common/TestComponent';
 
 type TLogin = RouteComponentProps;
 
@@ -311,9 +312,33 @@ const Login = (props: TLogin) => {
         el.selectionStart = password.value.length;
     };
 
+    /*______________________________________________________________________*/
+    const [information, setInformation] = useState([{ title: "1. potato", details: "blah blah blah" },
+    { title: "2. tomato", details: "red and juicy" },
+    { title: "3. taco", details: "burrito burrito" },
+    { title: "4. oregano", details: "spicy" },
+    { title: "5. oranges", details: "are orange" },
+    { title: "6. raccoon", details: "trash panda" }
+    ])
+    const [flag, setFlag] = useState(0)
+
+    const swap = (title1: any, title2: any) => {
+        let pos2 = information.findIndex((object) => { return (object.title === title2) })
+        let pos1 = information.findIndex((object) => { return (object.title === title1) })
+        let samplearray = information
+        let temp = information[pos1]
+        samplearray[pos1] = information[pos2]
+        samplearray[pos2] = temp
+        setInformation(samplearray);
+        setFlag(flag + 1);
+
+    }
+    /*______________________________________________________________________*/
+
     return (
         <Fragment>
             <Header login />
+            {/* {information.map((item: any, index: any) => <TestComponent title={item.title} swap={swap} index={index + 1} details={item.details} />)} */}
             <div className="login page-container">
                 {registration ?
                     <BGContent
