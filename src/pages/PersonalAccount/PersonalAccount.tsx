@@ -9,7 +9,7 @@ import clsx from 'clsx';
 
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
-import { appRequest } from '../../modules/app/appRequest';
+import { appRequest, appRequestFile } from '../../modules/app/appRequest';
 import { ReactComponent as Man } from '../../theme/icons/Man.svg';
 import { IUserProfileResponse } from '../../types/responseTypes';
 import { getCookieByName } from '../../utils/operationsWithCookie';
@@ -115,6 +115,32 @@ const PersonalAccount = (props: IPersonalAccount) => {
         return menuItemClass;
     }
 
+    const [image, setImage] = useState<{ file: any, previewUrl: any }>({ file: '', previewUrl: '' });
+    const [test, setTest] = useState<any>(null)
+
+
+    const handleImageChange = (event: any) => {
+        event.preventDefault();
+
+        let reader = new FileReader();
+        let file = event.target.files[0];
+
+        reader.onloadend = () => {
+            setImage({ file: file, previewUrl: reader.result });
+        }
+
+        reader.readAsDataURL(file)
+    }
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+
+        appRequestFile('/api/user/load-image', 'POST', image.file)
+            .then((response) => {
+                console.log(response);
+            });
+    }
+
     return (
         <div className="personal-account page-container">
             {
@@ -128,7 +154,21 @@ const PersonalAccount = (props: IPersonalAccount) => {
                     </div> :
                     <div className="personal-account-profile">
                         <div className="personal-account-profile__bar">
-                            <Man className="personal-account-profile__avatar" />
+                            {/* <Man className="personal-account-profile__avatar" /> */}
+
+                            <input
+                                className="fileInput"
+                                type="file"
+                                onChange={(e) => handleImageChange(e)}
+                            />
+                            <button
+                                className="submitButton"
+                                type="submit"
+                                onClick={(e) => handleSubmit(e)}
+                            >
+                                Upload Image
+                            </button>
+
                             <div className="personal-account-profile__name">{userData && (userData?.realName + ' ' + userData?.realSurname)}</div>
                             <div className="personal-account-profile__menu">
                                 <li className={menuItemClasses('MyProfile')} onClick={() => onMenuItemClick('MyProfile')}>

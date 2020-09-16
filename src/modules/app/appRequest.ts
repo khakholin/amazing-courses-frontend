@@ -49,7 +49,6 @@ export const appRequestFile = (endpoint: string, method: string, body?: any, opt
         method,
         headers: {
             'X-Request-Source': 'SITE',
-            'Content-Type': 'application/json',
             Pragma: 'no-cache',
         },
         mode: 'cors',
@@ -58,19 +57,24 @@ export const appRequestFile = (endpoint: string, method: string, body?: any, opt
 
     defaultOptions = { ...defaultOptions, ...options };
 
-    const headers = defaultOptions.headers?.['Content-Type'] ?? '';
+    // const headers = defaultOptions.headers?.['Content-Type'] ?? '';
+
+    // if (body) {
+    //     defaultOptions.body = headers.includes('json')
+    //         ? JSON.stringify(body)
+    //         : body;
+    // }
+    let formData = new FormData();
 
     if (body) {
-        defaultOptions.body = headers.includes('json')
-            ? JSON.stringify(body)
-            : body;
+        formData.append('userImage', body, 'myfile.jpg')
     }
 
     if (authToken) {
         defaultOptions.headers['Authorization'] = `Bearer ${authToken}`
     }
 
-    return fetch(API_URL + endpoint, defaultOptions)
+    return fetch(API_URL + endpoint, { ...defaultOptions, body: formData })
         .then((resp) => resp.blob())
         .then((data) => {
             return {
