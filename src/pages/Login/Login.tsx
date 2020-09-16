@@ -1,34 +1,23 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 
 import BGContent from '../../components/common/BGContent/BGContent';
+import Header from '../../components/common/Header/Header';
 import InputField from '../../components/common/InputField/InputField';
 import ModalComponent from '../../components/common/ModalComponent/ModalComponent';
 import { REPLACEABLE_FIELD_NAME, emailRegExp, textRusRealNameRegExp } from '../../constants/common';
 import { endpoints } from '../../constants/endpoints';
+import { EResponseMessages } from '../../constants/responseMessages';
 import * as translation from '../../constants/translation';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
 import { appRequest } from '../../modules/app/appRequest';
 import { setCookie } from '../../utils/operationsWithCookie';
 import { IResponse } from '../../types/responseTypes';
 
 import './loginStyle.scss';
-import { EResponseMessages } from '../../constants/responseMessages';
-import Header from '../../components/common/Header/Header';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import TestComponent from '../../components/common/TestComponent';
-
-import arrayMove from 'array-move';
-
-const SortableItem = SortableElement((props: any) => <li>{props.value}</li>);
-const SortableList = SortableContainer((props: any) => {
-    return <ul>{props.children}</ul>;
-});
-
-
 
 type TLogin = RouteComponentProps;
 
@@ -322,45 +311,9 @@ const Login = (props: TLogin) => {
         el.selectionStart = password.value.length;
     };
 
-    /*______________________________________________________________________*/
-    const [information, setInformation] = useState([{ title: "1. potato", details: "blah blah blah" },
-    { title: "2. tomato", details: "red and juicy" },
-    { title: "3. taco", details: "burrito burrito" },
-    { title: "4. oregano", details: "spicy" },
-    { title: "5. oranges", details: "are orange" },
-    { title: "6. raccoon", details: "trash panda" }
-    ])
-    const [flag, setFlag] = useState(0)
-
-    const swap = (title1: any, title2: any) => {
-        let pos2 = information.findIndex((object) => { return (object.title === title2) })
-        let pos1 = information.findIndex((object) => { return (object.title === title1) })
-        let samplearray = information
-        let temp = information[pos1]
-        samplearray[pos1] = information[pos2]
-        samplearray[pos2] = temp
-        setInformation(samplearray);
-        setFlag(flag + 1);
-
-    }
-    /*______________________________________________________________________*/
-
-    // const [itms, setItms] = useState(['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5', 'Item 6'])
-
-
     return (
         <Fragment>
             <Header login />
-            {/* {information.map((item: any, index: any) => <TestComponent title={item.title} swap={swap} index={index + 1} details={item.details} />)} */}
-            {/* <SortableList
-                onSortEnd={(props: any) => setItms(arrayMove(itms, props.oldIndex, props.newIndex))}
-            >
-                {
-                    itms.map((value, index) => (
-                        <SortableItem key={`item-${value}`} index={index} value={value} />
-                    ))
-                }
-            </SortableList> */}
             <div className="login page-container">
                 {registration ?
                     <BGContent

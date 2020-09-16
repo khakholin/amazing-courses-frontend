@@ -1,4 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
+import { SortableContainer, SortableElement } from 'react-sortable-hoc';
+import arrayMove from 'array-move';
 
 import './courseListStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
@@ -329,6 +331,14 @@ const CourseList = (props: ICourseListProps) => {
         return !!editAddedLectures.length && !editAddedLectures.find((item: any) => !item?.lectureTime || !item?.lectureTitle?.length);
     }
 
+    const EditableLectures = SortableContainer((props: any) => {
+        return <ul>{props.children}</ul>;
+    });
+
+    const SortableLecture = SortableElement((props: any) => {
+        return <Fragment>{props.children}</Fragment>;
+    });
+
     return (
         <Fragment>
             <div className="personal-account-info-header">
@@ -503,44 +513,69 @@ const CourseList = (props: ICourseListProps) => {
                                                     <div></div>
                                                 </div>
                                                 <div className="course-list-component-lectures-list_full-height">
-                                                    {
-                                                        selectedCourseData.courseLectures.map((item: any, index: number) => {
-                                                            return (
-                                                                <div key={item.lectureTitle} className="course-list-component-lectures-list__item">
-                                                                    <div className="course-list-component-lectures-list__title">
-                                                                        <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
-                                                                        <div className="course-list-component-lectures-list__title-data">{item.lectureTitle}</div>
-                                                                    </div>
-                                                                    <div className="course-list-component-lectures-list-progress">
-                                                                        <div
-                                                                            className="course-list-component-lectures-list-progress__item"
-                                                                            onClick={() => {
-                                                                                appRequest('/api/testing/data-edit', 'POST', { courseName: selectedCourseData.courseName, lectureTitle: item.lectureTitle })
-                                                                                    .then(response => {
-                                                                                        setAddedTesting(response.data);
-                                                                                        setSelectedLecture(item.lectureTitle);
-                                                                                        setOpenAddTestingModal(true);
-                                                                                    });
-                                                                            }}
-                                                                        >
-                                                                            <div className="course-list-component-lectures-list-progress__title">Редактировать тестирование</div>
-                                                                        </div>
-                                                                        <div className="course-list-component-lectures-list-progress">
-                                                                            <div
-                                                                                className="course-list-component-lectures-list-progress__item"
-                                                                                onClick={() => setOpenDeleteLectureModal({ status: true, lectureTitle: item.lectureTitle })}
-                                                                            >
-                                                                                <div className="course-list-component-lectures-list-progress__title">
-                                                                                    <ClearIcon />
+                                                    <EditableLectures
+                                                        onSortEnd={(props: any) => {
+                                                            const newSelectedArray = selectedCourseData;
+                                                            newSelectedArray.courseLectures = arrayMove(newSelectedArray.courseLectures, props.oldIndex, props.newIndex);
+                                                            appRequest('/api/course/move-lectures', 'POST', {
+                                                                courseName: selectedCourseData.courseName, oldIndex: props.oldIndex, newIndex: props.newIndex
+                                                            })
+                                                                .then(response => {
+                                                                    if (response) {
+                                                                        setSelectedCourseData(response.data);
+                                                                        setUpdateFlag(updateFlag + 1);
+                                                                        appRequest('/api/course/data', 'GET')
+                                                                            .then(response => {
+                                                                                setEditAddedLectures([]);
+                                                                                setCourseList(response.data);
+                                                                            });
+                                                                    }
+                                                                });
+                                                        }
+                                                        }
+                                                    >
+                                                        {
+                                                            selectedCourseData.courseLectures.map((item: any, index: number) => {
+                                                                return (
+                                                                    <SortableLecture key={`item-${item.lectureTitle}`} index={index}>
+                                                                        <div key={item.lectureTitle} className="course-list-component-lectures-list__item">
+                                                                            <div className="course-list-component-lectures-list__title">
+                                                                                <div className="course-list-component-lectures-list__title-description">{'Лекция №' + (index + 1) + ':'}</div>
+                                                                                <div className="course-list-component-lectures-list__title-data">{item.lectureTitle}</div>
+                                                                            </div>
+                                                                            <div className="course-list-component-lectures-list-progress">
+                                                                                <div
+                                                                                    className="course-list-component-lectures-list-progress__item"
+                                                                                    onClick={() => {
+                                                                                        appRequest('/api/testing/data-edit', 'POST', { courseName: selectedCourseData.courseName, lectureTitle: item.lectureTitle })
+                                                                                            .then(response => {
+                                                                                                setAddedTesting(response.data);
+                                                                                                setSelectedLecture(item.lectureTitle);
+                                                                                                setOpenAddTestingModal(true);
+                                                                                            });
+                                                                                    }}
+                                                                                >
+                                                                                    <div className="course-list-component-lectures-list-progress__title">Редактировать тестирование</div>
+                                                                                </div>
+                                                                                <div className="course-list-component-lectures-list-progress">
+                                                                                    <div
+                                                                                        className="course-list-component-lectures-list-progress__item"
+                                                                                        onClick={() => setOpenDeleteLectureModal({ status: true, lectureTitle: item.lectureTitle })}
+                                                                                    >
+                                                                                        <div className="course-list-component-lectures-list-progress__title">
+                                                                                            <ClearIcon />
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
+
                                                                         </div>
-                                                                    </div>
-                                                                </div>
+                                                                    </SortableLecture>
+                                                                )
+                                                            }
                                                             )
                                                         }
-                                                        )
-                                                    }
+                                                    </EditableLectures>
                                                     {
                                                         editAddedLectures?.map((lecture: any, index: number) => {
                                                             return (
