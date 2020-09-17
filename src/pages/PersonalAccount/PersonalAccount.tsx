@@ -9,13 +9,14 @@ import clsx from 'clsx';
 
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import appHistory from '../../modules/app/appHistory';
-import { appRequest } from '../../modules/app/appRequest';
-import { ReactComponent as Man } from '../../theme/icons/Man.svg';
+import { appRequest, appRequestFile, appRequestFile2 } from '../../modules/app/appRequest';
 import { IUserProfileResponse } from '../../types/responseTypes';
+import PublishIcon from '@material-ui/icons/Publish';
 import { getCookieByName } from '../../utils/operationsWithCookie';
 
 import Account from './components/Account/Account';
 import CourseList from './components/CourseList/CourseList';
+import PhotoCameraIcon from '@material-ui/icons/PhotoCamera';
 import MyProfile from './components/MyProfile/MyProfile';
 import MySuccess from './components/MySuccess/MySuccess';
 import UserInformation from './components/UserInformation/UserInformation';
@@ -23,6 +24,7 @@ import UserList from './components/UserList/UserList';
 import './personalAccountStyle.scss';
 import StudentSuccess from './components/StudentSuccess/StudentSuccess';
 import { CircularProgress } from '@material-ui/core';
+import ModalComponent from '../../components/common/ModalComponent/ModalComponent';
 
 export interface IPersonalAccount { };
 
@@ -43,6 +45,19 @@ const PersonalAccount = (props: IPersonalAccount) => {
         if (currentMenuItem === 'UserInformation') {
             setCurrentMenuItem('UserList');
         }
+        appRequestFile2('/api/user/get-image', 'GET')
+            .then((avatar) => {
+                if (avatar.data.message !== 'USER_IMAGE_NOT_FOUND') {
+                    let reader = new FileReader();
+                    let file = avatar.data;
+
+                    reader.onloadend = () => {
+                        setCurrentAvatar(reader.result);
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            })
         // eslint-disable-next-line
     }, []);
 
@@ -115,6 +130,69 @@ const PersonalAccount = (props: IPersonalAccount) => {
         return menuItemClass;
     }
 
+    const [image, setImage] = useState<any>('');
+    const [imageError, setImageError] = useState<string>('');
+    const [currentAvatar, setCurrentAvatar] = useState<any>();
+    const [isUploadModalShown, setIsUploadModalShown] = useState<boolean>(false);
+
+    const handleImageChange = (event: any) => {
+        event.preventDefault();
+
+        if (event.target.files.length) {
+
+
+            let reader = new FileReader();
+            let file = event.target.files[0];
+
+            if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                setImageError('')
+                reader.onloadend = () => {
+                    setImage(file);
+                    const btn: HTMLButtonElement | null = document.querySelector('.personal-account__submit-button');
+                    btn?.click();
+                }
+
+                reader.readAsDataURL(file);
+            } else {
+                setImage('');
+                setImageError('Неверный формат файла')
+            }
+        }
+    }
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+
+        appRequestFile('/api/user/load-image', 'POST', image)
+            .then((response) => {
+                if (response.data) {
+                    setImage('');
+                    setImageError('');
+                    const a: HTMLFormElement | null = document.querySelector('.personal-account__avatar-form');
+                    a?.reset();
+                    appRequestFile2('/api/user/get-image', 'GET')
+                        .then((avatar) => {
+                            if (avatar) {
+                                let reader = new FileReader();
+                                let file = avatar.data;
+
+                                reader.onloadend = () => {
+                                    setCurrentAvatar(reader.result);
+                                    setIsUploadModalShown(false);
+                                }
+
+                                reader.readAsDataURL(file);
+
+                            }
+                        })
+                }
+            });
+    }
+
+    const handleCloseUploadModal = () => {
+        setIsUploadModalShown(false);
+    }
+
     return (
         <div className="personal-account page-container">
             {
@@ -128,7 +206,14 @@ const PersonalAccount = (props: IPersonalAccount) => {
                     </div> :
                     <div className="personal-account-profile">
                         <div className="personal-account-profile__bar">
-                            <Man className="personal-account-profile__avatar" />
+                            <img className="personal-account-profile__avatar" src={currentAvatar} alt="" />
+                            <div className="personal-account-profile-upload" onClick={() => setIsUploadModalShown(true)}>
+                                {currentAvatar ?
+                                    <PublishIcon className="personal-account-profile-upload__icon" /> :
+                                    <PhotoCameraIcon className="personal-account-profile-upload__icon" />
+                                }
+                                <span className="personal-account-profile-upload__text">{currentAvatar ? 'Обновить фотографию' : 'Загрузить фотографию'}</span>
+                            </div>
                             <div className="personal-account-profile__name">{userData && (userData?.realName + ' ' + userData?.realSurname)}</div>
                             <div className="personal-account-profile__menu">
                                 <li className={menuItemClasses('MyProfile')} onClick={() => onMenuItemClick('MyProfile')}>
@@ -185,6 +270,49 @@ const PersonalAccount = (props: IPersonalAccount) => {
                         <div className="personal-account-profile__info">
                             {infoForm()}
                         </div>
+                        {
+                            isUploadModalShown ?
+                                <ModalComponent
+                                    closeHandler={handleCloseUploadModal}
+                                    error
+                                    isOpen={isUploadModalShown}
+                                    text={''}
+                                    title={'Загрузка новой фотографии'}
+                                >
+                                    <div className="personal-account-profile-modal">
+                                        <div className="personal-account-profile-modal__title">
+                                            Пользователям будет проще узнать Вас, если Вы загрузите свою настоящую фотографию.
+                                            Вы можете загрузить изображение в формате JPG или PNG.
+                                        </div>
+                                        <form
+                                            className="personal-account__avatar-form"
+                                        >
+                                            <label>
+                                                <div className="personal-account__button button-primary">
+                                                    Выбрать файл
+                                                </div>
+                                                <input
+                                                    style={{ display: "none" }}
+                                                    className="personal-account__avatar-input"
+                                                    type="file"
+                                                    onChange={(e) => handleImageChange(e)}
+                                                />
+                                            </label>
+                                            <button
+                                                className="personal-account__submit-button"
+                                                onClick={(e) => handleSubmit(e)}
+                                            >
+                                            </button>
+                                        </form>
+                                        <div className="personal-account-profile__avatar-error">{imageError}</div>
+
+                                        <div className="personal-account-profile-modal__info">
+                                            Если у Вас возникают проблемы с загрузкой, попробуйте выбрать фотографию меньшего размера.
+                                        </div>
+                                    </div>
+                                </ModalComponent>
+                                : <Fragment />
+                        }
                     </div>
             }
         </div>
