@@ -24,11 +24,26 @@
         display: flex;
         flex-direction: column;
 
+        &-header {
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+
+            &__image {
+                margin: 40px 20px;
+                border-radius: 4px;
+                max-width: 140px;
+                max-height: 140px;
+            }
+        }
+
         &__select-checkbox {
             color: $mainColor !important;
         }
 
         &-profile {
+            width: 100%;
             display: flex;
             flex-direction: column;
             margin: 40px 20px;

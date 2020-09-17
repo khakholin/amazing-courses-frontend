@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { CircularProgress, RadioGroup, FormControlLabel, Radio, withStyles, Input, Button, } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import { appRequestFile2 } from '../../../../modules/app/appRequest';
 
 import './studentSuccessStyle.scss';
 import { appRequest } from '../../../../modules/app/appRequest';
@@ -41,12 +42,16 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [selectedTesting, setSelectedTesting] = useState<any>({});
     const [currentTestingData, setCurrentTestingData] = useState([]);
+    const [currentAvatar, setCurrentAvatar] = useState<any>();
 
     useEffect(() => {
         setTimeout(() => setIsLoader(false), 500);
         appRequest('/api/user/get-students', 'POST', { email: props.email, roles: props.roles })
             .then(response => {
-                setUsers(response.data);
+                if (response.data.length) {
+                    setUsers(response.data);
+                }
+
             });
     }, [props.email, props.roles]);
 
@@ -64,6 +69,20 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
             .then(response => {
                 setUserCourseProgress(response.data);
             });
+
+        appRequestFile2('/api/user/get-user-image', 'POST', { email: user.email })
+            .then((avatar) => {
+                if (avatar.data.message !== 'USER_IMAGE_NOT_FOUND') {
+                    let reader = new FileReader();
+                    let file = avatar.data;
+
+                    reader.onloadend = () => {
+                        setCurrentAvatar(reader.result);
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            })
     }
 
     const handleCloseShowMoreModal = () => {
@@ -111,8 +130,25 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                 </Fragment> :
                                 <div className="student-success-wrapper">
                                     <div className="student-success-header">
-                                        <div className="student-success-header__title">Результаты тестирования ученика:</div>
-                                        <div className="student-success-header__user">{currentUser.realName + ' ' + currentUser.realSurname}</div>
+                                        <img className="student-success-header__image" src={currentAvatar} alt="" />
+                                        <div className="student-success-header__description">
+                                            <div className="user-information-component-profile__item">
+                                                <div className="user-information-component-profile__item-title">Email:</div>
+                                                <div className="user-information-component-profile__item-data">{currentUser?.email}</div>
+                                            </div>
+                                            <div className="user-information-component-profile__item">
+                                                <div className="user-information-component-profile__item-title">Имя:</div>
+                                                <div className="user-information-component-profile__item-data">{currentUser?.realName}</div>
+                                            </div>
+                                            <div className="user-information-component-profile__item">
+                                                <div className="user-information-component-profile__item-title">Фамилия:</div>
+                                                <div className="user-information-component-profile__item-data">{currentUser?.realSurname}</div>
+                                            </div>
+                                            <div className="user-information-component-profile__item">
+                                                <div className="user-information-component-profile__item-title">Школа:</div>
+                                                <div className="user-information-component-profile__item-data">{currentUser?.school}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                     {courseList?.courses?.map((course: any) => {
                                         const courseProgress = userCourseProgress?.find((progress: any) => course.courseName === progress.courseName);

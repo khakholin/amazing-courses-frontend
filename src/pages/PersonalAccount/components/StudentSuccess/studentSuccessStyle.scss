@@ -128,18 +128,28 @@
     }
 
     &-header {
-        height: 40px;
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
+
+        &__description {
+            min-width: 50%;
+            display: flex;
+            flex-direction: column;
+            margin: 0 20px;
+        }
 
         &__title {
             color: #828282;
-            margin: 0 5px;
         }
 
         &__user {
             color: #285473;
+        }
+
+        &__image {
+            border-radius: 4px;
+            width: 100px;
         }
     }
 

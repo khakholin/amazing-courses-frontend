@@ -5,6 +5,7 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { appRequest } from '../../../../modules/app/appRequest';
+import { appRequestFile2 } from '../../../../modules/app/appRequest';
 import { IUserProfileResponse, IUserCourseProgress } from '../../../../types/responseTypes';
 import { ICourseData, ILectureData } from '../../../../types/inputPropsFormats';
 
@@ -21,6 +22,7 @@ const UserInformation = (props: IUserInformationProps) => {
     // eslint-disable-next-line
     const [initialEmail, setInitialEmail] = useLocalStorage('initialEmail', '');
     const [userData, setUserData] = useState<IUserProfileResponse>();
+    const [currentAvatar, setCurrentAvatar] = useState<any>();
 
     useEffect(() => {
         appRequest('/api/course/list', 'GET')
@@ -46,6 +48,19 @@ const UserInformation = (props: IUserInformationProps) => {
             .then(response => {
                 setUserMentors(response.data);
             });
+        appRequestFile2('/api/user/get-user-image', 'POST', { email: props.currentUser })
+            .then((avatar) => {
+                if (avatar.data.message !== 'USER_IMAGE_NOT_FOUND') {
+                    let reader = new FileReader();
+                    let file = avatar.data;
+
+                    reader.onloadend = () => {
+                        setCurrentAvatar(reader.result);
+                    }
+
+                    reader.readAsDataURL(file);
+                }
+            })
         // eslint-disable-next-line
     }, [])
 
@@ -117,31 +132,34 @@ const UserInformation = (props: IUserInformationProps) => {
 
     return (
         <div className="user-information-component personal-account-info-body">
-            <div className="user-information-component-profile">
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Email:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.email}</div>
+            <div className="user-information-component-header">
+                <div className="user-information-component-profile">
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Email:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.email}</div>
+                    </div>
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Имя:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.realName}</div>
+                    </div>
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Фамилия:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.realSurname}</div>
+                    </div>
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Школа:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.school}</div>
+                    </div>
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Университет:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.university}</div>
+                    </div>
+                    <div className="user-information-component-profile__item">
+                        <div className="user-information-component-profile__item-title">Место работы:</div>
+                        <div className="user-information-component-profile__item-data">{userData?.workPlace}</div>
+                    </div>
                 </div>
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Имя:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.realName}</div>
-                </div>
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Фамилия:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.realSurname}</div>
-                </div>
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Школа:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.school}</div>
-                </div>
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Университет:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.university}</div>
-                </div>
-                <div className="user-information-component-profile__item">
-                    <div className="user-information-component-profile__item-title">Место работы:</div>
-                    <div className="user-information-component-profile__item-data">{userData?.workPlace}</div>
-                </div>
+                <img className="user-information-component-header__image" src={currentAvatar} alt="" />
             </div>
 
             <div className="user-information-roles">
