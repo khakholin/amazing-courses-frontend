@@ -145,14 +145,19 @@ const PersonalAccount = (props: IPersonalAccount) => {
             let file = event.target.files[0];
 
             if (file.type === 'image/jpeg' || file.type === 'image/png') {
-                setImageError('')
-                reader.onloadend = () => {
-                    setImage(file);
-                    const btn: HTMLButtonElement | null = document.querySelector('.personal-account__submit-button');
-                    btn?.click();
-                }
+                if (file.size < 1000000) {
+                    setImageError('')
+                    reader.onloadend = () => {
+                        setImage(file);
+                        const btn: HTMLButtonElement | null = document.querySelector('.personal-account__submit-button');
+                        btn?.click();
+                    }
 
-                reader.readAsDataURL(file);
+                    reader.readAsDataURL(file);
+                } else {
+                    setImage('');
+                    setImageError('Слишком большой размер файла');
+                }
             } else {
                 setImage('');
                 setImageError('Неверный формат файла')
