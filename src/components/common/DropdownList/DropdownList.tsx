@@ -220,6 +220,7 @@ const DropdownList = (props: IDropdownList) => {
                     lectureTitle={modalTitle}
                     lectureNumber={openedLecture + 1}
                     lectureFolder={props.folder}
+                    lectureAdditional={props.items[openedLecture].additionalMaterials}
                 /> : <Fragment />
             }
             {
