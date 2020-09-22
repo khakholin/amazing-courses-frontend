@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
 import Modal from '@material-ui/core/Modal';
@@ -18,6 +18,7 @@ export interface IVideoModal {
 const VideoModal = (props: IVideoModal) => {
     useEffect(() => {
         console.log(props.lectureAdditional);
+        // eslint-disable-next-line
     }, []);
 
     return (
@@ -39,21 +40,23 @@ const VideoModal = (props: IVideoModal) => {
                         <div className="video-modal-content__title">{props.lectureTitle}</div>
                         <video className="video-modal-content__video" src="http://khakholin.ru/api/course/video/Course1/1" controls />
                     </div>
-                    <div className="video-modal-materials">
-                        <div className="video-modal-materials__title">
-                            Дополнительные материалы:
-                    </div>
-                        {
-                            props.lectureAdditional?.map((material: any) => {
-                                return (
-                                    <div className="video-modal-materials__item">
-                                        <TouchAppIcon className="video-modal-materials__item-icon" />
-                                        <a className="video-modal-materials__item-link" href={material.materialLink} target='_blank'>{material.materialTitle}</a>
-                                    </div>
-                                )
-                            })
-                        }
-                    </div>
+                    {props.lectureAdditional?.length ?
+                        <div className="video-modal-materials">
+                            <div className="video-modal-materials__title">
+                                Дополнительные материалы:
+                            </div>
+                            {
+                                props.lectureAdditional?.map((material: any) => {
+                                    return (
+                                        <div className="video-modal-materials__item">
+                                            <TouchAppIcon className="video-modal-materials__item-icon" />
+                                            <a className="video-modal-materials__item-link" href={material.materialLink} target='_blank' rel="noopener noreferrer">{material.materialTitle}</a>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div> : <Fragment />
+                    }
                 </div>
             </Fade>
         </Modal>

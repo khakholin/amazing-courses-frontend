@@ -3,7 +3,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import './courseListStyle.scss';
-import { appRequest, appRequestFile } from '../../../../modules/app/appRequest';
+import { appRequest, appRequestFile, appRequestTestingImage } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
 import { Button, CircularProgress, Input, Checkbox, InputAdornment } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
@@ -11,6 +11,9 @@ import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
 import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
 import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import EventIcon from '@material-ui/icons/Event';
+import { KeyboardDatePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 export interface ICourseListProps { }
 
@@ -44,6 +47,7 @@ const CourseList = (props: ICourseListProps) => {
     const [openDeleteLectureModal, setOpenDeleteLectureModal] = useState({ status: false, lectureTitle: '' });
     const [openDeleteCourseModal, setOpenDeleteCourseModal] = useState(false);
     const [openAddAdditionalMaterials, setOpenAddAdditionalMaterials] = useState({ status: false, lectureIndex: -1 });
+    const [openAddAccessDate, setOpenAddAccessDate] = useState({ status: false, lectureIndex: -1 });
     const [editAddedLectures, setEditAddedLectures] = useState<any>([]);
 
     const onSaveClick = () => {
@@ -123,7 +127,7 @@ const CourseList = (props: ICourseListProps) => {
 
     const onAddLectureClick = () => {
         const newLecturesArray = addedLectures;
-        newLecturesArray.push({ lectureTime: '', lectureTitle: '', accessDate: '', additionalMaterials: [] });
+        newLecturesArray.push({ lectureTime: '', lectureTitle: '', accessDate: null, additionalMaterials: [] });
         setAddedLectures(newLecturesArray);
         setUpdateFlag(newLecturesArray.length);
     }
@@ -146,6 +150,21 @@ const CourseList = (props: ICourseListProps) => {
         setAddedLectures(newLecturesArray);
         setUpdateFlag(updateFlag + 1);
         setOpenAddAdditionalMaterials({ status: false, lectureIndex: -1 });
+    }
+
+    const accessDateAdd = (index: number) => {
+        setOpenAddAccessDate({ status: true, lectureIndex: index });
+    }
+
+    const handleCloseAddAccessDate = () => {
+        setOpenAddAccessDate({ status: false, lectureIndex: -1 });
+    }
+
+    const onLectureAccessDateChange = (e: any) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray[openAddAccessDate.lectureIndex].accessDate = e;
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
     }
 
     const onLectureMaterialTitleChange = (e: any, index: number) => {
@@ -236,6 +255,11 @@ const CourseList = (props: ICourseListProps) => {
     const onRemoveTestingClick = (i: number) => {
         const newTestingArray = addedTesting;
         setAddedLectures(newTestingArray.splice(i, 1));
+
+        const newImage = image;
+        const filteredImage = newImage.filter((item: any) => item.i !== i);
+        setImage(filteredImage.map((item: any) => item.i < i ? item : { ...item, i: item.i - 1 }));
+
         setUpdateFlag(newTestingArray.length);
     }
 
@@ -361,15 +385,15 @@ const CourseList = (props: ICourseListProps) => {
     }
 
 
-    const [image, setImage] = useState<any>('');
+    const [image, setImage] = useState<any>([]);
     const [imageError, setImageError] = useState<string>('');
 
-    const handleImageChange = (event: any) => {
+    const handleImageChange = (event: any, index: number) => {
+        console.log(image);
+
         event.preventDefault();
 
         if (event.target.files.length) {
-
-
             let reader = new FileReader();
             let file = event.target.files[0];
 
@@ -377,35 +401,43 @@ const CourseList = (props: ICourseListProps) => {
                 if (file.size < 1000000) {
                     setImageError('')
                     reader.onloadend = () => {
-                        setImage(file);
-                        const btn: HTMLButtonElement | null = document.querySelector('.personal-account__submit-button');
-                        btn?.click();
+                        let fileArr = image;
+                        let searched = -1;
+                        fileArr.find((item: any, serchedIndex: number) => {
+                            if (item.i === index) {
+                                searched = serchedIndex;
+                                return true;
+                            }
+                        })
+                        if (searched !== -1) {
+                            fileArr.splice(searched, 1);
+                        }
+                        fileArr.push({ i: index, file })
+                        setImage(fileArr);
+                        console.log(image);
                     }
 
                     reader.readAsDataURL(file);
                 } else {
-                    setImage('');
+                    setImage([]);
                     setImageError('Слишком большой размер файла');
                 }
             } else {
-                setImage('');
+                setImage([]);
                 setImageError('Неверный формат файла')
             }
         }
     }
 
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
+    const handleSubmit = () => {
+        image.map((item: any) => {
+            console.log(item);
 
-        appRequestFile('/api/user/load-image', 'POST', image)
-            .then((response) => {
-                if (response.data) {
-                    setImage('');
-                    setImageError('');
-                    const a: HTMLFormElement | null = document.querySelector('.course-list__image-form');
-                    a?.reset();
-                }
-            });
+            appRequestTestingImage('/api/course/load-image', 'POST', item.file, (selectedCourseData.courseFolder + '-' + selectedLecture + '-' + item.i))
+                .then((response) => {
+                    console.log(response);
+                });
+        })
     }
 
     const EditableLectures = SortableContainer((props: any) => {
@@ -502,6 +534,14 @@ const CourseList = (props: ICourseListProps) => {
                                                             <div className="course-list-component-lectures-list-progress">
                                                                 <div
                                                                     className="course-list-component-lectures-list-progress__item"
+                                                                    onClick={() => accessDateAdd(index)}
+                                                                >
+                                                                    <div className="course-list-component-lectures-list-progress__title">
+                                                                        <EventIcon />
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    className="course-list-component-lectures-list-progress__item"
                                                                     onClick={() => additionalMaterialsAdd(index)}
                                                                 >
                                                                     <div className="course-list-component-lectures-list-progress__title">
@@ -552,6 +592,43 @@ const CourseList = (props: ICourseListProps) => {
                                             </Button>
                                         }
                                     </div>
+                                    {openAddAccessDate.status ?
+                                        <ModalComponent
+                                            closeHandler={handleCloseAddAccessDate}
+                                            error
+                                            isOpen={openAddAccessDate.status}
+                                            text={''}
+                                            title={'Дата доступа лекции №' + (openAddAccessDate.lectureIndex + 1)}
+                                        >
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <KeyboardDatePicker
+                                                    disableToolbar
+                                                    variant="inline"
+                                                    format="dd.MM.yyyy"
+                                                    margin="normal"
+                                                    id="date-picker-inline"
+                                                    placeholder="Дата доступа"
+                                                    value={addedLectures[openAddAccessDate.lectureIndex].accessDate}
+                                                    onChange={(e) => onLectureAccessDateChange(e)}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                            <div className="course-list-modal__single-button">
+                                                <Button
+                                                    className="button-primary"
+                                                    variant="outlined"
+                                                    onClick={() => {
+                                                        handleCloseAddAccessDate();
+                                                    }}
+                                                >
+                                                    Сохранить
+                                                    </Button>
+                                            </div>
+                                        </ModalComponent> :
+                                        <Fragment />
+                                    }
                                     {openAddAdditionalMaterials.status ?
                                         <ModalComponent
                                             closeHandler={handleCloseAddAdditionalMaterials}
@@ -878,20 +955,15 @@ const CourseList = (props: ICourseListProps) => {
                                                                             className="course-list__image-form"
                                                                         >
                                                                             <label>
-                                                                                <div>
+                                                                                <div style={{ cursor: "pointer" }}>
                                                                                     Загрузить изображение
                                                                                 </div>
                                                                                 <input
                                                                                     style={{ display: "none" }}
                                                                                     type="file"
-                                                                                    onChange={(e) => handleImageChange(e)}
+                                                                                    onChange={(e) => handleImageChange(e, index)}
                                                                                 />
                                                                             </label>
-                                                                            <button
-                                                                                className="course-list__submit-button"
-                                                                                onClick={(e) => handleSubmit(e)}
-                                                                            >
-                                                                            </button>
                                                                         </form>
                                                                         <Input
                                                                             className="course-list-component-testing__input"
@@ -979,6 +1051,7 @@ const CourseList = (props: ICourseListProps) => {
                                                                 className="button-primary"
                                                                 variant="outlined"
                                                                 onClick={() => {
+                                                                    handleSubmit();
                                                                     appRequest('/api/testing/update', 'POST', {
                                                                         courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
                                                                     })

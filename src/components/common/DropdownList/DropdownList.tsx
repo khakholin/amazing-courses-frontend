@@ -1,4 +1,5 @@
 import React, { useState, Fragment, useEffect } from 'react';
+import moment from 'moment';
 import clsx from 'clsx';
 import Collapse from '@material-ui/core/Collapse';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -15,7 +16,7 @@ import endingForNumber from '../../../utils/endingForNumber';
 import './dropdownListStyle.scss';
 import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
-import { appRequest } from '../../../modules/app/appRequest';
+import { appRequest, appRequestFile2 } from '../../../modules/app/appRequest';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import { FormControlLabel, Radio, RadioGroup, Button, Input, withStyles } from '@material-ui/core';
 
@@ -159,15 +160,13 @@ const DropdownList = (props: IDropdownList) => {
                 {
                     props.items.map((item: ILectureData, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
-                            'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined),
-                            'dropdown-list-item_not-available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
+                            'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))),
+                            'dropdown-list-item_not-available': (!moment(item.accessDate).isBefore(moment().endOf('day'))),
                         });
-
                         const dropDownListItemProgressClass = clsx('dropdown-list-item__progress', {
-                            'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined),
-                            'dropdown-list-item__progress_inactive': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
+                            'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))),
+                            'dropdown-list-item__progress_inactive': (!moment(item.accessDate).isBefore(moment().endOf('day'))),
                         });
-
                         const dropDownListItemLineClass = clsx('dropdown-list-item__line', {
                             'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) !== undefined),
                             'dropdown-list-item__line_inactive': (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) === undefined),
@@ -190,7 +189,7 @@ const DropdownList = (props: IDropdownList) => {
                                 </div>
                                 <div className="dropdown-list-item__right"
                                     onClick={() => {
-                                        if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined) {
+                                        if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))) {
                                             handleOpenModal(item.lectureTitle, index);
                                         }
                                     }}
@@ -202,7 +201,7 @@ const DropdownList = (props: IDropdownList) => {
                                     <span className="dropdown-list-item__time">{timeConversion(item.lectureTime)}</span>
                                 </div>
                                 <div className="dropdown-list-item__testing" style={(!expanded || !isAvailableLecturesTests?.find((l: any) => l?.lectureTitle === item.lectureTitle && l?.lectureQuestions?.length)) ? { display: 'none' } : { display: 'flex' }} onClick={() => {
-                                    if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined) {
+                                    if (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))) {
                                         onTestingClick(props.title, item.lectureTitle)
                                     }
                                 }}>
@@ -240,6 +239,21 @@ const DropdownList = (props: IDropdownList) => {
                         <div className="dropdown-list-form">
                             {
                                 currentTestingData?.map((item: any, index: number) => {
+                                    let curAvatar;
+                                    appRequestFile2('/api/course/get-image', 'POST', { fileName: props.folder + '-' + modalTitle + '-' + index })
+                                        .then((avatar) => {
+                                            if (avatar.data.message !== 'TESTING_IMAGE_NOT_FOUND') {
+                                                let reader = new FileReader();
+                                                let file = avatar.data;
+
+                                                reader.onloadend = () => {
+                                                    curAvatar = reader.result;
+                                                }
+
+                                                reader.readAsDataURL(file);
+                                            }
+                                        })
+
                                     return (
                                         <div className="dropdown-list-question" key={index}>
                                             <div className="dropdown-list-question-title">
@@ -258,6 +272,7 @@ const DropdownList = (props: IDropdownList) => {
                                                     Вопрос № {index + 1}
                                                 </span>
                                             </div>
+                                            <img className="personal-account-profile__avatar" src={curAvatar} alt="" />
                                             <div className="dropdown-list-question__label">{item.question}</div>
                                             {item.isAnswerOptions ?
                                                 <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
