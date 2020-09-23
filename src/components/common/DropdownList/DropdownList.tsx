@@ -55,7 +55,7 @@ const DropdownList = (props: IDropdownList) => {
                 setIsAvailableLecturesTests(response.data.courseTests);
             });
         // eslint-disable-next-line
-    }, [])
+    }, []);
     const [expanded, setExpanded] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const [openTestingModal, setOpenTestingModal] = useState(false);
@@ -87,8 +87,52 @@ const DropdownList = (props: IDropdownList) => {
 
     const onTestingClick = (courseName: string, lectureTitle: string) => {
         appRequest('/api/testing/data-watch', 'POST', { courseName, lectureTitle })
-            .then(response => {
+            .then(async response => {
                 if (response) {
+                    // let newData = response.data;
+                    // let j = 0;
+
+
+                    // await Promise.all(
+                    //     response.data?.map((item: any, index: number) => {
+                    //         return appRequestFile2('/api/course/get-image', 'POST', { fileName: props.folder + '-' + lectureTitle + '-' + index })
+                    //             .then(async (avatar) => {
+                    //                 if (avatar.data.message !== 'TESTING_IMAGE_NOT_FOUND') {
+                    //                     let reader = new FileReader();
+                    //                     let file = avatar.data;
+                    //                     let tst: any;
+                    //                     reader.onloadend = () => {
+                    //                         newData[index].image = reader.result;
+                    //                         tst = reader.result;
+                    //                         // setCurrentTestingData(newData);
+                    //                         // console.log(index, '-', newData);
+                    //                     }
+
+                    //                     await reader.readAsDataURL(file);
+                    //                     return { ...item, image: tst };
+                    //                 }
+                    //             })
+                    //     }))
+                    //     .then(res => console.log(res))
+
+
+                    // for (const item of response.data) {
+                    //     await appRequestFile2('/api/course/get-image', 'POST', { fileName: props.folder + '-' + lectureTitle + '-' + j })
+                    //         .then((avatar) => {
+                    //             if (avatar.data.message !== 'TESTING_IMAGE_NOT_FOUND') {
+                    //                 let reader = new FileReader();
+                    //                 let file = avatar.data;
+
+                    //                 reader.onloadend = () => {
+                    //                     newData[j].image = reader.result;
+                    //                     console.log(j, '-', newData);
+                    //                     j++;
+                    //                 }
+
+                    //                 reader.readAsDataURL(file);
+                    //             }
+                    //         })
+                    // }
                     setCurrentTestingData(response.data);
                     setModalTitle(lectureTitle);
                     setOpenTestingModal(true);
@@ -239,21 +283,6 @@ const DropdownList = (props: IDropdownList) => {
                         <div className="dropdown-list-form">
                             {
                                 currentTestingData?.map((item: any, index: number) => {
-                                    let curAvatar;
-                                    appRequestFile2('/api/course/get-image', 'POST', { fileName: props.folder + '-' + modalTitle + '-' + index })
-                                        .then((avatar) => {
-                                            if (avatar.data.message !== 'TESTING_IMAGE_NOT_FOUND') {
-                                                let reader = new FileReader();
-                                                let file = avatar.data;
-
-                                                reader.onloadend = () => {
-                                                    curAvatar = reader.result;
-                                                }
-
-                                                reader.readAsDataURL(file);
-                                            }
-                                        })
-
                                     return (
                                         <div className="dropdown-list-question" key={index}>
                                             <div className="dropdown-list-question-title">
@@ -272,7 +301,7 @@ const DropdownList = (props: IDropdownList) => {
                                                     Вопрос № {index + 1}
                                                 </span>
                                             </div>
-                                            <img className="personal-account-profile__avatar" src={curAvatar} alt="" />
+                                            {/* <img className="personal-account-profile__avatar" src={item?.image} alt="" /> */}
                                             <div className="dropdown-list-question__label">{item.question}</div>
                                             {item.isAnswerOptions ?
                                                 <RadioGroup aria-label={item.question} name={item.question} value={answersArray[index]} onChange={(e) => handleAnswerChange(e, index)}>
