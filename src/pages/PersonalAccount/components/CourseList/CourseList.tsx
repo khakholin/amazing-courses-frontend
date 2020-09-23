@@ -3,13 +3,17 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import './courseListStyle.scss';
-import { appRequest } from '../../../../modules/app/appRequest';
+import { appRequest, appRequestFile, appRequestTestingImage } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
 import { Button, CircularProgress, Input, Checkbox, InputAdornment } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
 import { defaultTranslation } from '../../../../constants/translation';
 import ClearIcon from '@material-ui/icons/Clear';
 import ModalComponent from '../../../../components/common/ModalComponent/ModalComponent';
+import NoteAddIcon from '@material-ui/icons/NoteAdd';
+import EventIcon from '@material-ui/icons/Event';
+import { KeyboardDatePicker, MuiPickersUtilsProvider, } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 
 export interface ICourseListProps { }
 
@@ -42,6 +46,8 @@ const CourseList = (props: ICourseListProps) => {
     const [selectedLecture, setSelectedLecture] = useState('');
     const [openDeleteLectureModal, setOpenDeleteLectureModal] = useState({ status: false, lectureTitle: '' });
     const [openDeleteCourseModal, setOpenDeleteCourseModal] = useState(false);
+    const [openAddAdditionalMaterials, setOpenAddAdditionalMaterials] = useState({ status: false, lectureIndex: -1 });
+    const [openAddAccessDate, setOpenAddAccessDate] = useState({ status: false, lectureIndex: -1 });
     const [editAddedLectures, setEditAddedLectures] = useState<any>([]);
 
     const onSaveClick = () => {
@@ -121,7 +127,7 @@ const CourseList = (props: ICourseListProps) => {
 
     const onAddLectureClick = () => {
         const newLecturesArray = addedLectures;
-        newLecturesArray.push({ lectureTime: '', lectureTitle: '' });
+        newLecturesArray.push({ lectureTime: '', lectureTitle: '', accessDate: null, additionalMaterials: [] });
         setAddedLectures(newLecturesArray);
         setUpdateFlag(newLecturesArray.length);
     }
@@ -131,6 +137,48 @@ const CourseList = (props: ICourseListProps) => {
         newLecturesArray.splice(index, 1);
         setAddedLectures(newLecturesArray);
         setUpdateFlag(newLecturesArray.length);
+    }
+
+    const additionalMaterialsAdd = (index: number) => {
+        setOpenAddAdditionalMaterials({ status: true, lectureIndex: index });
+    }
+
+    const handleCloseAddAdditionalMaterials = () => {
+        const newLecturesArray = addedLectures;
+        const newAdditionalMaterials = newLecturesArray[openAddAdditionalMaterials.lectureIndex].additionalMaterials.filter((material: any) => !!material.materialTitle.length && !!material.materialLink.length);
+        newLecturesArray[openAddAdditionalMaterials.lectureIndex].additionalMaterials = newAdditionalMaterials;
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
+        setOpenAddAdditionalMaterials({ status: false, lectureIndex: -1 });
+    }
+
+    const accessDateAdd = (index: number) => {
+        setOpenAddAccessDate({ status: true, lectureIndex: index });
+    }
+
+    const handleCloseAddAccessDate = () => {
+        setOpenAddAccessDate({ status: false, lectureIndex: -1 });
+    }
+
+    const onLectureAccessDateChange = (e: any) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray[openAddAccessDate.lectureIndex].accessDate = e;
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
+    }
+
+    const onLectureMaterialTitleChange = (e: any, index: number) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray[openAddAdditionalMaterials.lectureIndex].additionalMaterials[index].materialTitle = e.target.value;
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
+    }
+
+    const onLectureMaterialLinkChange = (e: any, index: number) => {
+        const newLecturesArray = addedLectures;
+        newLecturesArray[openAddAdditionalMaterials.lectureIndex].additionalMaterials[index].materialLink = e.target.value;
+        setAddedLectures(newLecturesArray);
+        setUpdateFlag(updateFlag + 1);
     }
 
     const onEditLectureDeleteClick = (index: number) => {
@@ -207,6 +255,11 @@ const CourseList = (props: ICourseListProps) => {
     const onRemoveTestingClick = (i: number) => {
         const newTestingArray = addedTesting;
         setAddedLectures(newTestingArray.splice(i, 1));
+
+        const newImage = image;
+        const filteredImage = newImage.filter((item: any) => item.i !== i);
+        setImage(filteredImage.map((item: any) => item.i < i ? item : { ...item, i: item.i - 1 }));
+
         setUpdateFlag(newTestingArray.length);
     }
 
@@ -331,6 +384,62 @@ const CourseList = (props: ICourseListProps) => {
         return !!editAddedLectures.length && !editAddedLectures.find((item: any) => !item?.lectureTime || !item?.lectureTitle?.length);
     }
 
+
+    const [image, setImage] = useState<any>([]);
+    const [imageError, setImageError] = useState<string>('');
+
+    const handleImageChange = (event: any, index: number) => {
+        console.log(image);
+
+        event.preventDefault();
+
+        if (event.target.files.length) {
+            let reader = new FileReader();
+            let file = event.target.files[0];
+
+            if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                if (file.size < 1000000) {
+                    setImageError('')
+                    reader.onloadend = () => {
+                        let fileArr = image;
+                        let searched = -1;
+                        fileArr.find((item: any, serchedIndex: number) => {
+                            if (item.i === index) {
+                                searched = serchedIndex;
+                                return true;
+                            }
+                        })
+                        if (searched !== -1) {
+                            fileArr.splice(searched, 1);
+                        }
+                        fileArr.push({ i: index, file })
+                        setImage(fileArr);
+                        console.log(image);
+                    }
+
+                    reader.readAsDataURL(file);
+                } else {
+                    setImage([]);
+                    setImageError('Слишком большой размер файла');
+                }
+            } else {
+                setImage([]);
+                setImageError('Неверный формат файла')
+            }
+        }
+    }
+
+    const handleSubmit = () => {
+        image.map((item: any) => {
+            console.log(item);
+
+            appRequestTestingImage('/api/course/load-image', 'POST', item.file, (selectedCourseData.courseFolder + '-' + selectedLecture + '-' + item.i))
+                .then((response) => {
+                    console.log(response);
+                });
+        })
+    }
+
     const EditableLectures = SortableContainer((props: any) => {
         return <ul>{props.children}</ul>;
     });
@@ -425,6 +534,22 @@ const CourseList = (props: ICourseListProps) => {
                                                             <div className="course-list-component-lectures-list-progress">
                                                                 <div
                                                                     className="course-list-component-lectures-list-progress__item"
+                                                                    onClick={() => accessDateAdd(index)}
+                                                                >
+                                                                    <div className="course-list-component-lectures-list-progress__title">
+                                                                        <EventIcon />
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    className="course-list-component-lectures-list-progress__item"
+                                                                    onClick={() => additionalMaterialsAdd(index)}
+                                                                >
+                                                                    <div className="course-list-component-lectures-list-progress__title">
+                                                                        <NoteAddIcon />
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    className="course-list-component-lectures-list-progress__item"
                                                                     onClick={() => onLectureDeleteClick(index)}
                                                                 >
                                                                     <div className="course-list-component-lectures-list-progress__title">
@@ -467,6 +592,91 @@ const CourseList = (props: ICourseListProps) => {
                                             </Button>
                                         }
                                     </div>
+                                    {openAddAccessDate.status ?
+                                        <ModalComponent
+                                            closeHandler={handleCloseAddAccessDate}
+                                            error
+                                            isOpen={openAddAccessDate.status}
+                                            text={''}
+                                            title={'Дата доступа лекции №' + (openAddAccessDate.lectureIndex + 1)}
+                                        >
+                                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                                <KeyboardDatePicker
+                                                    disableToolbar
+                                                    variant="inline"
+                                                    format="dd.MM.yyyy"
+                                                    margin="normal"
+                                                    id="date-picker-inline"
+                                                    placeholder="Дата доступа"
+                                                    value={addedLectures[openAddAccessDate.lectureIndex].accessDate}
+                                                    onChange={(e) => onLectureAccessDateChange(e)}
+                                                    KeyboardButtonProps={{
+                                                        'aria-label': 'change date',
+                                                    }}
+                                                />
+                                            </MuiPickersUtilsProvider>
+                                            <div className="course-list-modal__single-button">
+                                                <Button
+                                                    className="button-primary"
+                                                    variant="outlined"
+                                                    onClick={() => {
+                                                        handleCloseAddAccessDate();
+                                                    }}
+                                                >
+                                                    Сохранить
+                                                    </Button>
+                                            </div>
+                                        </ModalComponent> :
+                                        <Fragment />
+                                    }
+                                    {openAddAdditionalMaterials.status ?
+                                        <ModalComponent
+                                            closeHandler={handleCloseAddAdditionalMaterials}
+                                            error
+                                            isOpen={openAddAdditionalMaterials.status}
+                                            text={''}
+                                            title={'Дополнительные материалы для лекции №' + (openAddAdditionalMaterials.lectureIndex + 1)}
+                                        >
+                                            <div className="course-list-materials-list">
+                                                <div className="course-list-materials__header">
+                                                    <div className="course-list-materials__block" onClick={() => {
+                                                        const newLecturesArray = addedLectures;
+                                                        newLecturesArray[openAddAdditionalMaterials.lectureIndex].additionalMaterials.push({ materialTitle: '', materialLink: '' });
+                                                        setAddedLectures(newLecturesArray);
+                                                        setUpdateFlag(updateFlag + 1);
+                                                    }}>
+                                                        <div className="course-list-materials__header-add">+</div>
+                                                        <div className="course-list-materials__header-description">
+                                                            <div className="course-list-materials__header-text">Добавить материал</div>
+                                                        </div>
+                                                    </div>
+                                                    <div></div>
+                                                </div>
+                                                {
+                                                    addedLectures[openAddAdditionalMaterials.lectureIndex].additionalMaterials?.map((material: any, materialIndex: number) => {
+                                                        return (
+                                                            <div className="course-list-materials__item">
+                                                                <Input className="course-list-materials__input" placeholder="Название" value={material.materialTitle} onChange={(e: any) => onLectureMaterialTitleChange(e, materialIndex)} />
+                                                                <Input className="course-list-materials__input" placeholder="Ссылка" value={material.materialLink} onChange={(e: any) => onLectureMaterialLinkChange(e, materialIndex)} />
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                            <div className="course-list-modal__single-button">
+                                                <Button
+                                                    className="button-primary"
+                                                    variant="outlined"
+                                                    onClick={() => {
+                                                        handleCloseAddAdditionalMaterials();
+                                                    }}
+                                                >
+                                                    Сохранить
+                                                    </Button>
+                                            </div>
+                                        </ModalComponent> :
+                                        <Fragment />
+                                    }
                                 </Fragment>
                                 : (!isCourseInfoMode ?
                                     <Fragment>
@@ -741,6 +951,20 @@ const CourseList = (props: ICourseListProps) => {
                                                                             onClick={() => onRemoveTestingClick(index)}
                                                                         />
                                                                         <div>Вопрос №{index + 1}:</div>
+                                                                        <form
+                                                                            className="course-list__image-form"
+                                                                        >
+                                                                            <label>
+                                                                                <div style={{ cursor: "pointer" }}>
+                                                                                    Загрузить изображение
+                                                                                </div>
+                                                                                <input
+                                                                                    style={{ display: "none" }}
+                                                                                    type="file"
+                                                                                    onChange={(e) => handleImageChange(e, index)}
+                                                                                />
+                                                                            </label>
+                                                                        </form>
                                                                         <Input
                                                                             className="course-list-component-testing__input"
                                                                             placeholder="Вопрос"
@@ -827,6 +1051,7 @@ const CourseList = (props: ICourseListProps) => {
                                                                 className="button-primary"
                                                                 variant="outlined"
                                                                 onClick={() => {
+                                                                    handleSubmit();
                                                                     appRequest('/api/testing/update', 'POST', {
                                                                         courseName: selectedCourseData.courseName, lectureTitle: selectedLecture, lectureQuestions: addedTesting
                                                                     })

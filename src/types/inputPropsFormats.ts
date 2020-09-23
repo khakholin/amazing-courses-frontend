@@ -31,6 +31,8 @@ export interface ICourseData {
 }
 
 export interface ILectureData {
+    accessDate: string;
+    additionalMaterials: { materialTitle: string; materialLink: string }[];
     lectureTime: number;
     lectureTitle: string;
 }

@@ -9,44 +9,58 @@
     align-items: center;
 
     &-content {
+        display: flex;
+        padding: 20px;
+        background-color: #fff;
         position: relative;
+        max-height: 440px;
 
         &__title {
-            z-index: 1;
-            position: absolute;
-            top: -40px;
-            left: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
             font-family: MullerRegular;
-            color: white;
+            color: $mainColor;
             font-size: 20px;
             height: 40px;
         }
 
         &__video {
-            height: 450px;
-            width: 800px;
+            height: 360px;
+            width: 640px;
         }
 
-        &__border {
-            position: absolute;
-            left: 0;
-            height: 40px;
-            width: 100%;
+    }
 
-            &_top {
-                top: -40px;
-                background: linear-gradient(transparent, black);
-            }
+    &-materials {
+        margin: 40px 20px 0 20px;
+        width: 240px;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
 
-            &_bottom {
-                bottom: -38px;
-                background: linear-gradient(black, transparent);
-
-            }
+        &__title {
+            font-size: 16px;
         }
 
+        &__item {
+            padding: 9px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            // min-height: 40px;
+            border-bottom: 1px solid $secondaryColor;
+
+            &:first-child {
+                border-top: 1px solid $secondaryColor;
+            }
+
+            &-icon {
+                color: $secondaryColor;
+            }
+
+            &-link {
+                margin-left: 5px;
+                margin-top: 5px;
+                color: $secondaryColor;
+            }
+        }
     }
 }

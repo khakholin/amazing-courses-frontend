@@ -325,4 +325,62 @@
             justify-content: space-between;
         }
     }
+
+    &-modal {
+        &__single-button {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            width: 100%;
+        }
+    }
+
+    &-materials {
+        &-list {
+            width: 520px;
+            height: 200px;
+            overflow: auto;
+            border: 1px solid $bgcPageDefault;
+        }
+
+        &__item {
+            width: 100%;
+            border-bottom: 1px solid $bgcPageDefault;
+            height: 40px;
+
+            &:last-child {
+                border: 0;
+            }
+        }
+
+        &__input {
+            margin: 0 10px;
+            width: calc(50% - 20px);
+        }
+
+        &__header {
+            cursor: pointer;
+            padding-left: 10px;
+            height: 40px;
+            width: 100%;
+            border-bottom: 1px solid $bgcPageDefault;
+
+            &-add {
+                color: $secondaryColor;
+                margin-right: 10px;
+                font-size: 28px;
+            }
+
+            &-description {}
+
+            &-text {}
+        }
+
+        &__block {
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+    }
 }
