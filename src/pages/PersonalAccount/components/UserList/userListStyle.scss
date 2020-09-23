@@ -5,10 +5,10 @@
 
 .user-list-component {
     width: 100%;
-    height: 400px;
+    min-height: 400px;
+    max-height: 400px;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
     overflow: auto;
     padding: 10px;
 
