@@ -3,7 +3,7 @@ import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import arrayMove from 'array-move';
 
 import './courseListStyle.scss';
-import { appRequest, appRequestFile, appRequestTestingImage } from '../../../../modules/app/appRequest';
+import { appRequest, appRequestTestingImage } from '../../../../modules/app/appRequest';
 import { ICourseData } from '../../../../types/inputPropsFormats';
 import { Button, CircularProgress, Input, Checkbox, InputAdornment } from '@material-ui/core';
 import InputField from '../../../../components/common/InputField/InputField';
@@ -386,7 +386,7 @@ const CourseList = (props: ICourseListProps) => {
 
 
     const [image, setImage] = useState<any>([]);
-    const [imageError, setImageError] = useState<string>('');
+    // const [imageError, setImageError] = useState<string>('');
 
     const handleImageChange = (event: any, index: number) => {
         console.log(image);
@@ -399,7 +399,7 @@ const CourseList = (props: ICourseListProps) => {
 
             if (file.type === 'image/jpeg' || file.type === 'image/png') {
                 if (file.size < 1000000) {
-                    setImageError('')
+                    // setImageError('')
                     reader.onloadend = () => {
                         let fileArr = image;
                         let searched = -1;
@@ -407,6 +407,8 @@ const CourseList = (props: ICourseListProps) => {
                             if (item.i === index) {
                                 searched = serchedIndex;
                                 return true;
+                            } else {
+                                return false;
                             }
                         })
                         if (searched !== -1) {
@@ -420,11 +422,11 @@ const CourseList = (props: ICourseListProps) => {
                     reader.readAsDataURL(file);
                 } else {
                     setImage([]);
-                    setImageError('Слишком большой размер файла');
+                    // setImageError('Слишком большой размер файла');
                 }
             } else {
                 setImage([]);
-                setImageError('Неверный формат файла')
+                // setImageError('Неверный формат файла')
             }
         }
     }
@@ -437,6 +439,7 @@ const CourseList = (props: ICourseListProps) => {
                 .then((response) => {
                     console.log(response);
                 });
+            return item;
         })
     }
 

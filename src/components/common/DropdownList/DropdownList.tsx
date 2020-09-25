@@ -16,7 +16,7 @@ import endingForNumber from '../../../utils/endingForNumber';
 import './dropdownListStyle.scss';
 import VideoModal from '../VideoModal/VideoModal';
 import { IUserCourseProgress } from '../../../types/responseTypes';
-import { appRequest, appRequestFile2 } from '../../../modules/app/appRequest';
+import { appRequest, } from '../../../modules/app/appRequest';
 import ModalComponent from '../ModalComponent/ModalComponent';
 import { FormControlLabel, Radio, RadioGroup, Button, Input, withStyles } from '@material-ui/core';
 
@@ -205,11 +205,11 @@ const DropdownList = (props: IDropdownList) => {
                     props.items.map((item: ILectureData, index: number) => {
                         const dropDownListItemClass = clsx('dropdown-list-item', {
                             'dropdown-list-item_available': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))),
-                            'dropdown-list-item_not-available': (!moment(item.accessDate).isBefore(moment().endOf('day'))),
+                            'dropdown-list-item_not-available': item.accessDate ? (!moment(item.accessDate).isBefore(moment().endOf('day'))) : (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
                         });
                         const dropDownListItemProgressClass = clsx('dropdown-list-item__progress', {
                             'dropdown-list-item__progress_active': (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) !== undefined || moment(item.accessDate).isBefore(moment().endOf('day'))),
-                            'dropdown-list-item__progress_inactive': (!moment(item.accessDate).isBefore(moment().endOf('day'))),
+                            'dropdown-list-item__progress_inactive': item.accessDate ? (!moment(item.accessDate).isBefore(moment().endOf('day'))) : (props.courseProgress?.availableLectures.find(lec => lec === item.lectureTitle) === undefined),
                         });
                         const dropDownListItemLineClass = clsx('dropdown-list-item__line', {
                             'dropdown-list-item__line_active': (props.courseProgress?.checkedLectures.find(lec => lec === item.lectureTitle) !== undefined),

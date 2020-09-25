@@ -38,7 +38,7 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
     const [isLoader, setIsLoader] = useState(true);
     const [isUserSelect, setIsUserSelect] = useState(false);
     const [userCourseProgress, setUserCourseProgress] = useState<any>([]);
-    const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState<any>([]);
     const [showMoreModal, setShowMoreModal] = useState(false);
     const [selectedTesting, setSelectedTesting] = useState<any>({});
     const [currentTestingData, setCurrentTestingData] = useState([]);
@@ -114,7 +114,9 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                             !isUserSelect ?
                                 <Fragment>
                                     {
-                                        users.length && users.map((user: any, index: number) => {
+                                        users?.length && users.map((user: any, index: number) => {
+                                            console.log(user?.courseProgress);
+
                                             return (
                                                 <div
                                                     className="student-success__item"
@@ -122,6 +124,21 @@ const StudentSuccess = (props: IStudentSuccessProps) => {
                                                 >
                                                     {
                                                         user.realName + ' ' + user.realSurname
+                                                    }
+                                                    {
+                                                        user.courseProgress?.[0]?.courseName && user.courseProgress?.[0]?.lecturesTesting?.length ?
+                                                            <div className="student-success-result">
+                                                                <div style={{ fontWeight: 700 }}>Курс: {user.courseProgress?.[0]?.courseName}</div>
+                                                                {user.courseProgress?.[0]?.lecturesTesting?.map((lec: any) => {
+                                                                    return (
+                                                                        <div className="student-success-result__lec">
+                                                                            <span>Лекция: {lec.lectureTitle}</span>
+                                                                            <span>Результат: {lec.result.right + ` из ` + lec.result.total}</span>
+                                                                        </div>
+                                                                    )
+                                                                })}
+                                                            </div> :
+                                                            <Fragment />
                                                     }
                                                 </div>
                                             )
